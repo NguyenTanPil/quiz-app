@@ -11,6 +11,9 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
   },
+  watchOptions: {
+    ignored: '**/node_modules',
+  },
   devtool: 'inline-source-map',
   plugins: [
     new HtmlWebpackPlugin({
@@ -27,7 +30,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.jpe?g|png|svg/,
+        test: /\.(jpe?g|png|svg)$/i,
         exclude: /node_modules/,
         use: ['url-loader', 'url-loader'],
       },
