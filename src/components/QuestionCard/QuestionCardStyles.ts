@@ -2,11 +2,11 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   background: #ebfeff;
-  max-width: 1100px;
-  border-radius: 0.8rem;
   border: 0.2 solid #0085a3;
+  border-radius: 0.8rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.25);
+  max-width: 1100px;
   padding: 2rem 4rem;
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.25);
   text-align: center;
 `;
 
@@ -20,6 +20,15 @@ export const QuestionContent = styled(QuestionNumber)`
   padding: 1.2rem 0;
 `;
 
-export const AnswerList = styled.div``;
+export const AnswerList = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+`;
 
-export const AnswerItem = styled.div``;
+export const AnswerItem = styled.div`
+  margin-bottom: 0.4rem;
+  margin-top: 0.4rem;
+  width: 100%;
+`;

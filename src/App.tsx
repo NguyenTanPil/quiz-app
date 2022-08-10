@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 // styles
-// styles
 import GlobalStyles, { Container } from './GlobalStyles';
 // components
 import Footer from './components/Footer';
@@ -31,7 +30,7 @@ const App: React.FC = () => {
 
       const answerObject = {
         question: questions[number].question,
-        answer,
+        answerClicked: answer,
         correct: isCorrect,
         correctAnswer: questions[number].correct_answer,
       };
@@ -41,12 +40,12 @@ const App: React.FC = () => {
   };
 
   const nextQuestion = () => {
-    const nextQuestion = number + 1;
+    const nextNumberQuestion = number + 1;
 
-    if (nextQuestion === TOTAL_QUESTIONS) {
+    if (nextNumberQuestion === TOTAL_QUESTIONS) {
       setGameOver(true);
     } else {
-      setNumber(nextQuestion);
+      setNumber(nextNumberQuestion);
     }
   };
 
@@ -56,7 +55,7 @@ const App: React.FC = () => {
 
     const newQuestion = await fetchQuizQuestions(
       TOTAL_QUESTIONS,
-      Difficulty.EASY
+      Difficulty.EASY,
     );
 
     setQuestions(newQuestion);

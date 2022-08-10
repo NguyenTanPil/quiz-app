@@ -19,7 +19,12 @@ export enum Difficulty {
 
 export type AnswerObject = {
   question: string;
-  answer: string;
+  answerClicked: string;
   correct: boolean;
   correctAnswer: string;
+};
+
+export type AnswerButtonProps = {
+  correct: boolean;
+  userClicked: boolean;
 };

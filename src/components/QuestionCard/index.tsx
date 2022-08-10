@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '../../common/Button';
+import { AnswerButton } from '../../common/Button';
 import { AnswerObject } from '../../utils/types';
 import {
   AnswerItem,
@@ -35,9 +35,15 @@ const QuestionCard: React.FC<Props> = ({
       <AnswerList>
         {answers.map((answer) => (
           <AnswerItem key={answer}>
-            <Button disabled={!!userAnswer} value={answer} onClick={callback}>
+            <AnswerButton
+              disabled={!!userAnswer}
+              value={answer}
+              correct={userAnswer?.correctAnswer === answer}
+              userClicked={userAnswer?.answerClicked === answer}
+              onClick={callback}
+            >
               <span dangerouslySetInnerHTML={{ __html: answer }}></span>
-            </Button>
+            </AnswerButton>
           </AnswerItem>
         ))}
       </AnswerList>
