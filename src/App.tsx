@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 // styles
-import GlobalStyles, { Container } from './GlobalStyles';
+import { ThemeProvider } from 'styled-components';
+import GlobalStyles from './styles/GlobalStyles';
 // components
 import Footer from './components/Footer';
 import Header from './components/Header';
@@ -9,7 +10,10 @@ import QuestionCard from './components/QuestionCard';
 import { AnswerObject, Difficulty, QuestionState } from './utils/types';
 // other
 import { fetchQuizQuestions } from './api/fetchQuizQuestions';
+import { getTheme } from './styles/theme';
 import { TOTAL_QUESTIONS } from './utils/constants';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './components/Pages/Home';
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -66,31 +70,32 @@ const App: React.FC = () => {
   };
 
   return (
-    <Container>
+    <ThemeProvider theme={getTheme('light')}>
       <GlobalStyles />
-      <Header
-        gameOver={gameOver}
-        userAnswers={userAnswers}
-        loading={loading}
-        score={score}
-        startGame={startTrivia}
-      />
-      {!loading && !gameOver && (
-        <QuestionCard
-          questionNumber={number + 1}
-          totalQuestions={TOTAL_QUESTIONS}
-          question={questions[number].question}
-          answers={questions[number].answers}
-          userAnswer={userAnswers ? userAnswers[number] : undefined}
-          callback={checkAnswer}
-        />
-      )}
-      {!gameOver &&
-        userAnswers.length === number + 1 &&
-        number !== TOTAL_QUESTIONS - 1 && (
-          <Footer nextQuestion={nextQuestion} />
-        )}
-    </Container>
+      <Router>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          {/* <Container>
+            {!loading && !gameOver && (
+              <QuestionCard
+                questionNumber={number + 1}
+                totalQuestions={TOTAL_QUESTIONS}
+                question={questions[number].question}
+                answers={questions[number].answers}
+                userAnswer={userAnswers ? userAnswers[number] : undefined}
+                callback={checkAnswer}
+              />
+            )}
+            {!gameOver &&
+              userAnswers.length === number + 1 &&
+              number !== TOTAL_QUESTIONS - 1 && (
+                <Footer nextQuestion={nextQuestion} />
+              )}
+          </Container> */}
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 };
 

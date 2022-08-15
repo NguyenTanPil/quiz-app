@@ -1,33 +1,48 @@
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import { breakpoints, devices } from '../../styles/breakpoints';
 
 export const Container = styled.div`
+  border-bottom: 0.1rem solid ${(props) => props.theme.borderColor};
+`;
+
+export const Content = styled.header`
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
+  ${breakpoints({
+    cssProp: ['padding-bottom', 'padding-top'],
+    cssPropUnits: 'rem',
+    values: [{ [devices.smallDevices]: 1 }, { [devices.mediumDevices]: 1.2 }],
+  })};
+`;
 
-  h1 {
-    background-clip: text;
-    background-image: linear-gradient(180deg, #fff, #00bbf0);
-    background-color: 100%;
-    filter: drop-shadow(0.2rem 0.2rem #005792);
-    font-size: 6rem;
-    font-weight: 600;
-    text-align: center;
-    margin: 2rem;
+export const LeftSide = styled.div`
+  display: flex;
+  align-items: center;
+`;
 
-    -moz-background-clip: text;
-    -moz-text-fill-color: transparent;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+export const NavList = styled.ul`
+  display: flex;
+  align-items: center;
+`;
+
+export const NavItem = styled.li`
+  margin-right: 1.2rem;
+
+  &:last-child {
+    margin-right: 0;
   }
 `;
 
-export const Score = styled.p`
-  color: #000000;
-  font-size: 2.4rem;
-  font-weight: 600;
-  margin: 0;
-`;
+export const RightSide = styled.div``;
 
-export const LoadingContainer = styled.p``;
+export const Logo = styled(Link)`
+  padding: 0 0.8rem;
+
+  span {
+    color: ${(props) => props.theme.mainColor};
+    font-size: 3.2rem;
+    font-weight: 600;
+  }
+`;

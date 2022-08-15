@@ -1,31 +1,47 @@
 import React from 'react';
-import { Button } from '../../common/Button';
-import { TOTAL_QUESTIONS } from '../../utils/constants';
-import { Container, LoadingContainer, Score } from './HeaderStyles';
+import { NoBorderButton, SignUpButton } from '../../common/Button';
+import Dropdown from '../../common/Dropdown';
+import { Wrapper } from '../../styles/Utils';
+import {
+  Container,
+  Content,
+  LeftSide,
+  Logo,
+  NavItem,
+  NavList,
+  RightSide,
+} from './HeaderStyles';
 
-type Props = {
-  gameOver: boolean;
-  userAnswers: any;
-  loading: boolean;
-  score: number;
-  startGame: any;
-};
-
-const Header: React.FC<Props> = ({
-  gameOver,
-  userAnswers,
-  loading,
-  score,
-  startGame,
-}) => {
+const Header = () => {
   return (
     <Container>
-      <h1>React Quiz</h1>
-      {(gameOver || userAnswers.length === TOTAL_QUESTIONS) && (
-        <Button onClick={startGame}>Start</Button>
-      )}
-      {!gameOver && <Score>Score: {score}</Score>}
-      {loading && <LoadingContainer>Loading Question...</LoadingContainer>}
+      <Wrapper>
+        <Content>
+          <LeftSide>
+            <Logo to="/">
+              <span>Quizil</span>
+            </Logo>
+            <NavList>
+              <NavItem>
+                <NoBorderButton>Create Quiz</NoBorderButton>
+              </NavItem>
+              <NavItem>
+                <NoBorderButton>Join now</NoBorderButton>
+              </NavItem>
+            </NavList>
+          </LeftSide>
+          <RightSide>
+            <NavList>
+              <NavItem>
+                <Dropdown values={['English', 'Vietnamese']} />
+              </NavItem>
+              <NavItem>
+                <SignUpButton>Sign Up</SignUpButton>
+              </NavItem>
+            </NavList>
+          </RightSide>
+        </Content>
+      </Wrapper>
     </Container>
   );
 };
