@@ -1,5 +1,5 @@
 type valueProps = {
-  [key: number]: number;
+  [key: number]: number | string;
 };
 
 type deviceProps = {
@@ -14,6 +14,7 @@ type breakpointsProps = {
 };
 
 export const devices: deviceProps = {
+  default: 100,
   smallDevices: 576,
   mediumDevices: 768,
   largeDevices: 992,
@@ -26,35 +27,34 @@ export const breakpoints = ({
   values = [],
   mediaQueryType = 'min-width',
 }: breakpointsProps): any => {
-  const breakpointsCssProps: string = values.reduce(
-    (mediaQueries: string, value: valueProps) => {
-      const [screenBreakpoint, cssPropBreakpoint] = [
-        Object.keys(value)[0],
-        Object.values(value)[0],
-      ];
+  let mediaQueries: string = '';
 
-      let multipleCss = '';
+  values.forEach((value: valueProps) => {
+    const [screenBreakpoint, cssPropBreakpoint] = [
+      Object.keys(value)[0],
+      Object.values(value)[0],
+    ];
 
-      if (Array.isArray(cssProp)) {
-        const cssPropsString = cssProp.reduce(
-          (cssProps, prop) =>
-            cssProps + `${prop}: ${cssPropBreakpoint}${cssPropUnits};`,
-          '',
-        );
+    let multipleCss = '';
 
-        multipleCss = cssPropsString;
-      } else {
-        multipleCss = `${cssProp}: ${cssPropBreakpoint}${cssPropUnits};`;
-      }
+    if (Array.isArray(cssProp)) {
+      const cssPropsString = cssProp.reduce(
+        (cssProps, prop) =>
+          cssProps + `${prop}: ${cssPropBreakpoint}${cssPropUnits};`,
+        '',
+      );
 
-      return (mediaQueries += `
+      multipleCss = cssPropsString;
+    } else {
+      multipleCss = `${cssProp}: ${cssPropBreakpoint}${cssPropUnits};`;
+    }
+
+    mediaQueries += `
         @media screen and (${mediaQueryType}: ${screenBreakpoint}px) {
           ${multipleCss}
         }
-    `);
-    },
-    '',
-  );
+    `;
+  }, '');
 
-  return breakpointsCssProps;
+  return mediaQueries;
 };

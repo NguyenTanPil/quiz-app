@@ -14,7 +14,7 @@ export const SelectedValue = styled.div`
   position: relative;
 
   button {
-    border: 0.1rem solid ${(props) => props.theme.borderColor};
+    border: 0.2rem solid ${(props) => props.theme.borderColor};
     padding-right: 3.2rem;
     z-index: 200;
   }

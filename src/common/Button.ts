@@ -34,7 +34,7 @@ const getBackgroundAnswerButton = ({
 
 export const Button = styled(ButtonPattern)`
   background-color: ${(props) => props.theme.backgroundColor};
-  border: 0.1rem solid ${(props) => props.theme.mainColor};
+  border: 0.2rem solid ${(props) => props.theme.mainColor};
   color: ${(props) => props.theme.mainColor};
 
   &:hover {
@@ -45,7 +45,7 @@ export const Button = styled(ButtonPattern)`
 
 export const SignUpButton = styled(ButtonPattern)`
   background-color: ${(props) => props.theme.mainColor};
-  border: 0.1rem solid ${(props) => props.theme.mainColor};
+  border: 0.2rem solid ${(props) => props.theme.mainColor};
   color: ${(props) => props.theme.backgroundColor};
 
   &:hover {
@@ -65,7 +65,7 @@ export const DropdownSelectedButton = styled(ButtonPattern)``;
 export const AnswerButton = styled(ButtonPattern)<AnswerButtonProps>`
   background: ${({ correct, userClicked }) =>
     getBackgroundAnswerButton({ correct, userClicked })};
-  border: 0.1rem solid
+  border: 0.2rem solid
     ${({ correct, userClicked }) =>
       getBackgroundAnswerButton({ correct, userClicked })};
   color: #ffffff;
