@@ -35,6 +35,16 @@ const Sidebar = ({ isShowSidebar, setIsShowSidebar }: SideBarProps) => {
           </li>
           <li onClick={() => setIsShowSidebar(false)}>
             <NavLink to="/">
+              <span>Academy</span>
+            </NavLink>
+          </li>
+          <li onClick={() => setIsShowSidebar(false)}>
+            <NavLink to="/">
+              <span>Start</span>
+            </NavLink>
+          </li>
+          <li onClick={() => setIsShowSidebar(false)}>
+            <NavLink to="/">
               <span>Sign up</span>
             </NavLink>
           </li>

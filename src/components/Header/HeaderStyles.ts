@@ -2,24 +2,15 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { breakpoints, devices } from '../../styles/breakpoints';
 
-export const Container = styled.div`
-  border-bottom: 0.1rem solid ${(props) => props.theme.borderColor};
-`;
-
-export const Content = styled.header`
+export const Container = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
   ${breakpoints({
     cssProp: ['padding-bottom', 'padding-top'],
     cssPropUnits: 'rem',
-    values: [{ [devices.default]: 1 }, { [devices.mediumDevices]: 1.2 }],
+    values: [{ [devices.default]: 2 }, { [devices.mediumDevices]: 2.4 }],
   })};
-`;
-
-export const LeftSide = styled.div`
-  display: flex;
-  align-items: center;
 `;
 
 export const NavList = styled.ul`
@@ -43,10 +34,8 @@ export const NavItem = styled.li`
   }
 `;
 
-export const RightSide = styled.div``;
-
 export const Logo = styled(Link)`
-  padding: 0 0.8rem;
+  padding-right: 0.8rem;
 
   span {
     color: ${(props) => props.theme.mainColor};

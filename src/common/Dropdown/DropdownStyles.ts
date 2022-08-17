@@ -49,8 +49,20 @@ type DropdownItemProps = {
 export const DropdownItem = styled.li<DropdownItemProps>`
   border-bottom: 0.1rem solid ${(props) => props.theme.borderColor};
 
+  &:first-child {
+    button {
+      border-top-left-radius: 0.4rem;
+      border-top-right-radius: 0.4rem;
+    }
+  }
+
   &:last-child {
     border-bottom: none;
+
+    button {
+      border-bottom-left-radius: 0.4rem;
+      border-bottom-right-radius: 0.4rem;
+    }
   }
 
   button {
