@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { breakpoints, devices } from '../../../styles/breakpoints';
+import { breakpoints, devices } from '../../styles/breakpoints';
 
 export const Container = styled.div`
   display: flex;
