@@ -1,5 +1,5 @@
 import React from 'react';
-import { Wrapper } from '../../styles/Utils';
+import { SectionTitle, WrapperSection } from '../../styles/Utils';
 import { Container, ListStep, StepItem } from './GettingStartStyles';
 import devicesImg from '../../images/devices.svg';
 import addImg from '../../images/add.svg';
@@ -7,9 +7,9 @@ import feedbackImg from '../../images/feedback.svg';
 
 const GettingStart = () => {
   return (
-    <Wrapper>
+    <WrapperSection>
       <Container>
-        <h2>Getting started is free and easy</h2>
+        <SectionTitle>Getting started is free and easy</SectionTitle>
         <ListStep>
           <StepItem>
             <img src={addImg} alt="" />
@@ -25,7 +25,7 @@ const GettingStart = () => {
           </StepItem>
         </ListStep>
       </Container>
-    </Wrapper>
+    </WrapperSection>
   );
 };
 

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Container, LeftSide, RightSide } from './BannerStyles';
 import banner from '../../images/banner.svg';
-import { Wrapper } from '../../styles/Utils';
+import { WrapperSection } from '../../styles/Utils';
 import { SignUpButton } from '../../common/Button';
 
 const Banner = () => {
   return (
-    <Wrapper>
+    <WrapperSection>
       <Container>
         <LeftSide>
           <h1>A Community of online marketers.</h1>
@@ -20,7 +20,7 @@ const Banner = () => {
           <img src={banner} alt="" />
         </RightSide>
       </Container>
-    </Wrapper>
+    </WrapperSection>
   );
 };
 

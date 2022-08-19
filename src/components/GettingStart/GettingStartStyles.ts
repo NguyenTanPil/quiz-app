@@ -2,6 +2,8 @@ import styled from 'styled-components';
 import { breakpoints, devices } from '../../styles/breakpoints';
 
 export const Container = styled.div`
+  margin-bottom: 8rem;
+
   ${breakpoints({
     cssProp: 'margin-top',
     cssPropUnits: 'rem',
@@ -12,25 +14,6 @@ export const Container = styled.div`
       { [devices.mediumDevices]: 7.2 },
     ],
   })};
-
-  h2 {
-    font-weight: 600;
-    margin-bottom: 4rem;
-    margin-top: 0;
-    text-align: center;
-
-    ${breakpoints({
-      cssProp: 'font-size',
-      cssPropUnits: 'rem',
-      values: [
-        {
-          [devices.default]: 2.8,
-        },
-        { [devices.mediumDevices]: 3.6 },
-      ],
-    })};
-  }
-  margin-bottom: 8rem;
 `;
 
 export const ListStep = styled.ul`
