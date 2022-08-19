@@ -1,5 +1,6 @@
 import React from 'react';
 import Banner from '../../Banner';
+import Footer from '../../Footer';
 import GetStartedFooter from '../../GetStartedFooter';
 import GettingStart from '../../GettingStart';
 
@@ -9,6 +10,7 @@ const Home = () => {
       <Banner />
       <GettingStart />
       <GetStartedFooter />
+      <Footer />
     </main>
   );
 };
