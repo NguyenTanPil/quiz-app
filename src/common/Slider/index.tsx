@@ -1,81 +1,73 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { IoIosArrowDropleft, IoIosArrowDropright } from 'react-icons/io';
-import { createSlides } from '../../utils';
-import { Arrow, Slide, SliderContent, SliderWrap } from './SliderStyles';
+import { devices } from '../../styles/breakpoints';
+import { getLastIndex, SliderUtils } from '../../utils';
+import { QUIZ_APP_CONSTANTS } from '../../utils/constants';
+import { Arrow, Slide, SlideContainer, SliderContent, SliderWrap } from './SliderStyles';
+
+export type breakpointsProps = {
+  [key: string]: number;
+};
 
 type SliderProps = {
   children: any[];
-  autoPlaySeconds: number | null;
-  slidesPerPage: number;
+  autoPlaySeconds: number;
+  breakpoints: breakpointsProps[];
 };
 
-// children >= 3
-const Slider = ({ children, autoPlaySeconds, slidesPerPage }: SliderProps) => {
+const Slider = ({ children, autoPlaySeconds, breakpoints }: SliderProps) => {
   const autoPlayRef = useRef<() => void>();
   const transitionRef = useRef<() => void>();
   const resizeRef = useRef<() => void>();
   const sliderRef = useRef<HTMLDivElement>();
   const throttleRef = useRef<() => void>();
 
-  const firstSlide = useMemo(
-    () => createSlides(children, slidesPerPage)[0],
-    [],
-  );
-  const secondSlide = useMemo(
-    () => createSlides(children, slidesPerPage)[1],
-    [],
-  );
-  const lastSlide = useMemo(
-    () =>
-      createSlides(children, slidesPerPage)[
-        createSlides(children, slidesPerPage).length - 1
-      ],
-    [],
-  );
+  const [slidesGroup, setSlidesGroup] = useState(() => {
+    const slidesPerPage = SliderUtils.createSlidesPerPage(breakpoints);
+    return SliderUtils.createSlides(children, slidesPerPage);
+  });
+  const firstSlide = useMemo(() => slidesGroup[QUIZ_APP_CONSTANTS.SLIDER.firstSlideIndex], [slidesGroup]);
+  const secondSlide = useMemo(() => slidesGroup[QUIZ_APP_CONSTANTS.SLIDER.secondSlideIndex], [slidesGroup]);
+  const lastSlide = useMemo(() => slidesGroup[getLastIndex(slidesGroup)], [slidesGroup]);
 
-  const [translateWidth, setTranslateWidth] = useState(100);
-  const [transition, setTransition] = useState(0.45);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [translateWidth, setTranslateWidth] = useState(QUIZ_APP_CONSTANTS.SLIDER.translateWidthDefault);
+  const [transition, setTransition] = useState(QUIZ_APP_CONSTANTS.SLIDER.transitionSecondsDefault);
+  const [activeIndex, setActiveIndex] = useState(QUIZ_APP_CONSTANTS.SLIDER.initialActiveIndex);
   const [transitioning, setTransitioning] = useState(false);
   const [slides, setSlides] = useState([lastSlide, firstSlide, secondSlide]);
 
   const nextSlide = () => {
     if (transitioning) return;
 
-    setTranslateWidth((prev) => prev + 100);
-    setActiveIndex((prev) => (prev === children.length - 1 ? 0 : prev + 1));
+    setTranslateWidth((prev) => prev + QUIZ_APP_CONSTANTS.SLIDER.translateWidthDefault);
+    setActiveIndex((prev) =>
+      prev === getLastIndex(slidesGroup) ? QUIZ_APP_CONSTANTS.SLIDER.initialActiveIndex : prev + 1,
+    );
   };
 
   const prevSlide = () => {
     if (transitioning) return;
 
-    setTranslateWidth(0);
-    setActiveIndex((prev) => (prev === 0 ? children.length - 1 : prev - 1));
+    setTranslateWidth(QUIZ_APP_CONSTANTS.SLIDER.translateWidthStart);
+    setActiveIndex((prev) =>
+      prev === QUIZ_APP_CONSTANTS.SLIDER.initialActiveIndex ? getLastIndex(slidesGroup) : prev - 1,
+    );
   };
 
   const smoothTransition = () => {
     let _slides = [];
 
-    if (activeIndex === createSlides(children, slidesPerPage).length - 1) {
-      _slides = [
-        createSlides(children, slidesPerPage)[
-          createSlides(children, slidesPerPage).length - 2
-        ],
-        lastSlide,
-        firstSlide,
-      ];
-    } else if (activeIndex === 0) {
+    if (activeIndex === getLastIndex(slidesGroup)) {
+      _slides = [SliderUtils.getNextToLastElement(slidesGroup), lastSlide, firstSlide];
+    } else if (activeIndex === QUIZ_APP_CONSTANTS.SLIDER.initialActiveIndex) {
       _slides = [lastSlide, firstSlide, secondSlide];
     } else {
-      _slides = createSlides(children, slidesPerPage).slice(
-        activeIndex - 1,
-        activeIndex + 2,
-      );
+      _slides = SliderUtils.getSubSlides(slidesGroup, activeIndex);
     }
 
     setSlides(_slides);
-    setTransition(0);
-    setTranslateWidth(100);
+    setTransition(QUIZ_APP_CONSTANTS.SLIDER.translateWidthStart);
+    setTranslateWidth(QUIZ_APP_CONSTANTS.SLIDER.translateWidthDefault);
   };
 
   const throttleArrows = () => {
@@ -83,8 +75,10 @@ const Slider = ({ children, autoPlaySeconds, slidesPerPage }: SliderProps) => {
   };
 
   const handleResize = () => {
-    setTransition(0);
-    setTranslateWidth(100);
+    setSlidesGroup(() => {
+      const slidesPerPage = SliderUtils.createSlidesPerPage(breakpoints);
+      return SliderUtils.createSlides(children, slidesPerPage);
+    });
   };
 
   useEffect(() => {
@@ -98,34 +92,36 @@ const Slider = ({ children, autoPlaySeconds, slidesPerPage }: SliderProps) => {
     let slider: HTMLDivElement;
     let transitionStart: any, transitionEnd: any, onResize: any;
 
+    const smooth = () => {
+      transitionRef.current?.();
+    };
+
+    const throttle = () => {
+      throttleRef.current?.();
+    };
+
+    const resize = () => {
+      resizeRef.current?.();
+    };
+
     if (sliderRef?.current) {
       slider = sliderRef.current;
 
-      const smooth = () => {
-        transitionRef.current?.();
-      };
-
-      const throttle = () => {
-        throttleRef.current?.();
-      };
-
-      const resize = () => {
-        resizeRef.current?.();
-      };
-
       transitionStart = slider.addEventListener('transitionstart', throttle);
       transitionEnd = slider.addEventListener('transitionend', smooth);
-      onResize = window.addEventListener('resize', resize);
     }
 
+    onResize = window.addEventListener('resize', resize);
+
     return () => {
-      if (sliderRef.current) {
+      if (sliderRef?.current) {
         slider.removeEventListener('transitionend', transitionStart);
         slider.removeEventListener('transitionend', transitionEnd);
       }
+
       window.removeEventListener('resize', onResize);
     };
-  }, [sliderRef.current]);
+  }, []);
 
   useEffect(() => {
     const play = () => {
@@ -135,7 +131,7 @@ const Slider = ({ children, autoPlaySeconds, slidesPerPage }: SliderProps) => {
     let interval: number;
 
     if (autoPlaySeconds) {
-      interval = window.setInterval(play, autoPlaySeconds * 1000);
+      interval = window.setInterval(play, autoPlaySeconds * QUIZ_APP_CONSTANTS.SLIDER.oneSecond);
     }
 
     return () => {
@@ -146,29 +142,33 @@ const Slider = ({ children, autoPlaySeconds, slidesPerPage }: SliderProps) => {
   }, []);
 
   useEffect(() => {
-    if (transition === 0) {
-      setTransition(0.45);
+    if (transition === QUIZ_APP_CONSTANTS.SLIDER.transitionSecondsStart) {
+      setTransition(QUIZ_APP_CONSTANTS.SLIDER.transitionSecondsDefault);
       setTransitioning(false);
     }
   }, [transition]);
 
+  useEffect(() => {
+    setSlides([lastSlide, firstSlide, secondSlide]);
+    setActiveIndex(QUIZ_APP_CONSTANTS.SLIDER.initialActiveIndex);
+  }, [firstSlide, secondSlide, lastSlide]);
+
   return (
     <SliderWrap ref={sliderRef}>
-      <SliderContent
-        translateWidth={translateWidth}
-        transition={transition}
-        totalSlide={slides.length}
-      >
-        {slides.map((slideContainer, idxContainer) =>
-          slideContainer.map((item, idx) => (
-            <Slide
-              key={`slider-${idxContainer}-${idx}`}
-              slidesPerPage={slidesPerPage}
-            >
-              {item}
-            </Slide>
-          )),
-        )}
+      <SliderContent translateWidth={translateWidth} transition={transition} totalSlide={slides.length}>
+        {slides.map((slideContainer, idxContainer) => (
+          <SlideContainer
+            key={`slider-${idxContainer}`}
+            slidesPerPage={SliderUtils.createSlidesPerPage(breakpoints)}
+            totalSlide={slides.length}
+          >
+            {slideContainer.map((item, idx) => (
+              <Slide key={`slider-${idxContainer}-${idx}`} slidesPerPage={SliderUtils.createSlidesPerPage(breakpoints)}>
+                {item}
+              </Slide>
+            ))}
+          </SlideContainer>
+        ))}
       </SliderContent>
       <Arrow direction="left" onClick={prevSlide}>
         <IoIosArrowDropleft />
@@ -182,6 +182,12 @@ const Slider = ({ children, autoPlaySeconds, slidesPerPage }: SliderProps) => {
 
 Slider.defaultProps = {
   autoPlaySeconds: null,
+  breakpoints: [
+    {
+      minWidth: devices.default,
+      items: 1,
+    },
+  ],
 };
 
 export default Slider;
