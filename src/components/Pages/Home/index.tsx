@@ -1,5 +1,6 @@
 import React from 'react';
 import Banner from '../../Banner';
+import Feedback from '../../Feedback';
 import Footer from '../../Footer';
 import GetStartedFooter from '../../GetStartedFooter';
 import GettingStart from '../../GettingStart';
@@ -10,6 +11,7 @@ const Home = () => {
     <main>
       <Banner />
       <Offer />
+      <Feedback />
       <GettingStart />
       <GetStartedFooter />
       <Footer />

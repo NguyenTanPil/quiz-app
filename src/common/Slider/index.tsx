@@ -1,23 +1,37 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { IoIosArrowDropleft, IoIosArrowDropright } from 'react-icons/io';
+import { createSlides } from '../../utils';
 import { Arrow, Slide, SliderContent, SliderWrap } from './SliderStyles';
 
 type SliderProps = {
   children: any[];
   autoPlaySeconds: number | null;
+  slidesPerPage: number;
 };
 
 // children >= 3
-const Slider = ({ children, autoPlaySeconds }: SliderProps) => {
+const Slider = ({ children, autoPlaySeconds, slidesPerPage }: SliderProps) => {
   const autoPlayRef = useRef<() => void>();
   const transitionRef = useRef<() => void>();
   const resizeRef = useRef<() => void>();
   const sliderRef = useRef<HTMLDivElement>();
   const throttleRef = useRef<() => void>();
 
-  const firstSlide = useMemo(() => children[0], []);
-  const secondSlide = useMemo(() => children[1], []);
-  const lastSlide = useMemo(() => children[children.length - 1], []);
+  const firstSlide = useMemo(
+    () => createSlides(children, slidesPerPage)[0],
+    [],
+  );
+  const secondSlide = useMemo(
+    () => createSlides(children, slidesPerPage)[1],
+    [],
+  );
+  const lastSlide = useMemo(
+    () =>
+      createSlides(children, slidesPerPage)[
+        createSlides(children, slidesPerPage).length - 1
+      ],
+    [],
+  );
 
   const [translateWidth, setTranslateWidth] = useState(100);
   const [transition, setTransition] = useState(0.45);
@@ -42,12 +56,21 @@ const Slider = ({ children, autoPlaySeconds }: SliderProps) => {
   const smoothTransition = () => {
     let _slides = [];
 
-    if (activeIndex === children.length - 1) {
-      _slides = [children[children.length - 2], lastSlide, firstSlide];
+    if (activeIndex === createSlides(children, slidesPerPage).length - 1) {
+      _slides = [
+        createSlides(children, slidesPerPage)[
+          createSlides(children, slidesPerPage).length - 2
+        ],
+        lastSlide,
+        firstSlide,
+      ];
     } else if (activeIndex === 0) {
       _slides = [lastSlide, firstSlide, secondSlide];
     } else {
-      _slides = children.slice(activeIndex - 1, activeIndex + 2);
+      _slides = createSlides(children, slidesPerPage).slice(
+        activeIndex - 1,
+        activeIndex + 2,
+      );
     }
 
     setSlides(_slides);
@@ -136,9 +159,16 @@ const Slider = ({ children, autoPlaySeconds }: SliderProps) => {
         transition={transition}
         totalSlide={slides.length}
       >
-        {slides.map((item, idx) => (
-          <Slide key={`slider-${idx}`}>{item}</Slide>
-        ))}
+        {slides.map((slideContainer, idxContainer) =>
+          slideContainer.map((item, idx) => (
+            <Slide
+              key={`slider-${idxContainer}-${idx}`}
+              slidesPerPage={slidesPerPage}
+            >
+              {item}
+            </Slide>
+          )),
+        )}
       </SliderContent>
       <Arrow direction="left" onClick={prevSlide}>
         <IoIosArrowDropleft />

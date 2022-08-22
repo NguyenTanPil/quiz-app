@@ -22,9 +22,17 @@ export const SliderContent = styled.div<ContentProps>`
   width: ${(props) => props.totalSlide * 100}%;
 `;
 
-export const Slide = styled.div<ContentProps>`
+export const SlideContainer = styled.div`
   height: 100%;
   width: 100%;
+`;
+
+export const Slide = styled.div<ContentProps>`
+  height: 100%;
+  width: ${(props) =>
+    props.slidesPerPage <= 1
+      ? '100%'
+      : `calc(100% / ${props.slidesPerPage} - 2rem)`};
 `;
 
 export const Arrow = styled.div<ContentProps>`
