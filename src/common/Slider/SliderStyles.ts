@@ -15,7 +15,7 @@ export const SliderContent = styled.ul<ContentProps>`
   display: flex;
   height: 100%;
   transform: translateX(-${(props) => props.translateWidth / props.totalSlide}%);
-  transition: transform ease-out ${(props) => props.transition}s;
+  ${(props) => props.translateWidth !== 100 && `transition: transform ease-out ${props.transition}s`};
   width: ${(props) => props.totalSlide * 100}%;
 `;
 
