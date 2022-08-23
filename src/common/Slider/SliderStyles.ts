@@ -6,6 +6,7 @@ type ContentProps = {
 
 export const SliderWrap = styled.div<ContentProps>`
   margin: 0 auto;
+  height: 100%;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -23,15 +24,15 @@ export const SlideContainer = styled.li<ContentProps>`
   display: flex;
   justify-content: ${(props) => (props.slidesPerPage === 1 ? 'center' : 'space-between')};
   height: 100%;
-  padding-left: 8rem;
-  padding-right: 8rem;
-  width: calc(${(props) => `100% / ${props.totalSlide} - 16rem`});
+  // padding-left: 8rem;
+  // padding-right: 8rem;
+  // width: calc(${(props) => `100% / ${props.totalSlide} - 16rem`});
+  width: calc(${(props) => `100% / ${props.totalSlide}`});
 `;
 
 export const Slide = styled.div<ContentProps>`
   display: flex;
   justify-content: center;
-  height: 100%;
   width: ${(props) => (props.slidesPerPage <= 1 ? '100%' : `calc(100% / ${props.slidesPerPage} - 2rem)`)};
 `;
 
@@ -42,12 +43,12 @@ export const Arrow = styled.div<ContentProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 5rem;
+  height: 4.8rem;
   position: absolute;
   ${(props) => (props.direction === 'right' ? `right: 2rem` : `left: 2rem`)};
-  top: calc(50% - 2.5rem);
+  top: calc(50% - 2.3rem);
   transition: transform ease-in 0.1s;
-  width: 5rem;
+  width: 4.8rem;
 
   svg {
     color: ${(props) => props.theme.fontColor};
@@ -58,4 +59,21 @@ export const Arrow = styled.div<ContentProps>`
       outline: 0;
     }
   }
+`;
+
+export const Dots = styled.ul`
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+`;
+
+export const DotItem = styled.li<ContentProps>`
+  background-color: ${(props) => (props.active ? props.theme.mainColor : 'transparent')};
+  border: 0.2rem solid ${(props) => props.theme.mainColor};
+  border-radius: 50%;
+  cursor: pointer;
+  height: 1.2rem;
+  margin-left: 0.4rem;
+  margin-right: 0.4rem;
+  width: 1.2rem;
 `;

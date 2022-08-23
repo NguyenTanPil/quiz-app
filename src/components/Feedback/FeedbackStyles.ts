@@ -22,6 +22,19 @@ export const FeedbackItem = styled.div`
   margin-top: 2.4rem;
   max-width: 64rem;
   padding: 2.4rem;
+
+  ${breakpoints({
+    cssProp: 'flex-direction',
+    cssPropUnits: '',
+    values: [
+      {
+        [devices.default]: 'column',
+      },
+      {
+        [devices.smallDevices]: 'row',
+      },
+    ],
+  })};
 `;
 
 export const Avatar = styled.div`
@@ -43,6 +56,19 @@ export const Content = styled.div`
     letter-spacing: 0.1rem;
     line-height: 2.4rem;
     margin: 0;
+
+    ${breakpoints({
+      cssProp: 'margin-top',
+      cssPropUnits: 'rem',
+      values: [
+        {
+          [devices.default]: 1.6,
+        },
+        {
+          [devices.smallDevices]: 0,
+        },
+      ],
+    })}
   }
 
   h4 {

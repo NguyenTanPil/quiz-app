@@ -20,6 +20,10 @@ const Feedback = () => {
                 items: 2,
               },
             ]}
+            options={{
+              arrow: false,
+              dots: true,
+            }}
           >
             <FeedbackItem>
               <Avatar>
@@ -30,7 +34,7 @@ const Feedback = () => {
               </Avatar>
               <Content>
                 <p>
-                  I realize it wasn’t easy to admit you were running behind on this project, but I’m so glad you were
+                  1 I realize it wasn’t easy to admit you were running behind on this project, but I’m so glad you were
                   honest. We can fix this together. If you had kept quiet and failed to meet our deadline, we might be
                   in hot water with the big boss.
                 </p>
@@ -62,8 +66,8 @@ const Feedback = () => {
               </Avatar>
               <Content>
                 <p>
-                  I saw that you learned how to use pivot tables for your Excel project and it really helped display the
-                  data. Even though that wasn’t in your job description, it shows that you are a great learner and
+                  2 I saw that you learned how to use pivot tables for your Excel project and it really helped display
+                  the data. Even though that wasn’t in your job description, it shows that you are a great learner and
                   hungry to do the best job possible.
                 </p>
                 <h4>Joseph Gonzalez</h4>
@@ -94,7 +98,7 @@ const Feedback = () => {
               </Avatar>
               <Content>
                 <p>
-                  I’m so thrilled that you managed to secure ten new partners. This achievement surpassed my
+                  3 I’m so thrilled that you managed to secure ten new partners. This achievement surpassed my
                   expectations, and it will make a significant impact on the kind of business we can do in the next
                   quarter.
                 </p>

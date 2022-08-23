@@ -3,7 +3,7 @@ import { IoIosArrowDropleft, IoIosArrowDropright } from 'react-icons/io';
 import { devices } from '../../styles/breakpoints';
 import { getLastIndex, SliderUtils } from '../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../utils/constants';
-import { Arrow, Slide, SlideContainer, SliderContent, SliderWrap } from './SliderStyles';
+import { Arrow, DotItem, Dots, Slide, SlideContainer, SliderContent, SliderWrap } from './SliderStyles';
 
 export type breakpointsProps = {
   [key: string]: number;
@@ -13,9 +13,10 @@ type SliderProps = {
   children: any[];
   autoPlaySeconds: number;
   breakpoints: breakpointsProps[];
+  options: { [key: string]: boolean };
 };
 
-const Slider = ({ children, autoPlaySeconds, breakpoints }: SliderProps) => {
+const Slider = ({ children, autoPlaySeconds, breakpoints, options }: SliderProps) => {
   const autoPlayRef = useRef<() => void>();
   const transitionRef = useRef<() => void>();
   const resizeRef = useRef<() => void>();
@@ -87,6 +88,25 @@ const Slider = ({ children, autoPlaySeconds, breakpoints }: SliderProps) => {
     setSlidesGroup(() => {
       const slidesPerPage = SliderUtils.createSlidesPerPage(breakpoints);
       return SliderUtils.createSlides(children, slidesPerPage);
+    });
+  };
+
+  const handleDotsChange = (activeIndex: number) => {
+    if (sliderState.activeIndex === activeIndex) {
+      return;
+    }
+
+    setSliderState((prev) => {
+      let translateWidth = prev.translateWidth;
+      const currentActiveIdx = prev.activeIndex;
+
+      if (activeIndex > currentActiveIdx) {
+        translateWidth += QUIZ_APP_CONSTANTS.SLIDER.translateWidthDefault;
+      } else {
+        translateWidth = QUIZ_APP_CONSTANTS.SLIDER.transitionSecondsStart;
+      }
+
+      return { ...prev, activeIndex, translateWidth };
     });
   };
 
@@ -173,7 +193,6 @@ const Slider = ({ children, autoPlaySeconds, breakpoints }: SliderProps) => {
       <SliderContent
         translateWidth={sliderState.translateWidth}
         transition={sliderState.transition}
-        transitioning={sliderState.transitioning}
         totalSlide={sliderState.slides.length}
       >
         {sliderState.slides.map((slideContainer, idxContainer) => (
@@ -190,12 +209,27 @@ const Slider = ({ children, autoPlaySeconds, breakpoints }: SliderProps) => {
           </SlideContainer>
         ))}
       </SliderContent>
-      <Arrow direction="left" onClick={prevSlide}>
-        <IoIosArrowDropleft />
-      </Arrow>
-      <Arrow direction="right" onClick={nextSlide}>
-        <IoIosArrowDropright />
-      </Arrow>
+      {options.arrow && (
+        <>
+          <Arrow direction="left" onClick={prevSlide}>
+            <IoIosArrowDropleft />
+          </Arrow>
+          <Arrow direction="right" onClick={nextSlide}>
+            <IoIosArrowDropright />
+          </Arrow>
+        </>
+      )}
+      {options.dots && (
+        <Dots>
+          {slidesGroup.map((_, idx) => (
+            <DotItem
+              key={`dots-${idx}`}
+              active={sliderState.activeIndex === idx}
+              onClick={() => handleDotsChange(idx)}
+            />
+          ))}
+        </Dots>
+      )}
     </SliderWrap>
   );
 };
@@ -208,6 +242,10 @@ Slider.defaultProps = {
       items: 1,
     },
   ],
+  options: {
+    arrow: true,
+    dots: false,
+  },
 };
 
 export default Slider;
