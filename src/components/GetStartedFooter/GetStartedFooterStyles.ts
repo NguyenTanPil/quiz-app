@@ -1,27 +1,15 @@
 import styled from 'styled-components';
-import { breakpoints, devices } from '../../styles/breakpoints';
+import gettingStartBanner from '../../images/gettingStartBanner.png';
 
-export const Container = styled.section`
-  background-color: rgb(255 250 242 / 1);
+export const Container = styled.div`
+  background-image: url(${gettingStartBanner});
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 1.6rem;
   display: flex;
   justify-content: space-between;
-`;
-
-export const SideBlock = styled.div`
-  ${breakpoints({
-    cssProp: 'display',
-    cssPropUnits: '',
-    values: [
-      { [devices.default]: 'none' },
-      { [devices.largeDevices]: 'block' },
-    ],
-  })}
-
-  img {
-    height: 100%;
-    max-width: 100%;
-    width: 32rem;
-  }
+  margin-bottom: 4rem;
 `;
 
 export const CenterBlock = styled.div`
@@ -33,6 +21,7 @@ export const CenterBlock = styled.div`
   margin: 5.2rem 0;
 
   h2 {
+    color: ${(props) => props.theme.titleColor};
     max-width: 46.4rem;
   }
 
