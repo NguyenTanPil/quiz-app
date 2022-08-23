@@ -35,8 +35,10 @@ export const DropdownList = styled.ul`
   background-color: ${(props) => props.theme.backgroundColor};
   border: 0.1rem solid ${(props) => props.theme.borderColor};
   border-radius: 0.4rem;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  min-width: 100%;
   position: absolute;
   top: calc(100% + 0.4rem);
   z-index: 200;
@@ -66,11 +68,9 @@ export const DropdownItem = styled.li<DropdownItemProps>`
   }
 
   button {
-    background-color: ${(props) =>
-      props.selected ? props.theme.borderColor : props.theme.backgroundColor};
+    background-color: ${(props) => (props.selected ? props.theme.borderColor : props.theme.backgroundColor)};
     border-radius: 0;
-    color: ${(props) =>
-      props.selected ? props.theme.mainColor : props.theme.fontColor};
+    color: ${(props) => (props.selected ? props.theme.mainColor : props.theme.fontColor)};
 
     &:hover {
       background-color: ${(props) => props.theme.dropdownButtonHover};
