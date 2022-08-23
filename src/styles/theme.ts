@@ -15,7 +15,7 @@ const theme: themeProps = {
     errorColor: '#f55d7a',
     fontColor: '#536471',
     hoverColor: '#005792',
-    mainColor: '#abe271',
+    mainColor: '#9852f9',
     selectBackgroundColor: '#f3f3f3',
     successColor: '#0fb56d',
     titleColor: '#0f1c2a',

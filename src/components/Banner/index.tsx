@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, LeftSide, RightSide } from './BannerStyles';
-import banner from '../../images/banner.svg';
+import banner from '../../images/banner.jpeg';
 import { WrapperSection } from '../../styles/Utils';
 import { SignUpButton } from '../../common/Button';
 
@@ -11,8 +11,7 @@ const Banner = () => {
         <LeftSide>
           <h1>A Community of online marketers.</h1>
           <p>
-            Education and strategy for internet marketers to launch and scale
-            marking and business campaigns online.
+            Education and strategy for internet marketers to launch and scale marking and business campaigns online.
           </p>
           <SignUpButton>Take A Quiz</SignUpButton>
         </LeftSide>

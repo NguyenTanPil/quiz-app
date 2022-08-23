@@ -23,27 +23,21 @@ export const ListStep = styled.ul`
   ${breakpoints({
     cssProp: 'align-items',
     cssPropUnits: '',
-    values: [
-      { [devices.default]: 'center' },
-      { [devices.largeDevices]: 'unset' },
-    ],
+    values: [{ [devices.default]: 'center' }, { [devices.largeDevices]: 'unset' }],
   })};
 
   ${breakpoints({
     cssProp: 'flex-direction',
     cssPropUnits: '',
-    values: [
-      { [devices.default]: 'column' },
-      { [devices.largeDevices]: 'row' },
-    ],
+    values: [{ [devices.default]: 'column' }, { [devices.largeDevices]: 'row' }],
   })};
 `;
 
 export const StepItem = styled.li`
   box-sizing: border-box;
-  box-shadow: rgba(171, 226, 113, 0.2) 0.5rem 0.5rem,
-    rgba(171, 226, 113, 0.15) 1rem 1rem, rgba(171, 226, 113, 0.1) 1.5rem 1.5rem;
-  background-color: #f7f7f7;
+  box-shadow: rgba(152, 82, 249, 0.2) 0.5rem 0.5rem, rgba(152, 82, 249, 0.15) 1rem 1rem,
+    rgba(152, 82, 249, 0.1) 1.5rem 1.5rem;
+  background-color: #fbfbfd;
   border-radius: 1.6rem;
   display: flex;
   flex-direction: column;
@@ -61,10 +55,7 @@ export const StepItem = styled.li`
   ${breakpoints({
     cssProp: 'width',
     cssPropUnits: '',
-    values: [
-      { [devices.default]: '100%' },
-      { [devices.largeDevices]: 'calc((100% - 8rem) / 3)' },
-    ],
+    values: [{ [devices.default]: '100%' }, { [devices.largeDevices]: 'calc((100% - 8rem) / 3)' }],
   })};
 
   img {

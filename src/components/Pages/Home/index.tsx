@@ -1,7 +1,6 @@
 import React from 'react';
 import Banner from '../../Banner';
 import Feedback from '../../Feedback';
-import Footer from '../../Footer';
 import GetStartedFooter from '../../GetStartedFooter';
 import GettingStart from '../../GettingStart';
 import Offer from '../../Offer';
@@ -14,7 +13,6 @@ const Home = () => {
       <Feedback />
       <GettingStart />
       <GetStartedFooter />
-      <Footer />
     </main>
   );
 };

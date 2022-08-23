@@ -90,6 +90,7 @@ const App: React.FC = () => {
               )}
           </Container> */}
         </Routes>
+        <Footer />
       </Router>
     </ThemeProvider>
   );
