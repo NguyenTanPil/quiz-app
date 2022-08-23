@@ -5,32 +5,23 @@ export const Container = styled.section`
   background-color: #f7f7f7;
 `;
 
-export const FeedbackList = styled.ul`
+export const FeedbackList = styled.div`
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  padding-bottom: 2.4rem;
-  padding-top: 2.4rem;
+  padding-bottom: 3.2rem;
+  padding-top: 3.2rem;
 `;
 
-export const FeedbackItem = styled.li`
+export const FeedbackItem = styled.div`
   background-color: ${(props) => props.theme.backgroundColor};
   border-radius: 1.6rem;
   box-sizing: border-box;
   display: flex;
   margin-bottom: 2.4rem;
   margin-top: 2.4rem;
-  /* max-width: 64rem; */
+  max-width: 64rem;
   padding: 2.4rem;
-
-  /* ${breakpoints({
-    cssProp: 'width',
-    cssPropUnits: '',
-    values: [
-      { [devices.default]: '100%' },
-      { [devices.largeDevices]: 'calc(50% - 2rem)' },
-    ],
-  })}; */
 `;
 
 export const Avatar = styled.div`

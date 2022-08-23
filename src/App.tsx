@@ -11,7 +11,6 @@ import { AnswerObject, Difficulty, QuestionState } from './utils/types';
 // other
 import { fetchQuizQuestions } from './api/fetchQuizQuestions';
 import { getTheme } from './styles/theme';
-import { TOTAL_QUESTIONS } from './utils/constants';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/Pages/Home';
 
@@ -46,7 +45,7 @@ const App: React.FC = () => {
   const nextQuestion = () => {
     const nextNumberQuestion = number + 1;
 
-    if (nextNumberQuestion === TOTAL_QUESTIONS) {
+    if (nextNumberQuestion === 10) {
       setGameOver(true);
     } else {
       setNumber(nextNumberQuestion);
@@ -57,10 +56,7 @@ const App: React.FC = () => {
     setLoading(true);
     setGameOver(false);
 
-    const newQuestion = await fetchQuizQuestions(
-      TOTAL_QUESTIONS,
-      Difficulty.EASY,
-    );
+    const newQuestion = await fetchQuizQuestions(10, Difficulty.EASY);
 
     setQuestions(newQuestion);
     setScore(0);
