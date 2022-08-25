@@ -6,6 +6,8 @@ const WrapperPattern = css`
   margin-left: auto;
   margin-right: auto;
   max-width: 124rem;
+  position: relative;
+
   ${breakpoints({
     cssProp: ['padding-left', 'padding-right'],
     cssPropUnits: 'rem',

@@ -13,6 +13,7 @@ import { fetchQuizQuestions } from './api/fetchQuizQuestions';
 import { getTheme } from './styles/theme';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/Pages/Home';
+import Game from './components/Pages/Game';
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -72,6 +73,7 @@ const App: React.FC = () => {
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/game" element={<Game />} />
           {/* <Container>
             {!loading && !gameOver && (
               <QuestionCard

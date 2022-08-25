@@ -16,13 +16,7 @@ const ButtonPattern = styled.button`
   text-transform: capitalize;
 `;
 
-const getBackgroundAnswerButton = ({
-  correct,
-  userClicked,
-}: {
-  correct: boolean;
-  userClicked: boolean;
-}) => {
+const getBackgroundAnswerButton = ({ correct, userClicked }: { correct: boolean; userClicked: boolean }) => {
   if (correct) {
     return '#45EBA5';
   } else if (userClicked) {
@@ -63,16 +57,20 @@ export const NoBorderButton = styled(ButtonPattern)`
 export const DropdownSelectedButton = styled(ButtonPattern)``;
 
 export const AnswerButton = styled(ButtonPattern)<AnswerButtonProps>`
-  background: ${({ correct, userClicked }) =>
-    getBackgroundAnswerButton({ correct, userClicked })};
-  border: 0.2rem solid
-    ${({ correct, userClicked }) =>
-      getBackgroundAnswerButton({ correct, userClicked })};
-  color: #ffffff;
+  color: ${(props) => props.theme.fontColor};
+  border: 0.2rem solid ${(props) => props.theme.borderColor};
+  border-radius: 1.2rem;
   display: block;
+  min-height: 14.4rem;
   width: 100%;
 
   &:hover {
     opacity: 0.8;
   }
 `;
+
+// background: ${({ correct, userClicked }) =>
+// getBackgroundAnswerButton({ correct, userClicked })};
+// border: 0.2rem solid
+// ${({ correct, userClicked }) =>
+//   getBackgroundAnswerButton({ correct, userClicked })};
