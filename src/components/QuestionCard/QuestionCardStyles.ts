@@ -100,15 +100,19 @@ export const Actions = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 3.2rem 0 6.4rem;
+  width: 100%;
+
+  ${breakpoints({
+    cssProp: 'flex-direction',
+    cssPropUnits: '',
+    values: [{ [devices.default]: 'column-reverse' }, { [devices.smallDevices]: 'row' }],
+  })};
 
   button {
     display: flex;
     align-items: center;
     justify-content: center;
-
-    &:first-child {
-      padding-left: 0.8rem;
-    }
+    line-height: 2.8rem;
 
     &:last-child {
       padding-right: 0.8rem;

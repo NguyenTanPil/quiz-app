@@ -1,8 +1,11 @@
 import styled from 'styled-components';
-import gettingStartBanner from '../../images/gettingStartBanner.png';
 
-export const Container = styled.div`
-  background-image: url(${gettingStartBanner});
+type Props = {
+  [key: string]: any;
+};
+
+export const Container = styled.div<Props>`
+  background-image: url(${(props) => props.url});
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;

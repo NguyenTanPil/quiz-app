@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { fetchQuizQuestions } from '../../../api/fetchQuizQuestions';
+import gameBannerImg from '../../../images/gameBanner.jpg';
 import { Wrapper } from '../../../styles/Utils';
 import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
 import { Difficulty, QuestionState } from '../../../utils/types';
 import Counter from '../../Counter';
 import QuestionCard from '../../QuestionCard';
-import { Container } from './GameStyles';
+import { Container, Content, GameBanner } from './GameStyles';
 
 const TOTAL_QUESTIONS = 10;
 const TIME = 12 * 60;
@@ -38,8 +39,8 @@ const Game = () => {
     setNumber((prev) => prev + 1);
   };
 
-  const prevQuestion = () => {
-    setNumber((prev) => prev - 1);
+  const getTotalCorrectAnswers = () => {
+    return questions.filter((question) => question.isCorrect).length;
   };
 
   useEffect(() => {
@@ -55,21 +56,28 @@ const Game = () => {
     startTrivia();
   }, []);
 
+  if (loading) {
+    return;
+  }
+
   return (
     <Container>
       <Wrapper>
-        <Counter time={TIME} />
-        {!loading && (
+        <GameBanner>
+          <img src={gameBannerImg} alt="" />
+        </GameBanner>
+        <Content>
+          <Counter time={TIME} />
           <QuestionCard
             questionDetails={questions[number]}
+            totalCorrectAnswers={getTotalCorrectAnswers()}
             questionNumber={number + 1}
             score={score}
             totalQuestions={TOTAL_QUESTIONS}
             nextQuestion={nextQuestion}
-            prevQuestion={prevQuestion}
             checkAnswer={checkAnswer}
           />
-        )}
+        </Content>
       </Wrapper>
     </Container>
   );

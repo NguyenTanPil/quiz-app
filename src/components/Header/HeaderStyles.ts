@@ -3,6 +3,10 @@ import styled from 'styled-components';
 import { breakpoints, devices } from '../../styles/breakpoints';
 
 export const Container = styled.header`
+  width: 100%;
+`;
+
+export const Content = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -19,10 +23,7 @@ export const NavList = styled.ul`
   ${breakpoints({
     cssProp: 'display',
     cssPropUnits: '',
-    values: [
-      { [devices.default]: 'none' },
-      { [devices.mediumDevices]: 'flex' },
-    ],
+    values: [{ [devices.default]: 'none' }, { [devices.mediumDevices]: 'flex' }],
   })};
 `;
 
@@ -61,9 +62,6 @@ export const ShowSidebarBox = styled.div`
   ${breakpoints({
     cssProp: 'display',
     cssPropUnits: '',
-    values: [
-      { [devices.default]: 'block' },
-      { [devices.mediumDevices]: 'none' },
-    ],
+    values: [{ [devices.default]: 'block' }, { [devices.mediumDevices]: 'none' }],
   })}
 `;

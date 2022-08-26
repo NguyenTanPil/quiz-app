@@ -16,23 +16,23 @@ import {
 } from './QuestionCardStyles';
 
 type Props = {
-  questionNumber: number;
+  totalCorrectAnswers: number;
   totalQuestions: number;
+  questionNumber: number;
   score: number;
   questionDetails: QuestionState;
   checkAnswer: (e: React.MouseEvent<HTMLButtonElement>, id: string) => void;
   nextQuestion: () => void;
-  prevQuestion: () => void;
 };
 
 const QuestionCard = ({
   questionDetails,
-  questionNumber,
+  totalCorrectAnswers,
   score,
   totalQuestions,
+  questionNumber,
   checkAnswer,
   nextQuestion,
-  prevQuestion,
 }: Props) => {
   const { id, question, correctAnswer, answerClicked, isCorrect, answers } = questionDetails;
 
@@ -42,11 +42,13 @@ const QuestionCard = ({
         <TotalQuestionCount>
           <span>Score {score}</span>
           <span>
-            Question {questionNumber} to {totalQuestions}
+            Question {totalCorrectAnswers} to {totalQuestions}
           </span>
         </TotalQuestionCount>
         <ProgressBarFill>
-          <ProgressBarStatus status={(questionNumber / totalQuestions) * QUIZ_APP_CONSTANTS.COMMON.oneHundredPercent} />
+          <ProgressBarStatus
+            status={(totalCorrectAnswers / totalQuestions) * QUIZ_APP_CONSTANTS.COMMON.oneHundredPercent}
+          />
         </ProgressBarFill>
       </ProgressBar>
       <QuestionContent>
@@ -68,11 +70,10 @@ const QuestionCard = ({
         ))}
       </AnswerList>
       <Actions>
-        <SignUpButton disabled={questionNumber === QUIZ_APP_CONSTANTS.GAME.firstNumberQuestion} onClick={prevQuestion}>
-          <BsArrowLeftShort />
-          <span>Last Question</span>
+        <SignUpButton>
+          <span>Close</span>
         </SignUpButton>
-        <SignUpButton disabled={questionNumber === totalQuestions} onClick={nextQuestion}>
+        <SignUpButton disabled={questionNumber === totalQuestions || isCorrect === undefined} onClick={nextQuestion}>
           <span>Next Question</span>
           <BsArrowRightShort />
         </SignUpButton>

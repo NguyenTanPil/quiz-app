@@ -5,15 +5,14 @@ type Props = {
   [key: string]: any;
 };
 
-export const Container = styled.div<Props>`
+export const Container = styled.aside<Props>`
   display: flex;
   justify-content: flex-end;
   height: 100vh;
   position: fixed;
   left: 0;
   top: 0;
-  transform: ${(props) =>
-    props.isShow ? 'translateX(0)' : 'translateX(100%)'};
+  transform: ${(props) => (props.isShow ? 'translateX(0)' : 'translateX(100%)')};
   width: 100vw;
   transition: all 0.2s ease-out;
   z-index: 1000;
@@ -27,8 +26,7 @@ export const Container = styled.div<Props>`
 
 export const Content = styled.div<Props>`
   background-color: ${(props) => props.theme.backgroundColor};
-  box-shadow: rgb(0 0 0 / 16%) 0px 0.2rem 2.5rem 0,
-    rgb(0 0 0 / 12%) 0 0.2rem 3rem 0;
+  box-shadow: rgb(0 0 0 / 16%) 0px 0.2rem 2.5rem 0, rgb(0 0 0 / 12%) 0 0.2rem 3rem 0;
   height: 100%;
 
   ${breakpoints({
