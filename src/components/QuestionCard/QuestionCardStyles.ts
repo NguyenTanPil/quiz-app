@@ -11,6 +11,7 @@ export const Container = styled.div`
   border-radius: 0.8rem;
   box-shadow: 0 -3em 3em rgb(73 73 73 / 10%), 0.3em 0.3em 1em rgb(73 73 73 / 10%);
   max-width: 1100px;
+  overflow-x: auto;
   padding: 2rem 4rem;
   text-align: center;
 

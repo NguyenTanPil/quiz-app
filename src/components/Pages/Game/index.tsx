@@ -5,6 +5,7 @@ import { Wrapper } from '../../../styles/Utils';
 import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
 import { Difficulty, QuestionState } from '../../../utils/types';
 import Counter from '../../Counter';
+import GameResult from '../../GameResult';
 import QuestionCard from '../../QuestionCard';
 import { Container, Content, GameBanner } from './GameStyles';
 
@@ -56,9 +57,9 @@ const Game = () => {
     startTrivia();
   }, []);
 
-  if (loading) {
-    return;
-  }
+  // if (loading) {
+  //   return;
+  // }
 
   return (
     <Container>
@@ -67,7 +68,7 @@ const Game = () => {
           <img src={gameBannerImg} alt="" />
         </GameBanner>
         <Content>
-          <Counter time={TIME} />
+          {/* <Counter time={TIME} />
           <QuestionCard
             questionDetails={questions[number]}
             totalCorrectAnswers={getTotalCorrectAnswers()}
@@ -76,7 +77,8 @@ const Game = () => {
             totalQuestions={TOTAL_QUESTIONS}
             nextQuestion={nextQuestion}
             checkAnswer={checkAnswer}
-          />
+          /> */}
+          <GameResult />
         </Content>
       </Wrapper>
     </Container>
