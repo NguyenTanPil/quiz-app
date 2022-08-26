@@ -1,26 +1,23 @@
 import React, { useEffect, useState } from 'react';
+import { GameUtils } from '../../utils';
+import { QUIZ_APP_CONSTANTS } from '../../utils/constants';
 import { Container, RemainingTime, TimeIcon } from './CounterStyles';
 
-const getFormattedTime = (time: number): string => {
-  const minutes = Math.floor(time / 60);
-  const seconds = time % 60;
-
-  const minutesFormatted = minutes < 10 ? `0${minutes}` : `${minutes}`;
-  const secondsFormatted = seconds < 10 ? `0${seconds}` : `${seconds}`;
-  return `${minutesFormatted}:${secondsFormatted}`;
+type Props = {
+  time: number;
 };
 
-const Counter = () => {
-  const [seconds, setSeconds] = useState(10);
+const Counter = ({ time }: Props) => {
+  const [seconds, setSeconds] = useState(time);
 
   useEffect(() => {
-    if (seconds === 0) {
+    if (seconds === QUIZ_APP_CONSTANTS.GAME.endTime) {
       return;
     }
 
     const timer = setInterval(() => {
       setSeconds((prev) => prev - 1);
-    }, 1000);
+    }, QUIZ_APP_CONSTANTS.COMMON.oneSecond);
 
     return () => {
       clearInterval(timer);
@@ -30,7 +27,7 @@ const Counter = () => {
   return (
     <Container>
       <TimeIcon seconds={seconds} />
-      <RemainingTime seconds={seconds}>{getFormattedTime(seconds)}</RemainingTime>
+      <RemainingTime seconds={seconds}>{GameUtils.getFormattedTime(seconds)}</RemainingTime>
     </Container>
   );
 };

@@ -1,75 +1,73 @@
 import React, { useEffect, useState } from 'react';
 import { fetchQuizQuestions } from '../../../api/fetchQuizQuestions';
 import { Wrapper } from '../../../styles/Utils';
-import { AnswerObject, Difficulty, QuestionState } from '../../../utils/types';
+import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
+import { Difficulty, QuestionState } from '../../../utils/types';
 import Counter from '../../Counter';
 import QuestionCard from '../../QuestionCard';
 import { Container } from './GameStyles';
 
+const TOTAL_QUESTIONS = 10;
+const TIME = 12 * 60;
+
 const Game = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState<QuestionState[]>([]);
-  const [number, setNumber] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<AnswerObject[]>([]);
-  const [score, setScore] = useState(0);
-  const [gameOver, setGameOver] = useState(true);
+  const [number, setNumber] = useState(QUIZ_APP_CONSTANTS.GAME.initialNumberQuestion);
+  const [score, setScore] = useState(QUIZ_APP_CONSTANTS.GAME.initialScore);
 
-  const checkAnswer = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!gameOver) {
-      const answer = e.currentTarget.value;
-      const isCorrect = questions[number].correct_answer === answer;
+  const checkAnswer = (e: React.MouseEvent<HTMLButtonElement>, id: string) => {
+    const answer = e.currentTarget.value;
+    const isCorrect = questions[number].correctAnswer === answer;
 
-      if (isCorrect) {
-        setScore((prev) => prev + 1);
-      }
-
-      const answerObject = {
-        question: questions[number].question,
-        answerClicked: answer,
-        correct: isCorrect,
-        correctAnswer: questions[number].correct_answer,
-      };
-
-      setUserAnswers((prev) => [...prev, answerObject]);
+    if (isCorrect) {
+      setScore((prev) => prev + 1);
     }
+
+    const newQuestions = questions.map((question) => {
+      if (question.id === id) {
+        return { ...question, answerClicked: answer, isCorrect };
+      }
+      return question;
+    });
+
+    setQuestions(newQuestions);
   };
 
   const nextQuestion = () => {
-    const nextNumberQuestion = number + 1;
-
-    if (nextNumberQuestion === 10) {
-      setGameOver(true);
-    } else {
-      setNumber(nextNumberQuestion);
-    }
+    setNumber((prev) => prev + 1);
   };
 
-  const startTrivia = async () => {
-    setLoading(true);
-    setGameOver(false);
-
-    const newQuestion = await fetchQuizQuestions(10, Difficulty.EASY);
-
-    setQuestions(newQuestion);
-    setScore(0);
-    setUserAnswers([]);
-    setNumber(0);
-    setLoading(false);
+  const prevQuestion = () => {
+    setNumber((prev) => prev - 1);
   };
+
+  useEffect(() => {
+    const startTrivia = async () => {
+      const responseQuestions = await fetchQuizQuestions(TOTAL_QUESTIONS, Difficulty.EASY);
+
+      setQuestions(responseQuestions);
+      setNumber(QUIZ_APP_CONSTANTS.GAME.initialNumberQuestion);
+      setScore(QUIZ_APP_CONSTANTS.GAME.initialScore);
+      setLoading(false);
+    };
+
+    startTrivia();
+  }, []);
 
   return (
     <Container>
       <Wrapper>
-        <button onClick={startTrivia}>Play</button>
-        <Counter />
-        {!loading && !gameOver && (
+        <Counter time={TIME} />
+        {!loading && (
           <QuestionCard
+            questionDetails={questions[number]}
             questionNumber={number + 1}
-            totalQuestions={10}
-            question={questions[number].question}
-            answers={questions[number].answers}
-            userAnswer={userAnswers ? userAnswers[number] : undefined}
-            callback={checkAnswer}
+            score={score}
+            totalQuestions={TOTAL_QUESTIONS}
+            nextQuestion={nextQuestion}
+            prevQuestion={prevQuestion}
+            checkAnswer={checkAnswer}
           />
         )}
       </Wrapper>

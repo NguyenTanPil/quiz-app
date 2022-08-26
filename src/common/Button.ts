@@ -16,13 +16,13 @@ const ButtonPattern = styled.button`
   text-transform: capitalize;
 `;
 
-const getBackgroundAnswerButton = ({ correct, userClicked }: { correct: boolean; userClicked: boolean }) => {
-  if (correct) {
+const getBackgroundAnswerButton = ({ isCorrect, userClicked }: { isCorrect: boolean; userClicked: boolean }) => {
+  if (isCorrect) {
     return '#45EBA5';
   } else if (userClicked) {
     return '#E33E5A';
   } else {
-    return '#00bbf0';
+    return 'transparent';
   }
 };
 
@@ -38,13 +38,14 @@ export const Button = styled(ButtonPattern)`
 `;
 
 export const SignUpButton = styled(ButtonPattern)`
-  background-color: ${(props) => props.theme.mainColor};
-  border: 0.2rem solid ${(props) => props.theme.mainColor};
-  color: ${(props) => props.theme.backgroundColor};
+  background-color: ${(props) => (props.disabled ? props.theme.borderColor : props.theme.mainColor)};
+  border: 0.2rem solid ${(props) => (props.disabled ? props.theme.fontColor : props.theme.mainColor)};
+  color: ${(props) => (props.disabled ? props.theme.fontColor : props.theme.backgroundColor)};
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'cursor')};
 
   &:hover {
-    background-color: ${(props) => props.theme.backgroundColor};
-    color: ${(props) => props.theme.mainColor};
+    background-color: ${(props) => (props.disabled ? props.theme.borderColor : props.theme.backgroundColor)};
+    color: ${(props) => (props.disabled ? props.theme.fontColor : props.theme.mainColor)};
   }
 `;
 
@@ -57,20 +58,13 @@ export const NoBorderButton = styled(ButtonPattern)`
 export const DropdownSelectedButton = styled(ButtonPattern)``;
 
 export const AnswerButton = styled(ButtonPattern)<AnswerButtonProps>`
-  color: ${(props) => props.theme.fontColor};
+  background: ${({ isCorrect, userClicked }) => getBackgroundAnswerButton({ isCorrect, userClicked })};
+  border-color: ${({ isCorrect, userClicked }) => getBackgroundAnswerButton({ isCorrect, userClicked })};
   border: 0.2rem solid ${(props) => props.theme.borderColor};
   border-radius: 1.2rem;
+  color: ${(props) => (props.isCorrect || props.userClicked ? props.theme.backgroundColor : props.theme.fontColor)};
+  cursor: ${(props) => (props.disabled ? 'default' : 'cursor')};
   display: block;
   min-height: 14.4rem;
   width: 100%;
-
-  &:hover {
-    opacity: 0.8;
-  }
 `;
-
-// background: ${({ correct, userClicked }) =>
-// getBackgroundAnswerButton({ correct, userClicked })};
-// border: 0.2rem solid
-// ${({ correct, userClicked }) =>
-//   getBackgroundAnswerButton({ correct, userClicked })};

@@ -8,7 +8,15 @@ export type Question = {
   type: string;
 };
 
-export type QuestionState = Question & { answers: string[] };
+export type QuestionState = {
+  id: string;
+  question: string;
+  correctAnswer: string;
+  incorrectAnswers: string[];
+  answerClicked: undefined | string;
+  isCorrect: undefined | boolean;
+  answers: string[];
+};
 
 // enum is group of named constants values
 export enum Difficulty {
@@ -17,14 +25,7 @@ export enum Difficulty {
   HARD = 'hard',
 }
 
-export type AnswerObject = {
-  question: string;
-  answerClicked: string;
-  correct: boolean;
-  correctAnswer: string;
-};
-
 export type AnswerButtonProps = {
-  correct: boolean;
+  isCorrect: boolean;
   userClicked: boolean;
 };

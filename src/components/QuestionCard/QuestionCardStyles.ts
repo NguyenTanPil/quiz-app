@@ -41,11 +41,16 @@ export const ProgressBarStatus = styled.div<Props>`
 `;
 
 export const TotalQuestionCount = styled.div`
-  color: ${(props) => props.theme.fontColor};
-  font-size: 1.2rem;
-  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 0.8rem;
-  text-align: right;
+
+  span {
+    color: ${(props) => props.theme.fontColor};
+    font-size: 1.2rem;
+    font-weight: 400;
+  }
 `;
 
 export const QuestionContent = styled.div`

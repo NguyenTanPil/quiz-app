@@ -1,4 +1,5 @@
 import { breakpointsProps } from '../common/Slider';
+import { QUIZ_APP_CONSTANTS } from './constants';
 
 export const shuffleArray = (array: any[]) => {
   return [...array].sort(() => Math.random() - 0.5);
@@ -33,6 +34,17 @@ export const SliderUtils = {
   },
   getNextToLastElement(array: any[]) {
     return array[array.length - 2];
+  },
+};
+
+export const GameUtils = {
+  getFormattedTime(time: number) {
+    const minutes = Math.floor(time / QUIZ_APP_CONSTANTS.COMMON.secondsPerMinute);
+    const seconds = time % QUIZ_APP_CONSTANTS.COMMON.secondsPerMinute;
+
+    const minutesFormatted = minutes < QUIZ_APP_CONSTANTS.COMMON.numberStandard ? `0${minutes}` : `${minutes}`;
+    const secondsFormatted = seconds < QUIZ_APP_CONSTANTS.COMMON.numberStandard ? `0${seconds}` : `${seconds}`;
+    return `${minutesFormatted}:${secondsFormatted}`;
   },
 };
 

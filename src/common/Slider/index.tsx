@@ -160,7 +160,7 @@ const Slider = ({ children, autoPlaySeconds, breakpoints, options }: SliderProps
     let interval: number;
 
     if (autoPlaySeconds) {
-      interval = window.setInterval(play, autoPlaySeconds * QUIZ_APP_CONSTANTS.SLIDER.oneSecond);
+      interval = window.setInterval(play, autoPlaySeconds * QUIZ_APP_CONSTANTS.COMMON.oneSecond);
     }
 
     return () => {
