@@ -16,6 +16,7 @@ const theme: themeProps = {
     fontColor: '#536471',
     hoverColor: '#005792',
     mainColor: '#9852f9',
+    dialogBackgroundColor: 'rgba(91, 112, 131, 0.4)',
     selectBackgroundColor: '#f3f3f3',
     successColor: '#0fb56d',
     titleColor: '#0f1c2a',

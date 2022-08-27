@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { fetchQuizQuestions } from '../../../api/fetchQuizQuestions';
+import Dialog from '../../../common/Dialog';
 import gameBannerImg from '../../../images/gameBanner.jpg';
 import { Wrapper } from '../../../styles/Utils';
+import { GameUtils } from '../../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
 import { Difficulty, QuestionState } from '../../../utils/types';
 import Counter from '../../Counter';
@@ -44,6 +46,10 @@ const Game = () => {
     return questions.filter((question) => question.isCorrect).length;
   };
 
+  const getTotalUserSelected = () => {
+    return questions.filter((question) => question.answerClicked).length;
+  };
+
   useEffect(() => {
     const startTrivia = async () => {
       const responseQuestions = await fetchQuizQuestions(TOTAL_QUESTIONS, Difficulty.EASY);
@@ -57,9 +63,9 @@ const Game = () => {
     startTrivia();
   }, []);
 
-  // if (loading) {
-  //   return;
-  // }
+  if (loading) {
+    return;
+  }
 
   return (
     <Container>
@@ -67,18 +73,26 @@ const Game = () => {
         <GameBanner>
           <img src={gameBannerImg} alt="" />
         </GameBanner>
+        <Dialog />
         <Content>
-          {/* <Counter time={TIME} />
-          <QuestionCard
-            questionDetails={questions[number]}
-            totalCorrectAnswers={getTotalCorrectAnswers()}
-            questionNumber={number + 1}
-            score={score}
-            totalQuestions={TOTAL_QUESTIONS}
-            nextQuestion={nextQuestion}
-            checkAnswer={checkAnswer}
-          /> */}
-          <GameResult />
+          {questions.length === getTotalUserSelected() ? (
+            <GameResult
+              rowData={[{ id: '1', name: 'Nguyen Tan Pil', score: score * 10, time: GameUtils.getFormattedTime(TIME) }]}
+            />
+          ) : (
+            <>
+              <Counter time={TIME} />
+              <QuestionCard
+                questionDetails={questions[number]}
+                totalCorrectAnswers={getTotalCorrectAnswers()}
+                questionNumber={number + 1}
+                score={score}
+                totalQuestions={TOTAL_QUESTIONS}
+                nextQuestion={nextQuestion}
+                checkAnswer={checkAnswer}
+              />
+            </>
+          )}
         </Content>
       </Wrapper>
     </Container>
