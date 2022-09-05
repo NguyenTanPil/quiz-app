@@ -3,7 +3,6 @@ import { fetchQuizQuestions } from '../../../api/fetchQuizQuestions';
 import Dialog from '../../../common/Dialog';
 import gameBannerImg from '../../../images/gameBanner.jpg';
 import { Wrapper } from '../../../styles/Utils';
-import { GameUtils } from '../../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
 import { Difficulty, QuestionState } from '../../../utils/types';
 import Counter from '../../Counter';
@@ -19,6 +18,8 @@ const Game = () => {
   const [questions, setQuestions] = useState<QuestionState[]>([]);
   const [number, setNumber] = useState(QUIZ_APP_CONSTANTS.GAME.initialNumberQuestion);
   const [score, setScore] = useState(QUIZ_APP_CONSTANTS.GAME.initialScore);
+  const [isShowDialog, setIsShowDialog] = useState(false);
+  const [isShowResult, setIsShowResult] = useState(false);
 
   const checkAnswer = (e: React.MouseEvent<HTMLButtonElement>, id: string) => {
     const answer = e.currentTarget.value;
@@ -46,8 +47,13 @@ const Game = () => {
     return questions.filter((question) => question.isCorrect).length;
   };
 
-  const getTotalUserSelected = () => {
-    return questions.filter((question) => question.answerClicked).length;
+  const handleCloseDialog = () => {
+    setIsShowDialog(false);
+  };
+
+  const handleApplyDialog = () => {
+    setIsShowDialog(false);
+    setIsShowResult(true);
   };
 
   useEffect(() => {
@@ -70,18 +76,25 @@ const Game = () => {
   return (
     <Container>
       <Wrapper>
+        {/* start dialogs */}
+        {isShowDialog && (
+          <Dialog
+            content="Do you want to complete this exam?"
+            title="Confirm to complete"
+            handleCloseDialog={handleCloseDialog}
+            handleApplyDialog={handleApplyDialog}
+          />
+        )}
+        {/* end dialogs */}
         <GameBanner>
           <img src={gameBannerImg} alt="" />
         </GameBanner>
-        <Dialog />
         <Content>
-          {questions.length === getTotalUserSelected() ? (
-            <GameResult
-              rowData={[{ id: '1', name: 'Nguyen Tan Pil', score: score * 10, time: GameUtils.getFormattedTime(TIME) }]}
-            />
+          {isShowResult ? (
+            <GameResult />
           ) : (
             <>
-              <Counter time={TIME} />
+              <Counter time={TIME} isPause={isShowDialog} />
               <QuestionCard
                 questionDetails={questions[number]}
                 totalCorrectAnswers={getTotalCorrectAnswers()}
@@ -90,6 +103,7 @@ const Game = () => {
                 totalQuestions={TOTAL_QUESTIONS}
                 nextQuestion={nextQuestion}
                 checkAnswer={checkAnswer}
+                setIsShowDialog={setIsShowDialog}
               />
             </>
           )}

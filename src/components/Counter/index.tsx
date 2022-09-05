@@ -4,10 +4,11 @@ import { QUIZ_APP_CONSTANTS } from '../../utils/constants';
 import { Container, RemainingTime, TimeIcon } from './CounterStyles';
 
 type Props = {
+  isPause: boolean;
   time: number;
 };
 
-const Counter = ({ time }: Props) => {
+const Counter = ({ isPause, time }: Props) => {
   const [seconds, setSeconds] = useState(time);
 
   useEffect(() => {
@@ -16,13 +17,15 @@ const Counter = ({ time }: Props) => {
     }
 
     const timer = setInterval(() => {
-      setSeconds((prev) => prev - 1);
+      if (!isPause) {
+        setSeconds((prev) => prev - 1);
+      }
     }, QUIZ_APP_CONSTANTS.COMMON.oneSecond);
 
     return () => {
       clearInterval(timer);
     };
-  }, [seconds]);
+  }, [isPause, seconds]);
 
   return (
     <Container>

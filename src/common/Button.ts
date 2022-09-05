@@ -1,6 +1,10 @@
 import styled from 'styled-components';
 import { AnswerButtonProps } from '../utils/types';
 
+type Props = {
+  [key: string]: any;
+};
+
 const ButtonPattern = styled.button`
   background-color: transparent;
   border: none;
@@ -37,15 +41,17 @@ export const Button = styled(ButtonPattern)`
   }
 `;
 
-export const SignUpButton = styled(ButtonPattern)`
-  background-color: ${(props) => (props.disabled ? props.theme.borderColor : props.theme.mainColor)};
-  border: 0.2rem solid ${(props) => (props.disabled ? props.theme.fontColor : props.theme.mainColor)};
+export const SignUpButton = styled(ButtonPattern)<Props>`
+  background-color: ${(props) =>
+    props.disabled ? props.theme.borderColor : props.theme[`${props.typeColor || 'mainColor'}`]};
+  border: 0.2rem solid
+    ${(props) => (props.disabled ? props.theme.fontColor : props.theme[`${props.typeColor || 'mainColor'}`])};
   color: ${(props) => (props.disabled ? props.theme.fontColor : props.theme.backgroundColor)};
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'cursor')};
 
   &:hover {
     background-color: ${(props) => (props.disabled ? props.theme.borderColor : props.theme.backgroundColor)};
-    color: ${(props) => (props.disabled ? props.theme.fontColor : props.theme.mainColor)};
+    color: ${(props) => (props.disabled ? props.theme.fontColor : props.theme[`${props.typeColor || 'mainColor'}`])};
   }
 `;
 
@@ -67,4 +73,21 @@ export const AnswerButton = styled(ButtonPattern)<AnswerButtonProps>`
   display: block;
   min-height: 14.4rem;
   width: 100%;
+`;
+
+export const DialogCloseButton = styled(ButtonPattern)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: color 0.2s ease-out;
+
+  svg {
+    color: ${(props) => props.theme.fontColor};
+    font-size: 2.4rem;
+
+    &:hover {
+      color: ${(props) => props.theme.errorColor};
+    }
+  }
 `;

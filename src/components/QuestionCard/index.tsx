@@ -23,6 +23,7 @@ type Props = {
   questionDetails: QuestionState;
   checkAnswer: (e: React.MouseEvent<HTMLButtonElement>, id: string) => void;
   nextQuestion: () => void;
+  setIsShowDialog: (value: boolean) => void;
 };
 
 const QuestionCard = ({
@@ -33,6 +34,7 @@ const QuestionCard = ({
   questionNumber,
   checkAnswer,
   nextQuestion,
+  setIsShowDialog,
 }: Props) => {
   const { id, question, correctAnswer, answerClicked, isCorrect, answers } = questionDetails;
 
@@ -70,10 +72,14 @@ const QuestionCard = ({
         ))}
       </AnswerList>
       <Actions>
-        <SignUpButton>
+        <SignUpButton typeColor="mainColor" onClick={() => setIsShowDialog(true)}>
           <span>Close</span>
         </SignUpButton>
-        <SignUpButton disabled={questionNumber === totalQuestions || isCorrect === undefined} onClick={nextQuestion}>
+        <SignUpButton
+          disabled={questionNumber === totalQuestions || isCorrect === undefined}
+          typeColor="mainColor"
+          onClick={nextQuestion}
+        >
           <span>Next Question</span>
           <BsArrowRightShort />
         </SignUpButton>
