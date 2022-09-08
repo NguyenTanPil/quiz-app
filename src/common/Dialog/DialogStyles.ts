@@ -1,5 +1,9 @@
 import styled from 'styled-components';
 
+type Props = {
+  [key: string]: any;
+};
+
 export const Container = styled.div`
   background-color: rgba(91, 112, 131, 0.4);
   display: flex;
@@ -14,7 +18,7 @@ export const Container = styled.div`
   z-index: 2000;
 `;
 
-export const Content = styled.div`
+export const Content = styled.div<Props>`
   background-color: ${(props) => props.theme.backgroundColor};
   border-radius: 0.8rem;
   box-sizing: border-box;

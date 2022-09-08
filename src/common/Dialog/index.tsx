@@ -1,13 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Container, Content, DialogBody, DialogFooter, DialogHeader, DialogTitle } from './DialogStyles';
 import { MdOutlineClose } from 'react-icons/md';
 import { DialogCloseButton, SignUpButton } from '../Button';
+import useOnClickOutside from '../../utils/useOnClickOutside';
 
 type DialogProps = {
   content: string;
   title: string;
-  handleCloseDialog: () => void;
+  cancelButtonContent: string;
+  applyButtonContent: string;
+  handleCancelDialog: () => void;
   handleApplyDialog: () => void;
+  handleCloseDialog: () => void;
 };
 
 const resetScrollbar = () => {
@@ -20,9 +24,26 @@ const disableScrollbar = () => {
   document.body.style.overflowY = 'hidden';
 };
 
-const Dialog = ({ content, title, handleCloseDialog, handleApplyDialog }: DialogProps) => {
+const Dialog = ({
+  content,
+  title,
+  cancelButtonContent,
+  applyButtonContent,
+  handleCancelDialog,
+  handleApplyDialog,
+  handleCloseDialog,
+}: DialogProps) => {
+  const contentRef = useRef<HTMLDivElement>();
+
   const handleClose = () => {
     handleCloseDialog();
+    resetScrollbar();
+  };
+
+  useOnClickOutside(contentRef, handleClose);
+
+  const handleCancel = () => {
+    handleCancelDialog();
     resetScrollbar();
   };
 
@@ -37,25 +58,30 @@ const Dialog = ({ content, title, handleCloseDialog, handleApplyDialog }: Dialog
 
   return (
     <Container>
-      <Content>
+      <Content ref={contentRef}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogCloseButton onClick={handleCloseDialog}>
+          <DialogCloseButton onClick={handleClose}>
             <MdOutlineClose />
           </DialogCloseButton>
         </DialogHeader>
         <DialogBody>{content}</DialogBody>
         <DialogFooter>
-          <SignUpButton typeColor="errorColor" onClick={handleClose}>
-            Cancel
+          <SignUpButton typeColor="errorColor" onClick={handleCancel}>
+            {cancelButtonContent}
           </SignUpButton>
           <SignUpButton typeColor="successColor" onClick={handleApply}>
-            Okay
+            {applyButtonContent}
           </SignUpButton>
         </DialogFooter>
       </Content>
     </Container>
   );
+};
+
+Dialog.defaultProps = {
+  cancelButtonContent: 'cancel',
+  applyButtonContent: 'apply',
 };
 
 export default Dialog;

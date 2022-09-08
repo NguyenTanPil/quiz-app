@@ -6,9 +6,10 @@ import { Container, RemainingTime, TimeIcon } from './CounterStyles';
 type Props = {
   isPause: boolean;
   time: number;
+  handleCompletedTest: () => void;
 };
 
-const Counter = ({ isPause, time }: Props) => {
+const Counter = ({ isPause, time, handleCompletedTest }: Props) => {
   const [seconds, setSeconds] = useState(time);
 
   useEffect(() => {
@@ -26,6 +27,16 @@ const Counter = ({ isPause, time }: Props) => {
       clearInterval(timer);
     };
   }, [isPause, seconds]);
+
+  useEffect(() => {
+    if (seconds === QUIZ_APP_CONSTANTS.GAME.endTime) {
+      handleCompletedTest();
+    }
+  }, [seconds]);
+
+  useEffect(() => {
+    setSeconds(time);
+  }, [time]);
 
   return (
     <Container>

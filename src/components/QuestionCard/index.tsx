@@ -16,11 +16,11 @@ import {
 } from './QuestionCardStyles';
 
 type Props = {
-  totalCorrectAnswers: number;
   totalQuestions: number;
   questionNumber: number;
   score: number;
   questionDetails: QuestionState;
+  isCompleted: boolean;
   checkAnswer: (e: React.MouseEvent<HTMLButtonElement>, id: string) => void;
   nextQuestion: () => void;
   setIsShowDialog: (value: boolean) => void;
@@ -28,9 +28,9 @@ type Props = {
 
 const QuestionCard = ({
   questionDetails,
-  totalCorrectAnswers,
   score,
   totalQuestions,
+  isCompleted,
   questionNumber,
   checkAnswer,
   nextQuestion,
@@ -44,13 +44,11 @@ const QuestionCard = ({
         <TotalQuestionCount>
           <span>Score {score}</span>
           <span>
-            Question {totalCorrectAnswers} to {totalQuestions}
+            Question {questionNumber} to {totalQuestions}
           </span>
         </TotalQuestionCount>
         <ProgressBarFill>
-          <ProgressBarStatus
-            status={(totalCorrectAnswers / totalQuestions) * QUIZ_APP_CONSTANTS.COMMON.oneHundredPercent}
-          />
+          <ProgressBarStatus status={(score / totalQuestions) * QUIZ_APP_CONSTANTS.COMMON.oneHundredPercent} />
         </ProgressBarFill>
       </ProgressBar>
       <QuestionContent>
@@ -60,7 +58,7 @@ const QuestionCard = ({
         {answers.map((answer) => (
           <AnswerItem key={answer}>
             <AnswerButton
-              disabled={isCorrect !== undefined}
+              disabled={isCompleted || isCorrect !== undefined}
               value={answer}
               isCorrect={correctAnswer === answer && answerClicked !== undefined}
               userClicked={answerClicked === answer}
@@ -72,14 +70,10 @@ const QuestionCard = ({
         ))}
       </AnswerList>
       <Actions>
-        <SignUpButton typeColor="mainColor" onClick={() => setIsShowDialog(true)}>
+        <SignUpButton typeColor="errorColor" onClick={() => setIsShowDialog(true)}>
           <span>Close</span>
         </SignUpButton>
-        <SignUpButton
-          disabled={questionNumber === totalQuestions || isCorrect === undefined}
-          typeColor="mainColor"
-          onClick={nextQuestion}
-        >
+        <SignUpButton disabled={questionNumber === totalQuestions || isCorrect === undefined} onClick={nextQuestion}>
           <span>Next Question</span>
           <BsArrowRightShort />
         </SignUpButton>

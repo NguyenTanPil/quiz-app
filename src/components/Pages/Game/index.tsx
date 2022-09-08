@@ -6,28 +6,29 @@ import { Wrapper } from '../../../styles/Utils';
 import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
 import { Difficulty, QuestionState } from '../../../utils/types';
 import Counter from '../../Counter';
-import GameResult from '../../GameResult';
 import QuestionCard from '../../QuestionCard';
 import { Container, Content, GameBanner } from './GameStyles';
 
 const TOTAL_QUESTIONS = 10;
-const TIME = 12 * 60;
+let TIME = 0.1 * 60;
 
 const Game = () => {
   const [loading, setLoading] = useState(true);
+  const [isShowCloseDialog, setIsShowCloseDialog] = useState(false);
+  const [isShowCompleteDialog, setIsShowCompleteDialog] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
+
   const [questions, setQuestions] = useState<QuestionState[]>([]);
   const [number, setNumber] = useState(QUIZ_APP_CONSTANTS.GAME.initialNumberQuestion);
   const [score, setScore] = useState(QUIZ_APP_CONSTANTS.GAME.initialScore);
-  const [isShowDialog, setIsShowDialog] = useState(false);
-  const [isShowResult, setIsShowResult] = useState(false);
 
   const checkAnswer = (e: React.MouseEvent<HTMLButtonElement>, id: string) => {
     const answer = e.currentTarget.value;
     const isCorrect = questions[number].correctAnswer === answer;
 
-    if (isCorrect) {
-      setScore((prev) => prev + 1);
-    }
+    // if (isCorrect) {
+    // }
+    setScore((prev) => prev + 1);
 
     const newQuestions = questions.map((question) => {
       if (question.id === id) {
@@ -43,17 +44,30 @@ const Game = () => {
     setNumber((prev) => prev + 1);
   };
 
-  const getTotalCorrectAnswers = () => {
-    return questions.filter((question) => question.isCorrect).length;
+  const handleCancelCloseDialog = () => {
+    setIsShowCloseDialog(false);
   };
 
-  const handleCloseDialog = () => {
-    setIsShowDialog(false);
+  const handleApplyCloseDialog = () => {
+    setIsShowCloseDialog(false);
   };
 
-  const handleApplyDialog = () => {
-    setIsShowDialog(false);
-    setIsShowResult(true);
+  const handleTryAgainCompleteDialog = () => {
+    console.log('try');
+    setIsShowCompleteDialog(false);
+    TIME = 12 * 60;
+    setQuestions((prev) => prev.map((question) => ({ ...question, answerClicked: undefined, isCorrect: undefined })));
+    setNumber(QUIZ_APP_CONSTANTS.GAME.initialNumberQuestion);
+    setScore(QUIZ_APP_CONSTANTS.GAME.initialScore);
+  };
+
+  const handleApplyCompleteDialog = () => {
+    setIsShowCompleteDialog(false);
+  };
+
+  const handleCompletedTest = () => {
+    setIsShowCompleteDialog(true);
+    setIsCompleted(true);
   };
 
   useEffect(() => {
@@ -69,6 +83,12 @@ const Game = () => {
     startTrivia();
   }, []);
 
+  useEffect(() => {
+    if (score === TOTAL_QUESTIONS) {
+      handleCompletedTest();
+    }
+  }, [score]);
+
   if (loading) {
     return;
   }
@@ -77,12 +97,26 @@ const Game = () => {
     <Container>
       <Wrapper>
         {/* start dialogs */}
-        {isShowDialog && (
+        {isShowCloseDialog && (
           <Dialog
-            content="Do you want to complete this exam?"
+            content="Do you want to exit this exam?"
             title="Confirm to complete"
-            handleCloseDialog={handleCloseDialog}
-            handleApplyDialog={handleApplyDialog}
+            applyButtonContent="Okay"
+            handleCancelDialog={handleCancelCloseDialog}
+            handleApplyDialog={handleApplyCloseDialog}
+            handleCloseDialog={() => setIsShowCloseDialog(false)}
+          />
+        )}
+
+        {isShowCompleteDialog && (
+          <Dialog
+            content="This exam has completed!"
+            title="Confirm to try"
+            applyButtonContent="Continue"
+            cancelButtonContent="Try Again"
+            handleCancelDialog={handleTryAgainCompleteDialog}
+            handleApplyDialog={handleApplyCompleteDialog}
+            handleCloseDialog={() => setIsShowCompleteDialog(false)}
           />
         )}
         {/* end dialogs */}
@@ -90,23 +124,17 @@ const Game = () => {
           <img src={gameBannerImg} alt="" />
         </GameBanner>
         <Content>
-          {isShowResult ? (
-            <GameResult />
-          ) : (
-            <>
-              <Counter time={TIME} isPause={isShowDialog} />
-              <QuestionCard
-                questionDetails={questions[number]}
-                totalCorrectAnswers={getTotalCorrectAnswers()}
-                questionNumber={number + 1}
-                score={score}
-                totalQuestions={TOTAL_QUESTIONS}
-                nextQuestion={nextQuestion}
-                checkAnswer={checkAnswer}
-                setIsShowDialog={setIsShowDialog}
-              />
-            </>
-          )}
+          <Counter time={TIME} isPause={isShowCloseDialog} handleCompletedTest={handleCompletedTest} />
+          <QuestionCard
+            questionDetails={questions[number]}
+            questionNumber={number + 1}
+            score={score}
+            totalQuestions={TOTAL_QUESTIONS}
+            isCompleted={isCompleted}
+            nextQuestion={nextQuestion}
+            checkAnswer={checkAnswer}
+            setIsShowDialog={setIsShowCloseDialog}
+          />
         </Content>
       </Wrapper>
     </Container>
