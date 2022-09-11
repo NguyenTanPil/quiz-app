@@ -47,7 +47,7 @@ export const SignUpButton = styled(ButtonPattern)<Props>`
   border: 0.2rem solid
     ${(props) => (props.disabled ? props.theme.fontColor : props.theme[`${props.typeColor || 'mainColor'}`])};
   color: ${(props) => (props.disabled ? props.theme.fontColor : props.theme.backgroundColor)};
-  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'cursor')};
+  cursor: ${(props) => (props.disabled ? 'default' : 'pointer')};
 
   &:hover {
     background-color: ${(props) => (props.disabled ? props.theme.borderColor : props.theme.backgroundColor)};

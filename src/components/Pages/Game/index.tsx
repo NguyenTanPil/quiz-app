@@ -26,9 +26,9 @@ const Game = () => {
     const answer = e.currentTarget.value;
     const isCorrect = questions[number].correctAnswer === answer;
 
-    // if (isCorrect) {
-    // }
-    setScore((prev) => prev + 1);
+    if (isCorrect) {
+      setScore((prev) => prev + 1);
+    }
 
     const newQuestions = questions.map((question) => {
       if (question.id === id) {
@@ -53,7 +53,6 @@ const Game = () => {
   };
 
   const handleTryAgainCompleteDialog = () => {
-    console.log('try');
     setIsShowCompleteDialog(false);
     TIME = 12 * 60;
     setQuestions((prev) => prev.map((question) => ({ ...question, answerClicked: undefined, isCorrect: undefined })));
@@ -90,7 +89,7 @@ const Game = () => {
   }, [score]);
 
   if (loading) {
-    return;
+    return <div></div>;
   }
 
   return (
