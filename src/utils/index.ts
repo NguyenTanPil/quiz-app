@@ -52,7 +52,11 @@ export const getLastIndex = (array: any[]) => {
   return array.length - 1;
 };
 
-export const ValidUtils = {
+type ValidUtilsProps = {
+  [key: string]: (...args: any[]) => any;
+};
+
+export const ValidUtils: ValidUtilsProps = {
   // check user name
   name(value: string) {
     let error;

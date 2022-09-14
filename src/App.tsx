@@ -12,6 +12,7 @@ import Game from './components/Pages/Game';
 import Home from './components/Pages/Home';
 import { getTheme } from './styles/theme';
 import SignUp from './components/Pages/SignUp';
+import SignIn from './components/Pages/SignIn';
 
 const App: React.FC = () => {
   return (
@@ -23,6 +24,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/game" element={<Game />} />
           <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/sign-in" element={<SignIn />} />
         </Routes>
         <Footer />
       </Router>

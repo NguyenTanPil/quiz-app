@@ -6,7 +6,7 @@ import { AiOutlineCheckCircle } from 'react-icons/ai';
 
 type ValidTextInputProps = {
   type: string;
-  name: string;
+  name: string | undefined;
   placeholder: string;
   errorMessage: boolean | string | undefined;
   touched: boolean | undefined;

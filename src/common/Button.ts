@@ -91,3 +91,22 @@ export const DialogCloseButton = styled(ButtonPattern)`
     }
   }
 `;
+
+export const OtherAuthenButton = styled(ButtonPattern)<Props>`
+  background-color: ${(props) => props.logoColor};
+  border: 0.2rem solid ${(props) => props.logoColor};
+  box-sizing: border-box;
+  color: ${(props) => props.theme.backgroundColor};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  height: 4.4rem;
+  padding: 0;
+  width: 4.4rem;
+
+  &:hover {
+    background-color: ${(props) => props.theme.backgroundColor};
+    color: ${(props) => props.logoColor};
+  }
+`;
