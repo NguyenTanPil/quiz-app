@@ -1,28 +1,32 @@
 import React, { useState, useRef } from 'react';
-import {
-  Container,
-  DropdownItem,
-  DropdownList,
-  SelectedValue,
-} from './DropdownStyles';
+import { Container, DropdownItem, DropdownList, SelectedValue } from './DropdownStyles';
 import { RiArrowDropDownFill } from 'react-icons/ri';
 import { DropdownSelectedButton } from '../Button';
 import useOnClickOutside from '../../utils/useOnClickOutside';
 
 type DropdownProps = {
+  id: string;
+  activeValue: string;
   values: string[];
+  handleSelected: (value: string) => void;
 };
 
-const Dropdown = ({ values }: DropdownProps) => {
-  const [selectedValue, setSelectedValue] = useState(values[0]);
+const Dropdown = ({ id, activeValue, values, handleSelected }: DropdownProps) => {
+  const [selectedValue, setSelectedValue] = useState(activeValue);
   const [isShow, setIsShow] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(dropdownRef, () => setIsShow(false));
 
+  const handleClick = (value: string) => {
+    setIsShow(false);
+    setSelectedValue(value);
+    handleSelected(value);
+  };
+
   return (
-    <Container ref={dropdownRef}>
+    <Container ref={dropdownRef} id={`${id}-dropdown`}>
       <SelectedValue>
-        <DropdownSelectedButton onClick={() => setIsShow((prev) => !prev)}>
+        <DropdownSelectedButton type="button" onClick={() => setIsShow((prev) => !prev)}>
           {selectedValue}
           <RiArrowDropDownFill />
         </DropdownSelectedButton>
@@ -30,14 +34,7 @@ const Dropdown = ({ values }: DropdownProps) => {
       {isShow && (
         <DropdownList>
           {values.map((value) => (
-            <DropdownItem
-              key={value}
-              selected={selectedValue === value}
-              onClick={() => {
-                setIsShow(false);
-                setSelectedValue(value);
-              }}
-            >
+            <DropdownItem key={value} selected={selectedValue === value} onClick={() => handleClick(value)}>
               <DropdownSelectedButton>{value}</DropdownSelectedButton>
             </DropdownItem>
           ))}

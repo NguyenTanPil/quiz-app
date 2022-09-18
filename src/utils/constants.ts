@@ -20,4 +20,27 @@ export const QUIZ_APP_CONSTANTS = {
     endTime: 0,
     firstNumberQuestion: 1,
   },
+  QUIZ_QUESTION: {
+    levels: [
+      {
+        name: 'Easy',
+        typeColor: 'successColor',
+      },
+      {
+        name: 'Medium',
+        typeColor: 'warningColor',
+      },
+      {
+        name: 'Hard',
+        typeColor: 'errorColor',
+      },
+    ],
+    categories: ['Category 1', 'Category 2', 'Category 3'],
+    getAllLevels() {
+      return this.levels.map((level) => level.name);
+    },
+    getActiveLevelTypeColor(activeLevel: string) {
+      return this.levels.find((level) => level.name === activeLevel)?.typeColor;
+    },
+  },
 };

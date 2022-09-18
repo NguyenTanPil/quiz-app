@@ -12,6 +12,9 @@ const ButtonPattern = styled.button`
   box-sizing: border-box;
   color: ${(props) => props.theme.fontColor};
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 1.6rem;
   font-weight: 600;
   margin: 0;
@@ -108,5 +111,19 @@ export const OtherAuthenButton = styled(ButtonPattern)<Props>`
   &:hover {
     background-color: ${(props) => props.theme.backgroundColor};
     color: ${(props) => props.logoColor};
+  }
+`;
+
+export const ActionButton = styled(OtherAuthenButton)<Props>`
+  background-color: ${(props) => props.theme.backgroundColor};
+  border: 0.2rem solid ${(props) => props.theme.borderColor};
+  color: ${(props) => props.theme.fontColor};
+  font-size: 1.6rem;
+  height: 3.6rem;
+  width: 3.6rem;
+
+  &:hover {
+    border-color: ${(props) => props.theme[`${props.typeColor || 'mainColor'}`]};
+    color: ${(props) => props.theme[`${props.typeColor || 'mainColor'}`]};
   }
 `;

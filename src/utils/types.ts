@@ -12,7 +12,7 @@ export type QuestionState = {
   id: string;
   question: string;
   correctAnswer: string;
-  incorrectAnswers: string[];
+  inCorrectAnswers: string[];
   answerClicked: undefined | string;
   isCorrect: undefined | boolean;
   answers: string[];
@@ -28,4 +28,17 @@ export enum Difficulty {
 export type AnswerButtonProps = {
   isCorrect: boolean;
   userClicked: boolean;
+};
+
+export type AnswerProps = {
+  id: string;
+  content: string;
+  isCorrect: boolean | undefined;
+};
+
+export type QuizProps = {
+  id: string;
+  question: string;
+  level: string;
+  answers: AnswerProps[];
 };

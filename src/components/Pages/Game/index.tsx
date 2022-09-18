@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchQuizQuestions } from '../../../api/fetchQuizQuestions';
-import Dialog from '../../../common/Dialog';
+import { ConfirmDialog } from '../../../common/Dialog';
 import gameBannerImg from '../../../images/gameBanner.jpg';
 import { Wrapper } from '../../../styles/Utils';
 import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
@@ -97,7 +97,7 @@ const Game = () => {
       <Wrapper>
         {/* start dialogs */}
         {isShowCloseDialog && (
-          <Dialog
+          <ConfirmDialog
             content="Do you want to exit this exam?"
             title="Confirm to complete"
             applyButtonContent="Okay"
@@ -108,7 +108,7 @@ const Game = () => {
         )}
 
         {isShowCompleteDialog && (
-          <Dialog
+          <ConfirmDialog
             content="This exam has completed!"
             title="Confirm to try"
             applyButtonContent="Continue"

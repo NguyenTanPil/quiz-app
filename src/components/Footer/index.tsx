@@ -62,7 +62,12 @@ const Footer = () => {
           </FooterItem>
           <FooterItem>
             <Language>
-              <Dropdown values={['English', 'Vietnamese']} />
+              <Dropdown
+                id="language"
+                activeValue="English"
+                values={['English', 'Vietnamese']}
+                handleSelected={() => {}}
+              />
             </Language>
           </FooterItem>
         </FooterTop>

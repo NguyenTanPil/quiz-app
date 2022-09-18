@@ -4,6 +4,7 @@ export const Container = styled.div`
   position: relative;
 
   button {
+    justify-content: flex-start;
     text-align: left;
     width: 100%;
   }

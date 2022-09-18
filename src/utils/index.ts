@@ -48,10 +48,6 @@ export const GameUtils = {
   },
 };
 
-export const getLastIndex = (array: any[]) => {
-  return array.length - 1;
-};
-
 type ValidUtilsProps = {
   [key: string]: (...args: any[]) => any;
 };
@@ -108,4 +104,28 @@ export const ValidUtils: ValidUtilsProps = {
 
     return error;
   },
+};
+
+export const DialogUtils = {
+  resetScrollbar() {
+    document.body.style.height = '';
+    document.body.style.overflowY = '';
+  },
+
+  disableScrollbar() {
+    document.body.style.height = '100vh';
+    document.body.style.overflowY = 'hidden';
+  },
+};
+
+export const getLastIndex = (array: any[]) => {
+  return array.length - 1;
+};
+
+export const deepCloneObject = (object: any) => {
+  return JSON.parse(JSON.stringify(object));
+};
+
+export const convertNumberFormat = (num: number) => {
+  return num < 10 ? '0' + num : num;
 };

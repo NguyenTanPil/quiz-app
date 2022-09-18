@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { breakpoints, devices } from '../../styles/breakpoints';
 
 type Props = {
   [key: string]: any;
@@ -53,12 +54,73 @@ export const DialogBody = styled.div`
   text-align: center;
 `;
 
-export const DialogFooter = styled.div`
+export const DialogFooter = styled.div<Props>`
   display: flex;
-  justify-content: center;
+  justify-content: ${(props) => props.justifyContent};
   padding: 1.6rem;
 
   & > button {
     margin-left: 1.2rem;
+  }
+`;
+
+export const CreateQuizContent = styled(Content)`
+  max-width: 80rem;
+  width: 96%;
+`;
+
+export const QuizAnswers = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: -1.6rem;
+
+  & > div {
+    margin-bottom: 1.6rem;
+
+    ${breakpoints({
+      cssProp: 'width',
+      cssPropUnits: '',
+      values: [{ [devices.default]: '100%' }, { [devices.smallDevices]: 'calc(50% - 0.8rem)' }],
+    })}
+  }
+`;
+
+export const ElementGroup = styled.div`
+  margin-top: 1.2rem;
+
+  &:last-child {
+    margin-top: 2.4rem;
+  }
+
+  h3 {
+    color: ${(props) => props.theme.titleColor};
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    margin-top: 0;
+    text-align: left;
+  }
+`;
+
+export const QuizOptions = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  & > div {
+    margin-bottom: 1.2rem;
+    margin-top: 0;
+
+    &:last-child {
+      margin-top: 0;
+    }
+
+    ${breakpoints({
+      cssProp: 'width',
+      cssPropUnits: '',
+      values: [{ [devices.default]: '100%' }, { [devices.smallDevices]: 'calc(50% - 0.8rem)' }],
+    })};
   }
 `;

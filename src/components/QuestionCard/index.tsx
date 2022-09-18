@@ -1,5 +1,5 @@
 import React from 'react';
-import { BsArrowLeftShort, BsArrowRightShort } from 'react-icons/bs';
+import { BsArrowRightShort } from 'react-icons/bs';
 import { AnswerButton, SignUpButton } from '../../common/Button';
 import { QUIZ_APP_CONSTANTS } from '../../utils/constants';
 import { QuestionState } from '../../utils/types';

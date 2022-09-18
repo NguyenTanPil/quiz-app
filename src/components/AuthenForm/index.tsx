@@ -4,7 +4,7 @@ import { RiFacebookFill, RiGoogleFill, RiTwitterFill } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 import { OtherAuthenButton, SignUpButton } from '../../common/Button';
 import { ValidUtils as validate } from '../../utils';
-import ValidTextInput from '../Input/ValidTextInput';
+import { ValidTextInput } from '../../common/Input';
 import { AuthenFormBanner, Content, FormContainer, FormTitle, ListAuthen, OtherAuthen } from './AuthenFormStyles';
 
 export type formValueProps = {

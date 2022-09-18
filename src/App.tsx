@@ -13,6 +13,7 @@ import Home from './components/Pages/Home';
 import { getTheme } from './styles/theme';
 import SignUp from './components/Pages/SignUp';
 import SignIn from './components/Pages/SignIn';
+import CreateQuiz from './components/Pages/CreateQuiz';
 
 const App: React.FC = () => {
   return (
@@ -25,6 +26,7 @@ const App: React.FC = () => {
           <Route path="/game" element={<Game />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/create-quiz" element={<CreateQuiz />} />
         </Routes>
         <Footer />
       </Router>

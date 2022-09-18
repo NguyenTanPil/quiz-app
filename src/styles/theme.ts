@@ -21,7 +21,7 @@ const theme: themeProps = {
     successColor: '#0fb56d',
     titleColor: '#0f1c2a',
     pageButtonColor: '#00000040',
-    warningColor: '#FDDB3A',
+    warningColor: '#ed8a0a',
   },
   dark: {
     backgroundColor: '#15202b',

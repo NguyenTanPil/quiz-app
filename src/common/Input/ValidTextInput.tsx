@@ -30,11 +30,13 @@ const ValidTextInput = ({ type, name, placeholder, errorMessage, touched, valida
         <Field type={type} name={name} placeholder=" " autoComplete="off" validate={validateFunc} />
         <span>{placeholder}</span>
       </FieldGroup>
-      <ErrorMessage ref={wrapMessageRef}>
-        <WrapMessage ref={messageRef}>
-          <span>{errorMessage}</span>
-        </WrapMessage>
-      </ErrorMessage>
+      {errorMessage && (
+        <ErrorMessage ref={wrapMessageRef}>
+          <WrapMessage ref={messageRef}>
+            <span>{errorMessage}</span>
+          </WrapMessage>
+        </ErrorMessage>
+      )}
       <IconStatus isError={errorMessage ? 1 : 0}>
         {touched ? <> {errorMessage ? <BiErrorCircle /> : <AiOutlineCheckCircle />} </> : ''}
       </IconStatus>
