@@ -39,6 +39,7 @@ import {
   QuizOptions,
   TotalQuiz,
 } from './CreateQuizStyles';
+import ToolTip from '../../../common/ToolTip';
 
 const initialQuiz: QuizProps = {
   id: uuid(),
@@ -169,7 +170,7 @@ const CreateQuiz = () => {
               <LevelList>
                 {QUIZ_APP_CONSTANTS.QUIZ_QUESTION.levels.map((level) => (
                   <LevelItem key={level.name} typeColor={level.typeColor}>
-                    Easy
+                    {level.name}
                   </LevelItem>
                 ))}
               </LevelList>
@@ -195,21 +196,29 @@ const CreateQuiz = () => {
                 <QuizItemHeader>
                   <QuizItemNumber>Quiz {convertNumberFormat(idx + 1)}</QuizItemNumber>
                   <QuizItemActions>
-                    <LevelButton
-                      disable={true}
-                      typeColor={QUIZ_APP_CONSTANTS.QUIZ_QUESTION.getActiveLevelTypeColor(quiz.level)}
-                    >
-                      <SiOpslevel />
-                    </LevelButton>
-                    <ActionButton onClick={() => setEditId(quiz.id)}>
-                      <BiEditAlt />
-                    </ActionButton>
-                    <ActionButton typeColor="successColor" onClick={() => handleDuplicateQuiz(quiz.id)}>
-                      <BiCopy />
-                    </ActionButton>
-                    <ActionButton typeColor="errorColor" onClick={() => handleDeleteQuiz(quiz.id)}>
-                      <CgTrash />
-                    </ActionButton>
+                    <ToolTip content="Quiz Level">
+                      <LevelButton
+                        disable={true}
+                        typeColor={QUIZ_APP_CONSTANTS.QUIZ_QUESTION.getActiveLevelTypeColor(quiz.level)}
+                      >
+                        <SiOpslevel />
+                      </LevelButton>
+                    </ToolTip>
+                    <ToolTip content="Edit Quiz">
+                      <ActionButton onClick={() => setEditId(quiz.id)}>
+                        <BiEditAlt />
+                      </ActionButton>
+                    </ToolTip>
+                    <ToolTip content="Duplicate Quiz">
+                      <ActionButton typeColor="successColor" onClick={() => handleDuplicateQuiz(quiz.id)}>
+                        <BiCopy />
+                      </ActionButton>
+                    </ToolTip>
+                    <ToolTip content="Delete Quiz">
+                      <ActionButton typeColor="errorColor" onClick={() => handleDeleteQuiz(quiz.id)}>
+                        <CgTrash />
+                      </ActionButton>
+                    </ToolTip>
                   </QuizItemActions>
                 </QuizItemHeader>
                 <QuizItemContent>{quiz.question}</QuizItemContent>

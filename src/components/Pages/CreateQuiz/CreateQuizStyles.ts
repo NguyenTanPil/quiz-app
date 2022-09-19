@@ -131,7 +131,7 @@ export const QuizItemActions = styled.div`
   align-items: center;
   padding-bottom: 1.2rem;
 
-  button {
+  & > div {
     margin-left: 0.8rem;
 
     &:first-child {

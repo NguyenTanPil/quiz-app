@@ -24,7 +24,7 @@ const Sidebar = ({ isShowSidebar, setIsShowSidebar }: SideBarProps) => {
         </Header>
         <ListLink>
           <li onClick={() => setIsShowSidebar(false)}>
-            <NavLink to="/">
+            <NavLink to="/create-quiz">
               <span>Create Quiz</span>
             </NavLink>
           </li>
@@ -39,13 +39,13 @@ const Sidebar = ({ isShowSidebar, setIsShowSidebar }: SideBarProps) => {
             </NavLink>
           </li>
           <li onClick={() => setIsShowSidebar(false)}>
-            <NavLink to="/">
+            <NavLink to="/game">
               <span>Start</span>
             </NavLink>
           </li>
           <li onClick={() => setIsShowSidebar(false)}>
-            <NavLink to="/">
-              <span>Sign up</span>
+            <NavLink to="/sign-in">
+              <span>Sign In</span>
             </NavLink>
           </li>
         </ListLink>

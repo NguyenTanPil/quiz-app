@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BiBarChart } from 'react-icons/bi';
+import { NavLink } from 'react-router-dom';
 import { NoBorderButton, SignUpButton } from '../../common/Button';
 import { Wrapper } from '../../styles/Utils';
 import Sidebar from '../Sidebar';
@@ -19,19 +20,29 @@ const Header = () => {
           <div>
             <NavList>
               <NavItem>
-                <NoBorderButton>Create Quiz</NoBorderButton>
+                <NavLink to="/create-quiz">
+                  <NoBorderButton>Create Quiz</NoBorderButton>
+                </NavLink>
               </NavItem>
               <NavItem>
-                <NoBorderButton>Join now</NoBorderButton>
+                <NavLink to="/">
+                  <NoBorderButton>Join now</NoBorderButton>
+                </NavLink>
               </NavItem>
               <NavItem>
-                <NoBorderButton>Academy</NoBorderButton>
+                <NavLink to="/">
+                  <NoBorderButton>Academy</NoBorderButton>
+                </NavLink>
               </NavItem>
               <NavItem>
-                <NoBorderButton>Start</NoBorderButton>
+                <NavLink to="/game">
+                  <NoBorderButton>Start</NoBorderButton>
+                </NavLink>
               </NavItem>
               <NavItem>
-                <SignUpButton>Sign Up</SignUpButton>
+                <NavLink to="/sign-in">
+                  <SignUpButton>Sign In</SignUpButton>
+                </NavLink>
               </NavItem>
             </NavList>
             <ShowSidebarBox onClick={() => setIsShowSidebar(true)}>
