@@ -10,6 +10,8 @@ type ConfirmDialogProps = {
   title: string;
   cancelButtonContent: string;
   applyButtonContent: string;
+  cancelButtonTypeColor: string;
+  applyButtonTypeColor: string;
   handleCancelDialog: () => void;
   handleApplyDialog: () => void;
   handleCloseDialog: () => void;
@@ -20,6 +22,8 @@ const ConfirmDialog = ({
   title,
   cancelButtonContent,
   applyButtonContent,
+  cancelButtonTypeColor,
+  applyButtonTypeColor,
   handleCancelDialog,
   handleApplyDialog,
   handleCloseDialog,
@@ -58,10 +62,10 @@ const ConfirmDialog = ({
         </DialogHeader>
         <DialogBody>{content}</DialogBody>
         <DialogFooter justifyContent="center">
-          <SignUpButton typeColor="errorColor" onClick={handleCancel}>
+          <SignUpButton typeColor={cancelButtonTypeColor} onClick={handleCancel}>
             {cancelButtonContent}
           </SignUpButton>
-          <SignUpButton typeColor="successColor" onClick={handleApply}>
+          <SignUpButton typeColor={applyButtonTypeColor} onClick={handleApply}>
             {applyButtonContent}
           </SignUpButton>
         </DialogFooter>
@@ -73,6 +77,8 @@ const ConfirmDialog = ({
 ConfirmDialog.defaultProps = {
   cancelButtonContent: 'cancel',
   applyButtonContent: 'apply',
+  cancelButtonTypeColor: 'errorColor',
+  applylButtonTypeColor: 'successColor',
 };
 
 export default ConfirmDialog;

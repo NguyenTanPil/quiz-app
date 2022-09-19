@@ -6,7 +6,7 @@ import { SiOpslevel } from 'react-icons/si';
 import { MdOutlineMenuOpen } from 'react-icons/md';
 import uuid from 'react-uuid';
 import { ActionButton, SignUpButton } from '../../../common/Button';
-import { CreateQuizDialog } from '../../../common/Dialog';
+import { ConfirmDialog, CreateQuizDialog } from '../../../common/Dialog';
 import Dropdown from '../../../common/Dropdown';
 import { OriginInput } from '../../../common/Input';
 import { WrapperSection } from '../../../styles/Utils';
@@ -58,6 +58,7 @@ const CreateQuiz = () => {
   const [quizCategory, setQuizCategory] = useState(QUIZ_APP_CONSTANTS.QUIZ_QUESTION.categories[0]);
   const [isShowCreateDialog, setIsShowCreateDialog] = useState(false);
   const [editId, setEditId] = useState<string | undefined>(undefined);
+  const [deleteId, setDeleteId] = useState<string | undefined>(undefined);
   const [quizList, setQuizList] = useState<QuizProps[]>([
     {
       id: '1',
@@ -83,6 +84,7 @@ const CreateQuiz = () => {
   };
 
   const handleDeleteQuiz = (id: string) => {
+    setDeleteId(undefined);
     setQuizList((prev) => prev.filter((quiz) => quiz.id !== id));
   };
 
@@ -133,6 +135,18 @@ const CreateQuiz = () => {
           handleCancelDialog={() => setEditId(undefined)}
           handleApplyDialog={(values) => handleUpdateQuiz(values)}
           handleCloseDialog={() => setEditId(undefined)}
+        />
+      )}
+      {deleteId && (
+        <ConfirmDialog
+          content="Do you want to delete this quiz?"
+          title="Confirm to delete"
+          applyButtonContent="Delete"
+          applyButtonTypeColor="errorColor"
+          cancelButtonTypeColor="successColor"
+          handleCancelDialog={() => setDeleteId(undefined)}
+          handleApplyDialog={() => handleDeleteQuiz(deleteId)}
+          handleCloseDialog={() => setDeleteId(undefined)}
         />
       )}
       {/* end dialogs */}
@@ -196,7 +210,7 @@ const CreateQuiz = () => {
                 <QuizItemHeader>
                   <QuizItemNumber>Quiz {convertNumberFormat(idx + 1)}</QuizItemNumber>
                   <QuizItemActions>
-                    <ToolTip content="Quiz Level">
+                    <ToolTip content={`${quiz.level} Level`}>
                       <LevelButton
                         disable={true}
                         typeColor={QUIZ_APP_CONSTANTS.QUIZ_QUESTION.getActiveLevelTypeColor(quiz.level)}
@@ -215,7 +229,7 @@ const CreateQuiz = () => {
                       </ActionButton>
                     </ToolTip>
                     <ToolTip content="Delete Quiz">
-                      <ActionButton typeColor="errorColor" onClick={() => handleDeleteQuiz(quiz.id)}>
+                      <ActionButton typeColor="errorColor" onClick={() => setDeleteId(quiz.id)}>
                         <CgTrash />
                       </ActionButton>
                     </ToolTip>
