@@ -6,6 +6,7 @@ import { OtherAuthenButton, SignUpButton } from '../../common/Button';
 import { ValidUtils as validate } from '../../utils';
 import { ValidTextInput } from '../../common/Input';
 import { AuthenFormBanner, Content, FormContainer, FormTitle, ListAuthen, OtherAuthen } from './AuthenFormStyles';
+import ToolTip from '../../common/ToolTip';
 
 export type formValueProps = {
   type: string;
@@ -20,6 +21,7 @@ type AuthenFormProps = {
   bannerImg: any;
   isVerticalReverse?: boolean;
   formId: string;
+  isSignIn?: boolean;
   moreActionText: string;
   moreActionLink: string;
   formValues: formValueProps[];
@@ -40,6 +42,7 @@ const AuthenForm = ({
   bannerImg,
   isVerticalReverse,
   formId,
+  isSignIn,
   moreActionText,
   moreActionLink,
   formValues,
@@ -87,26 +90,34 @@ const AuthenForm = ({
             </Form>
           )}
         </Formik>
-        <OtherAuthen>
-          <span>Or login with</span>
-          <ListAuthen>
-            <li>
-              <OtherAuthenButton logoColor="#4267B2">
-                <RiFacebookFill />
-              </OtherAuthenButton>
-            </li>
-            <li>
-              <OtherAuthenButton logoColor="#1DA1F2">
-                <RiTwitterFill />
-              </OtherAuthenButton>
-            </li>
-            <li>
-              <OtherAuthenButton logoColor="#DB4437">
-                <RiGoogleFill />
-              </OtherAuthenButton>
-            </li>
-          </ListAuthen>
-        </OtherAuthen>
+        {isSignIn && (
+          <OtherAuthen>
+            <span>Or login with</span>
+            <ListAuthen>
+              <li>
+                <ToolTip content="Facebook">
+                  <OtherAuthenButton logoColor="#4267B2">
+                    <RiFacebookFill />
+                  </OtherAuthenButton>
+                </ToolTip>
+              </li>
+              <li>
+                <ToolTip content="Twitter">
+                  <OtherAuthenButton logoColor="#1DA1F2">
+                    <RiTwitterFill />
+                  </OtherAuthenButton>
+                </ToolTip>
+              </li>
+              <li>
+                <ToolTip content="Google">
+                  <OtherAuthenButton logoColor="#DB4437">
+                    <RiGoogleFill />
+                  </OtherAuthenButton>
+                </ToolTip>
+              </li>
+            </ListAuthen>
+          </OtherAuthen>
+        )}
       </FormContainer>
       <AuthenFormBanner isReverse={isVerticalReverse}>
         <img src={bannerImg} alt="" />

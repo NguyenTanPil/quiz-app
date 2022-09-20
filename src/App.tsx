@@ -8,12 +8,13 @@ import Header from './components/Header';
 // type
 // other
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import CreateQuiz from './components/Pages/CreateQuiz';
 import Game from './components/Pages/Game';
 import Home from './components/Pages/Home';
-import { getTheme } from './styles/theme';
-import SignUp from './components/Pages/SignUp';
+import Profile from './components/Pages/Profile';
 import SignIn from './components/Pages/SignIn';
-import CreateQuiz from './components/Pages/CreateQuiz';
+import SignUp from './components/Pages/SignUp';
+import { getTheme } from './styles/theme';
 
 const App: React.FC = () => {
   return (
@@ -27,6 +28,7 @@ const App: React.FC = () => {
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/create-quiz" element={<CreateQuiz />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
         <Footer />
       </Router>

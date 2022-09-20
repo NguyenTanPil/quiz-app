@@ -37,7 +37,7 @@ export const StepItem = styled.li`
   box-sizing: border-box;
   box-shadow: rgba(152, 82, 249, 0.2) 0.5rem 0.5rem, rgba(152, 82, 249, 0.15) 1rem 1rem,
     rgba(152, 82, 249, 0.1) 1.5rem 1.5rem;
-  background-color: #fbfbfd;
+  background-color: #f2f2f2;
   border-radius: 1.6rem;
   display: flex;
   flex-direction: column;

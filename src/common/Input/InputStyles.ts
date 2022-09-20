@@ -30,7 +30,7 @@ export const FieldGroup = styled.div<Props>`
   position: relative;
 
   & > span {
-    background-color: #fbfbfd;
+    background-color: #f2f2f2;
     color: ${(props) => props.theme.fontColor};
     font-size: 1.6rem;
     font-weight: 600;
@@ -71,6 +71,7 @@ export const ErrorMessage = styled.div<Props>`
 
   div {
     padding: 0.75rem 0.5rem 0.5rem 1.8rem;
+    text-align: left;
   }
 
   span {

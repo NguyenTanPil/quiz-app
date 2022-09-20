@@ -43,4 +43,8 @@ export const QUIZ_APP_CONSTANTS = {
       return this.levels.find((level) => level.name === activeLevel)?.typeColor;
     },
   },
+  NAME_TITLE: {
+    initNameTitle: 'Mr.',
+    titles: ['Mr.', 'Ms.', 'Mrs.', 'Dr.'],
+  },
 };

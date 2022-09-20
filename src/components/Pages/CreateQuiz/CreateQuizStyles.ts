@@ -17,10 +17,15 @@ export const Content = styled.div`
 `;
 
 export const CreateQuizHeader = styled.div`
-  background-color: #fbfbfd;
+  background-color: #f2f2f2;
   border-radius: 0.8rem;
   display: flex;
-  padding: 4rem 3.2rem;
+
+  ${breakpoints({
+    cssProp: 'padding',
+    cssPropUnits: '',
+    values: [{ [devices.default]: '2rem 1.2rem' }, { [devices.smallDevices]: '4rem 3.2rem' }],
+  })};
 
   ${breakpoints({
     cssProp: 'flex-direction',
@@ -69,11 +74,16 @@ export const CreateNewQuiz = styled.div`
 `;
 
 export const TotalQuiz = styled.div`
-  background-color: #fbfbfd;
+  background-color: #f2f2f2;
   border-radius: 0.8rem;
   display: flex;
   margin-top: 4rem;
-  padding: 2.4rem 3.2rem;
+
+  ${breakpoints({
+    cssProp: 'padding',
+    cssPropUnits: '',
+    values: [{ [devices.default]: '2rem 1.2rem' }, { [devices.smallDevices]: '4rem 3.2rem' }],
+  })};
 
   h3 {
     display: flex;
@@ -100,13 +110,17 @@ export const QuizList = styled.ul`
 `;
 
 export const QuizItem = styled.li`
-  background-color: #fbfbfd;
+  background-color: #f2f2f2;
   border-radius: 0.8rem;
   display: flex;
   flex-direction: column;
   margin-top: 2rem;
-  padding-left: 3.2rem;
-  padding-right: 3.2rem;
+
+  ${breakpoints({
+    cssProp: ['padding-left', 'padding-right'],
+    cssPropUnits: 'rem',
+    values: [{ [devices.default]: 1.2 }, { [devices.smallDevices]: 3.2 }],
+  })};
 `;
 
 export const QuizItemHeader = styled.div`

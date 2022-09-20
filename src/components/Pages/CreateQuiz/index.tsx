@@ -157,6 +157,7 @@ const CreateQuiz = () => {
               <LabelGroup>Quiz Name</LabelGroup>
               <OriginInput
                 value={quizName}
+                name="quiz-name"
                 setValue={setQuizName}
                 errorMessage={quizName === '' && 'Quiz Name is not empty!'}
               />

@@ -5,7 +5,7 @@ import footerBg from '../../images/footerBg.png';
 import { breakpoints, devices } from '../../styles/breakpoints';
 
 export const Container = styled.footer`
-  background-color: #fbfbfd;
+  background-color: #f2f2f2;
   overflow-x: hidden;
   padding: 4rem 0 28rem;
   position: relative;

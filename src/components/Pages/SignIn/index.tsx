@@ -32,6 +32,7 @@ const SignIn = () => {
           submitButtonText="Sign In"
           bannerImg={signInImage}
           isVerticalReverse={true}
+          isSignIn={true}
           formId="signInForm"
           moreActionText="Create an account"
           moreActionLink="/sign-up"

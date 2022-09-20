@@ -105,7 +105,7 @@ export const ElementGroup = styled.div`
 
 export const QuizOptions = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   flex-wrap: wrap;
   justify-content: space-between;
 
@@ -123,4 +123,8 @@ export const QuizOptions = styled.div`
       values: [{ [devices.default]: '100%' }, { [devices.smallDevices]: 'calc(50% - 0.8rem)' }],
     })};
   }
+`;
+
+export const ProfileContent = styled(CreateQuizContent)`
+  max-width: 60rem;
 `;

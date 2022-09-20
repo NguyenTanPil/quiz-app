@@ -6,7 +6,7 @@ type Props = {
 };
 
 export const Content = styled.div<Props>`
-  background-color: #fbfbfd;
+  background-color: #f2f2f2;
   border-radius: 0.8rem;
   display: flex;
   flex-direction: ${(props) => (props.isReverse ? 'row-reverse' : 'row')};
