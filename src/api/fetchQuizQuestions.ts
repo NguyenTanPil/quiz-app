@@ -19,3 +19,18 @@ export const fetchQuizQuestions = async (amount: number, difficulty: Difficulty)
     };
   });
 };
+
+export const fakeFetchQuizList = (quizList: any[]) => {
+  return quizList.map((quiz: any) => {
+    const { id, question, correctAnswer, inCorrectAnswers } = quiz;
+    return {
+      id: id,
+      question,
+      correctAnswer,
+      inCorrectAnswers,
+      answerClicked: undefined,
+      isCorrect: undefined,
+      answers: shuffleArray([...inCorrectAnswers, correctAnswer]),
+    };
+  });
+};

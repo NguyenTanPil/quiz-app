@@ -78,7 +78,7 @@ ConfirmDialog.defaultProps = {
   cancelButtonContent: 'cancel',
   applyButtonContent: 'apply',
   cancelButtonTypeColor: 'errorColor',
-  applylButtonTypeColor: 'successColor',
+  applyButtonTypeColor: 'successColor',
 };
 
 export default ConfirmDialog;

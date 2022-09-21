@@ -4,14 +4,18 @@ import { NavLink } from 'react-router-dom';
 import { NoBorderButton, SignUpButton } from '../../common/Button';
 import { Wrapper } from '../../styles/Utils';
 import Sidebar from '../Sidebar';
-import { Container, Content, Logo, NavItem, NavList, ShowSidebarBox } from './HeaderStyles';
+import { Container, Content, HeaderAvatar, Logo, NavItem, NavList, ShowSidebarBox } from './HeaderStyles';
 
-const Header = () => {
+type Props = {
+  [key: string]: any;
+};
+
+const Header = ({ isLogin }: Props) => {
   const [isShowSidebar, setIsShowSidebar] = useState(false);
 
   return (
     <Container>
-      <Sidebar isShowSidebar={isShowSidebar} setIsShowSidebar={setIsShowSidebar} />
+      <Sidebar isLogin={isLogin} isShowSidebar={isShowSidebar} setIsShowSidebar={setIsShowSidebar} />
       <Wrapper>
         <Content>
           <Logo to="/">
@@ -40,8 +44,17 @@ const Header = () => {
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink to="/sign-in">
-                  <SignUpButton>Sign In</SignUpButton>
+                <NavLink to={isLogin ? '/profile' : '/sign-in'}>
+                  {isLogin ? (
+                    <HeaderAvatar>
+                      <img
+                        src="https://lh3.googleusercontent.com/a-/AFdZucrdbwb3FFVarH2n7n2AMaXpHYdR2oExsH9wf-R6=s96-c?w=200&h=200"
+                        alt=""
+                      />
+                    </HeaderAvatar>
+                  ) : (
+                    <SignUpButton>Sign In</SignUpButton>
+                  )}
                 </NavLink>
               </NavItem>
             </NavList>

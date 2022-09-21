@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AiOutlineClockCircle } from 'react-icons/ai';
 import { BiCategory, BiEditAlt } from 'react-icons/bi';
 import { MdOutlineMenuOpen } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 import { SignUpButton } from '../../../common/Button';
 import ProfileDialog from '../../../common/Dialog/ProfileDialog';
 import ToolTip from '../../../common/ToolTip';
@@ -29,15 +30,25 @@ import {
   UserProfile,
 } from './ProfileStyles';
 
-const Profile = () => {
+type Props = {
+  [key: string]: any;
+};
+
+const Profile = ({ isLogin, user, setUser }: Props) => {
   const [isShowEditDialog, setIsShowEditDialog] = useState(false);
-  const [nameTitle, setNameTitle] = useState(QUIZ_APP_CONSTANTS.NAME_TITLE.initNameTitle);
-  const [userName, setUserName] = useState('Pil Nguyen');
+  const { name: userName, email, nameTitle } = user;
+
+  const navigate = useNavigate();
 
   const handleEditProfile = (values: any) => {
-    setNameTitle(values.nameTitle);
-    setUserName(values.name);
+    setUser({ ...user, ...values });
   };
+
+  useEffect(() => {
+    if (!isLogin) {
+      navigate('/sign-in');
+    }
+  }, []);
 
   return (
     <Container>
@@ -67,7 +78,7 @@ const Profile = () => {
                 <UserName>
                   {nameTitle} {userName}
                 </UserName>
-                <UserEmail>tanpil@gmail.com</UserEmail>
+                <UserEmail>{email}</UserEmail>
               </UserDetail>
             </UserProfile>
             <Actions>

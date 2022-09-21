@@ -18,7 +18,7 @@ export const Content = styled.div<Props>`
   })};
 `;
 
-export const FormContainer = styled.div`
+export const FormContainer = styled.div<Props>`
   box-sizing: border-box;
 
   ${breakpoints({
@@ -27,22 +27,49 @@ export const FormContainer = styled.div`
     values: [{ [devices.default]: 2 }, { [devices.smallDevices]: 4 }],
   })};
 
-  ${breakpoints({
-    cssProp: 'padding-right',
-    cssPropUnits: 'rem',
-    values: [
-      { [devices.default]: 2 },
-      { [devices.smallDevices]: 4 },
-      { [devices.mediumDevices]: 0 },
-      { [devices.largeDevices]: 4 },
-    ],
-  })};
+  ${(props) =>
+    props.isReverse &&
+    breakpoints({
+      cssProp: 'margin-left',
+      cssPropUnits: 'rem',
+      values: [{ [devices.default]: 0 }, { [devices.mediumDevices]: 2.4 }, { [devices.largeDevices]: 0 }],
+    })};
 
-  ${breakpoints({
-    cssProp: 'width',
-    cssPropUnits: '%',
-    values: [{ [devices.default]: 100 }, { [devices.mediumDevices]: 40 }, { [devices.largeDevices]: 50 }],
-  })};
+  ${(props) =>
+    props.isReverse
+      ? breakpoints({
+          cssProp: 'padding-left',
+          cssPropUnits: 'rem',
+          values: [
+            { [devices.default]: 2 },
+            { [devices.smallDevices]: 4 },
+            { [devices.mediumDevices]: 0 },
+            { [devices.largeDevices]: 4 },
+          ],
+        })
+      : breakpoints({
+          cssProp: 'padding-right',
+          cssPropUnits: 'rem',
+          values: [
+            { [devices.default]: 2 },
+            { [devices.smallDevices]: 4 },
+            { [devices.mediumDevices]: 0 },
+            { [devices.largeDevices]: 4 },
+          ],
+        })};
+
+  ${(props) =>
+    props.isReverse
+      ? breakpoints({
+          cssProp: 'width',
+          cssPropUnits: '%',
+          values: [{ [devices.default]: 100 }, { [devices.mediumDevices]: 60 }, { [devices.largeDevices]: 50 }],
+        })
+      : breakpoints({
+          cssProp: 'width',
+          cssPropUnits: '%',
+          values: [{ [devices.default]: 100 }, { [devices.mediumDevices]: 40 }, { [devices.largeDevices]: 50 }],
+        })};
 
   form > div {
     margin-bottom: 2.4rem;
@@ -78,17 +105,31 @@ export const AuthenFormBanner = styled.div<Props>`
     values: [{ [devices.default]: 'none' }, { [devices.mediumDevices]: 'flex' }],
   })};
 
-  ${breakpoints({
-    cssProp: 'padding-left',
-    cssPropUnits: 'rem',
-    values: [{ [devices.default]: 0 }, { [devices.largeDevices]: 4 }],
-  })};
+  ${(props) =>
+    props.isReverse
+      ? breakpoints({
+          cssProp: 'padding-right',
+          cssPropUnits: 'rem',
+          values: [{ [devices.default]: 0 }, { [devices.largeDevices]: 4 }],
+        })
+      : breakpoints({
+          cssProp: 'padding-left',
+          cssPropUnits: 'rem',
+          values: [{ [devices.default]: 0 }, { [devices.largeDevices]: 4 }],
+        })};
 
-  ${breakpoints({
-    cssProp: 'width',
-    cssPropUnits: '%',
-    values: [{ [devices.default]: 60 }, { [devices.largeDevices]: 50 }],
-  })};
+  ${(props) =>
+    props.isReverse
+      ? breakpoints({
+          cssProp: 'width',
+          cssPropUnits: '%',
+          values: [{ [devices.default]: 40 }, { [devices.largeDevices]: 50 }],
+        })
+      : breakpoints({
+          cssProp: 'width',
+          cssPropUnits: '%',
+          values: [{ [devices.default]: 60 }, { [devices.largeDevices]: 50 }],
+        })};
 
   img {
     width: 100%;

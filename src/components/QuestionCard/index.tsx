@@ -21,7 +21,7 @@ type Props = {
   score: number;
   questionDetails: QuestionState;
   isCompleted: boolean;
-  checkAnswer: (e: React.MouseEvent<HTMLButtonElement>, id: string) => void;
+  checkAnswer: (answerId: string, questionId: string) => void;
   nextQuestion: () => void;
   setIsShowDialog: (value: boolean) => void;
 };
@@ -55,16 +55,16 @@ const QuestionCard = ({
         <h3>{question}</h3>
       </QuestionContent>
       <AnswerList>
-        {answers.map((answer) => (
-          <AnswerItem key={answer}>
+        {answers.map((answer: any) => (
+          <AnswerItem key={answer.id}>
             <AnswerButton
               disabled={isCompleted || isCorrect !== undefined}
-              value={answer}
-              isCorrect={correctAnswer === answer && answerClicked !== undefined}
-              userClicked={answerClicked === answer}
-              onClick={(e) => checkAnswer(e, id)}
+              value={answer.content}
+              isCorrect={correctAnswer.content === answer.content && answerClicked !== undefined}
+              userClicked={answerClicked === answer.id}
+              onClick={() => checkAnswer(answer.id, id)}
             >
-              <span dangerouslySetInnerHTML={{ __html: answer }}></span>
+              <span dangerouslySetInnerHTML={{ __html: answer.content }}></span>
             </AnswerButton>
           </AnswerItem>
         ))}

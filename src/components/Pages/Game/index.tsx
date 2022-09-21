@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchQuizQuestions } from '../../../api/fetchQuizQuestions';
+import { fakeFetchQuizList, fetchQuizQuestions } from '../../../api/fetchQuizQuestions';
 import { ConfirmDialog } from '../../../common/Dialog';
 import gameBannerImg from '../../../images/gameBanner.jpg';
 import { Wrapper } from '../../../styles/Utils';
@@ -9,10 +9,13 @@ import Counter from '../../Counter';
 import QuestionCard from '../../QuestionCard';
 import { Container, Content, GameBanner } from './GameStyles';
 
-const TOTAL_QUESTIONS = 10;
-let TIME = 0.1 * 60;
+let TIME = 10 * 60;
 
-const Game = () => {
+type Props = {
+  [key: string]: any;
+};
+
+const Game = ({ quizList }: Props) => {
   const [loading, setLoading] = useState(true);
   const [isShowCloseDialog, setIsShowCloseDialog] = useState(false);
   const [isShowCompleteDialog, setIsShowCompleteDialog] = useState(false);
@@ -22,17 +25,16 @@ const Game = () => {
   const [number, setNumber] = useState(QUIZ_APP_CONSTANTS.GAME.initialNumberQuestion);
   const [score, setScore] = useState(QUIZ_APP_CONSTANTS.GAME.initialScore);
 
-  const checkAnswer = (e: React.MouseEvent<HTMLButtonElement>, id: string) => {
-    const answer = e.currentTarget.value;
-    const isCorrect = questions[number].correctAnswer === answer;
+  const checkAnswer = (answerId: string, questionId: string) => {
+    const isCorrect = questions[number].correctAnswer.id === answerId;
 
     if (isCorrect) {
       setScore((prev) => prev + 1);
     }
 
     const newQuestions = questions.map((question) => {
-      if (question.id === id) {
-        return { ...question, answerClicked: answer, isCorrect };
+      if (question.id === questionId) {
+        return { ...question, answerClicked: answerId, isCorrect };
       }
       return question;
     });
@@ -70,8 +72,9 @@ const Game = () => {
   };
 
   useEffect(() => {
-    const startTrivia = async () => {
-      const responseQuestions = await fetchQuizQuestions(TOTAL_QUESTIONS, Difficulty.EASY);
+    const getQuestions = async () => {
+      // const responseQuestions = await fetchQuizQuestions(TOTAL_QUESTIONS, Difficulty.EASY);
+      const responseQuestions = fakeFetchQuizList(quizList);
 
       setQuestions(responseQuestions);
       setNumber(QUIZ_APP_CONSTANTS.GAME.initialNumberQuestion);
@@ -79,14 +82,16 @@ const Game = () => {
       setLoading(false);
     };
 
-    startTrivia();
+    getQuestions();
   }, []);
 
   useEffect(() => {
-    if (score === TOTAL_QUESTIONS) {
+    if (questions.length !== QUIZ_APP_CONSTANTS.GAME.initialScore && score === questions.length) {
       handleCompletedTest();
     }
   }, [score]);
+
+  console.log({ questions: questions });
 
   if (loading) {
     return <div></div>;
@@ -123,12 +128,16 @@ const Game = () => {
           <img src={gameBannerImg} alt="" />
         </GameBanner>
         <Content>
-          <Counter time={TIME} isPause={isShowCloseDialog} handleCompletedTest={handleCompletedTest} />
+          <Counter
+            time={TIME}
+            isPause={isShowCloseDialog || isShowCompleteDialog}
+            handleCompletedTest={handleCompletedTest}
+          />
           <QuestionCard
             questionDetails={questions[number]}
             questionNumber={number + 1}
             score={score}
-            totalQuestions={TOTAL_QUESTIONS}
+            totalQuestions={questions.length}
             isCompleted={isCompleted}
             nextQuestion={nextQuestion}
             checkAnswer={checkAnswer}

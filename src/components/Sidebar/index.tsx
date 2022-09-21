@@ -6,11 +6,12 @@ import { NavLink } from 'react-router-dom';
 import useOnClickOutside from '../../utils/useOnClickOutside';
 
 type SideBarProps = {
+  isLogin: boolean;
   isShowSidebar: boolean;
   setIsShowSidebar: any;
 };
 
-const Sidebar = ({ isShowSidebar, setIsShowSidebar }: SideBarProps) => {
+const Sidebar = ({ isLogin, isShowSidebar, setIsShowSidebar }: SideBarProps) => {
   const contentRef = useRef<HTMLDivElement>();
   useOnClickOutside(contentRef, () => setIsShowSidebar(false));
 
@@ -44,8 +45,8 @@ const Sidebar = ({ isShowSidebar, setIsShowSidebar }: SideBarProps) => {
             </NavLink>
           </li>
           <li onClick={() => setIsShowSidebar(false)}>
-            <NavLink to="/sign-in">
-              <span>Sign In</span>
+            <NavLink to={isLogin ? '/profile' : '/sign-in'}>
+              <span>{isLogin ? 'Profile' : 'Sign in'}</span>
             </NavLink>
           </li>
         </ListLink>

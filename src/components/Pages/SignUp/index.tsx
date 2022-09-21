@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import signUpImage from '../../../images/signUp.svg';
 import { Wrapper } from '../../../styles/Utils';
+import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
 import AuthenForm, { formValueProps } from '../../AuthenForm';
 import { Container } from './SignUpStyles';
 
@@ -31,10 +33,23 @@ const signUpFormValues: formValueProps[] = [
   },
 ];
 
-const SignUp = () => {
-  const handleSubmit = () => {
-    console.log('submit');
+type Props = {
+  [key: string]: any;
+};
+
+const SignUp = ({ isLogin, setUser }: Props) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = (values: any) => {
+    setUser({ ...values, nameTitle: QUIZ_APP_CONSTANTS.NAME_TITLE.initNameTitle });
+    navigate('/sign-in');
   };
+
+  useEffect(() => {
+    if (isLogin) {
+      navigate('/');
+    }
+  }, []);
 
   return (
     <Container>

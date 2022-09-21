@@ -65,3 +65,15 @@ export const ShowSidebarBox = styled.div`
     values: [{ [devices.default]: 'block' }, { [devices.mediumDevices]: 'none' }],
   })}
 `;
+
+export const HeaderAvatar = styled.div`
+  height: 4.8rem;
+  width: 4.8rem;
+
+  img {
+    border-radius: 50%;
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+`;

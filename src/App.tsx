@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 // styles
 import { ThemeProvider } from 'styled-components';
 import GlobalStyles from './styles/GlobalStyles';
@@ -17,18 +17,25 @@ import SignUp from './components/Pages/SignUp';
 import { getTheme } from './styles/theme';
 
 const App: React.FC = () => {
+  const [user, setUser] = useState({ name: 'tanpil', email: 'tanpil@gmail.com' });
+  const [isLogin, setIsLogin] = useState(true);
+  const [globalQuiz, setGlobalQuiz] = useState<any[]>([]);
+
   return (
     <ThemeProvider theme={getTheme('light')}>
       <GlobalStyles />
       <Router>
-        <Header />
+        <Header isLogin={isLogin} />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/game" element={<Game />} />
-          <Route path="/sign-up" element={<SignUp />} />
-          <Route path="/sign-in" element={<SignIn />} />
-          <Route path="/create-quiz" element={<CreateQuiz />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/game" element={<Game quizList={globalQuiz[0]?.quizList} />} />
+          <Route path="/sign-up" element={<SignUp isLogin={isLogin} setUser={setUser} />} />
+          <Route path="/sign-in" element={<SignIn isLogin={isLogin} user={user} setIsLogin={setIsLogin} />} />
+          <Route
+            path="/create-quiz"
+            element={<CreateQuiz isLogin={isLogin} user={user} setGlobalQuiz={setGlobalQuiz} />}
+          />
+          <Route path="/profile" element={<Profile isLogin={isLogin} user={user} setUser={setUser} />} />
         </Routes>
         <Footer />
       </Router>

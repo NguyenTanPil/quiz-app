@@ -25,7 +25,7 @@ type AuthenFormProps = {
   moreActionText: string;
   moreActionLink: string;
   formValues: formValueProps[];
-  onSubmit: () => void;
+  onSubmit: (values: any) => void;
 };
 
 type FormValues = {
@@ -50,18 +50,17 @@ const AuthenForm = ({
 }: AuthenFormProps) => {
   return (
     <Content isReverse={isVerticalReverse}>
-      <FormContainer>
+      <FormContainer isReverse={isVerticalReverse}>
         <FormTitle>
           <h3>{title}</h3>
         </FormTitle>
         <Formik
           initialValues={createInitValuesFromFormValues(formValues)}
-          onSubmit={(values, actions) => {
-            console.log({ values, actions });
-            onSubmit();
+          onSubmit={(values) => {
+            onSubmit(values);
           }}
         >
-          {({ errors, touched, dirty, values, validateForm, handleSubmit }) => (
+          {({ errors, touched, dirty, values, handleSubmit }) => (
             <Form id={formId} onSubmit={handleSubmit} noValidate>
               {formValues.map((value: formValueProps) => {
                 const errorProp = value.name as keyof FormikErrors<FormValues>;

@@ -40,7 +40,6 @@ const CreateQuizDialog = ({
   handleCloseDialog,
 }: CreateQuizDialogProps) => {
   const contentRef = useRef<HTMLDivElement>();
-  console.log(initialQuiz);
 
   const handleClose = () => {
     handleCloseDialog();
@@ -78,7 +77,7 @@ const CreateQuizDialog = ({
         <DialogBody>
           <Formik
             initialValues={initialQuiz}
-            onSubmit={(values, actions) => {
+            onSubmit={(values) => {
               handleApply({ ...values, id: initialQuiz.id });
             }}
           >

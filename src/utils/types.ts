@@ -11,8 +11,8 @@ export type Question = {
 export type QuestionState = {
   id: string;
   question: string;
-  correctAnswer: string;
-  inCorrectAnswers: string[];
+  correctAnswer: { id: string; content: string };
+  inCorrectAnswers: { id: string; content: string }[];
   answerClicked: undefined | string;
   isCorrect: undefined | boolean;
   answers: string[];

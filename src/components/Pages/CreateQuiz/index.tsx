@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BiCopy, BiEditAlt } from 'react-icons/bi';
 import { CgTrash } from 'react-icons/cg';
 import { FiPlusSquare } from 'react-icons/fi';
@@ -40,6 +40,7 @@ import {
   TotalQuiz,
 } from './CreateQuizStyles';
 import ToolTip from '../../../common/ToolTip';
+import { useNavigate } from 'react-router-dom';
 
 const initialQuiz: QuizProps = {
   id: uuid(),
@@ -53,25 +54,19 @@ const initialQuiz: QuizProps = {
   ],
 };
 
-const CreateQuiz = () => {
-  const [quizName, setQuizName] = useState('Test');
+type Props = {
+  [key: string]: any;
+};
+
+const CreateQuiz = ({ isLogin, user, setGlobalQuiz }: Props) => {
+  const [quizName, setQuizName] = useState('');
   const [quizCategory, setQuizCategory] = useState(QUIZ_APP_CONSTANTS.QUIZ_QUESTION.categories[0]);
   const [isShowCreateDialog, setIsShowCreateDialog] = useState(false);
   const [editId, setEditId] = useState<string | undefined>(undefined);
   const [deleteId, setDeleteId] = useState<string | undefined>(undefined);
-  const [quizList, setQuizList] = useState<QuizProps[]>([
-    {
-      id: '1',
-      question: 'This is question 1',
-      level: 'Easy',
-      answers: [
-        { id: '1', content: 'this is answer 1', isCorrect: true },
-        { id: '2', content: 'this is answer 2', isCorrect: false },
-        { id: '3', content: 'this is answer 3', isCorrect: false },
-        { id: '4', content: 'this is answer 4', isCorrect: false },
-      ],
-    },
-  ]);
+  const [quizList, setQuizList] = useState<QuizProps[]>([]);
+
+  const navigate = useNavigate();
 
   const handleCreateNewQuiz = (values: QuizProps) => {
     const { id, question, level, answers } = values;
@@ -105,14 +100,27 @@ const CreateQuiz = () => {
     const newQuizList = quizList.map((quiz) => {
       const { id, question, level, answers } = quiz;
 
-      const correctAnswer = answers.find((answer) => answer.isCorrect)?.content;
-      const inCorrectAnswers = answers.filter((answer) => !answer.isCorrect).map((answer) => answer.content);
+      const correctAnswer = answers
+        .filter((answer) => answer.isCorrect)
+        .map((answer) => ({ id: answer.id, content: answer.content }))[0];
+      const inCorrectAnswers = answers
+        .filter((answer) => !answer.isCorrect)
+        .map((answer) => ({ id: answer.id, content: answer.content }));
 
       return { id, question, level, correctAnswer, inCorrectAnswers };
     });
 
-    console.log({ name: quizName, category: quizCategory, newQuizList });
+    setGlobalQuiz((prev: any[]) => [
+      ...prev,
+      { userId: user.name, name: quizName, category: quizCategory, quizList: newQuizList },
+    ]);
   };
+
+  useEffect(() => {
+    if (!isLogin) {
+      navigate('/sign-in');
+    }
+  });
 
   return (
     <Container>

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import signInImage from '../../../images/signIn.svg';
 import { Wrapper } from '../../../styles/Utils';
 import AuthenForm, { formValueProps } from '../../AuthenForm';
@@ -6,9 +7,9 @@ import { Container } from '../SignUp/SignUpStyles';
 
 const signInFormValues: formValueProps[] = [
   {
-    type: 'text',
-    placeholder: 'Your Name',
-    name: 'name',
+    type: 'email',
+    placeholder: 'Your Email',
+    name: 'email',
     initValue: '',
   },
   {
@@ -19,10 +20,25 @@ const signInFormValues: formValueProps[] = [
   },
 ];
 
-const SignIn = () => {
-  const handleSubmit = () => {
-    console.log('submit');
+type Props = {
+  [key: string]: any;
+};
+
+const SignIn = ({ isLogin, user, setIsLogin }: Props) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = (values: any) => {
+    if (values.email === user.email && values.password === user.password) {
+      setIsLogin(true);
+      navigate('/');
+    }
   };
+
+  useEffect(() => {
+    if (isLogin) {
+      navigate('/');
+    }
+  }, []);
 
   return (
     <Container>
