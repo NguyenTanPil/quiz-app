@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BiCopy, BiEditAlt } from 'react-icons/bi';
 import { CgTrash } from 'react-icons/cg';
 import { FiPlusSquare } from 'react-icons/fi';
-import { SiOpslevel } from 'react-icons/si';
 import { MdOutlineMenuOpen } from 'react-icons/md';
+import { SiOpslevel } from 'react-icons/si';
+import { useNavigate } from 'react-router-dom';
 import uuid from 'react-uuid';
 import { ActionButton, SignUpButton } from '../../../common/Button';
 import { ConfirmDialog, CreateQuizDialog } from '../../../common/Dialog';
 import Dropdown from '../../../common/Dropdown';
-import { OriginInput } from '../../../common/Input';
+import { DateTimePickerInput, OriginInput } from '../../../common/Input';
+import ToolTip from '../../../common/ToolTip';
 import { WrapperSection } from '../../../styles/Utils';
-import { convertNumberFormat, deepCloneObject } from '../../../utils';
+import { convertNumberFormat, convertTimeDurationToMinutes, deepCloneObject } from '../../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
 import { AnswerProps, QuizProps } from '../../../utils/types';
 import {
@@ -37,10 +39,12 @@ import {
   QuizList,
   QuizName,
   QuizOptions,
+  TimeDuration,
+  TimeDurationGroup,
+  TimeDurationItem,
+  TimeStart,
   TotalQuiz,
 } from './CreateQuizStyles';
-import ToolTip from '../../../common/ToolTip';
-import { useNavigate } from 'react-router-dom';
 
 const initialQuiz: QuizProps = {
   id: uuid(),
@@ -59,14 +63,20 @@ type Props = {
 };
 
 const CreateQuiz = ({ isLogin, user, setGlobalQuiz }: Props) => {
-  const [quizName, setQuizName] = useState('');
-  const [quizCategory, setQuizCategory] = useState(QUIZ_APP_CONSTANTS.QUIZ_QUESTION.categories[0]);
+  const navigate = useNavigate();
+
+  const [quizName, setQuizName] = useState(QUIZ_APP_CONSTANTS.CREATE_QUIZ.initialQuizName);
+  const [timeStart, setTimeStart] = useState<number>(QUIZ_APP_CONSTANTS.CREATE_QUIZ.initialTimeStart);
+  const [quizList, setQuizList] = useState<QuizProps[]>(QUIZ_APP_CONSTANTS.CREATE_QUIZ.initialQuizList);
   const [isShowCreateDialog, setIsShowCreateDialog] = useState(false);
+
   const [editId, setEditId] = useState<string | undefined>(undefined);
   const [deleteId, setDeleteId] = useState<string | undefined>(undefined);
-  const [quizList, setQuizList] = useState<QuizProps[]>([]);
-
-  const navigate = useNavigate();
+  const [quizCategory, setQuizCategory] = useState(QUIZ_APP_CONSTANTS.CREATE_QUIZ.categories[0]);
+  const [timeDuration, setTimeDuration] = useState({
+    hours: QUIZ_APP_CONSTANTS.CREATE_QUIZ.initialHours,
+    minutes: QUIZ_APP_CONSTANTS.CREATE_QUIZ.initialMinutes,
+  });
 
   const handleCreateNewQuiz = (values: QuizProps) => {
     const { id, question, level, answers } = values;
@@ -100,19 +110,24 @@ const CreateQuiz = ({ isLogin, user, setGlobalQuiz }: Props) => {
     const newQuizList = quizList.map((quiz) => {
       const { id, question, level, answers } = quiz;
 
-      const correctAnswer = answers
-        .filter((answer) => answer.isCorrect)
-        .map((answer) => ({ id: answer.id, content: answer.content }))[0];
-      const inCorrectAnswers = answers
-        .filter((answer) => !answer.isCorrect)
-        .map((answer) => ({ id: answer.id, content: answer.content }));
+      const correctAnswer = answers.find((answer) => answer.isCorrect)?.content;
+      const inCorrectAnswers = answers.filter((answer) => !answer.isCorrect).map((answer) => answer.content);
 
       return { id, question, level, correctAnswer, inCorrectAnswers };
     });
 
+    const timeDurationFormat = convertTimeDurationToMinutes(timeDuration);
+
     setGlobalQuiz((prev: any[]) => [
       ...prev,
-      { userId: user.name, name: quizName, category: quizCategory, quizList: newQuizList },
+      {
+        userId: user.name,
+        name: quizName,
+        category: quizCategory,
+        timeDuration: timeDurationFormat,
+        timeStart: timeStart,
+        quizList: newQuizList,
+      },
     ]);
   };
 
@@ -120,7 +135,7 @@ const CreateQuiz = ({ isLogin, user, setGlobalQuiz }: Props) => {
     if (!isLogin) {
       navigate('/sign-in');
     }
-  });
+  }, []);
 
   return (
     <Container>
@@ -184,20 +199,49 @@ const CreateQuiz = ({ isLogin, user, setGlobalQuiz }: Props) => {
               <Dropdown
                 id="category"
                 activeValue={quizCategory}
-                values={QUIZ_APP_CONSTANTS.QUIZ_QUESTION.categories}
+                values={QUIZ_APP_CONSTANTS.CREATE_QUIZ.categories}
                 handleSelected={(value) => setQuizCategory(value)}
               />
             </CategoryQuiz>
             <LevelQuiz>
               <LabelGroup>Quiz Level</LabelGroup>
               <LevelList>
-                {QUIZ_APP_CONSTANTS.QUIZ_QUESTION.levels.map((level) => (
+                {QUIZ_APP_CONSTANTS.CREATE_QUIZ.levels.map((level) => (
                   <LevelItem key={level.name} typeColor={level.typeColor}>
                     {level.name}
                   </LevelItem>
                 ))}
               </LevelList>
             </LevelQuiz>
+          </QuizOptions>
+          <QuizOptions>
+            <TimeDuration>
+              <LabelGroup>Time Duration</LabelGroup>
+              <TimeDurationGroup>
+                <TimeDurationItem>
+                  <Dropdown
+                    id="hours"
+                    activeValue={timeDuration.hours}
+                    values={QUIZ_APP_CONSTANTS.CREATE_QUIZ.getHourList()}
+                    handleSelected={(value) => setTimeDuration((prev) => ({ ...prev, hours: value }))}
+                  />
+                  <span>h</span>
+                </TimeDurationItem>
+                <TimeDurationItem>
+                  <Dropdown
+                    id="minutes"
+                    activeValue={timeDuration.minutes}
+                    values={QUIZ_APP_CONSTANTS.CREATE_QUIZ.getMinuteList()}
+                    handleSelected={(value) => setTimeDuration((prev) => ({ ...prev, minutes: value }))}
+                  />
+                  <span>m</span>
+                </TimeDurationItem>
+              </TimeDurationGroup>
+            </TimeDuration>
+            <TimeStart>
+              <LabelGroup>Time Start</LabelGroup>
+              <DateTimePickerInput id="start-time" setDateTime={setTimeStart} />
+            </TimeStart>
           </QuizOptions>
 
           {quizList.length > 0 ? (
@@ -222,7 +266,7 @@ const CreateQuiz = ({ isLogin, user, setGlobalQuiz }: Props) => {
                     <ToolTip content={`${quiz.level} Level`}>
                       <LevelButton
                         disable={true}
-                        typeColor={QUIZ_APP_CONSTANTS.QUIZ_QUESTION.getActiveLevelTypeColor(quiz.level)}
+                        typeColor={QUIZ_APP_CONSTANTS.CREATE_QUIZ.getActiveLevelTypeColor(quiz.level)}
                       >
                         <SiOpslevel />
                       </LevelButton>
@@ -257,7 +301,15 @@ const CreateQuiz = ({ isLogin, user, setGlobalQuiz }: Props) => {
             ))}
           </QuizList>
           <CreateQuizFooter>
-            <SignUpButton disabled={quizName === ''} onClick={handleSaveQuiz}>
+            <SignUpButton
+              disabled={
+                quizName === QUIZ_APP_CONSTANTS.CREATE_QUIZ.initialQuizName ||
+                convertTimeDurationToMinutes(timeDuration) === QUIZ_APP_CONSTANTS.CREATE_QUIZ.initialTimeDuration ||
+                timeStart === QUIZ_APP_CONSTANTS.CREATE_QUIZ.initialTimeStart ||
+                quizList.length === QUIZ_APP_CONSTANTS.CREATE_QUIZ.initialQuizList.length
+              }
+              onClick={handleSaveQuiz}
+            >
               Save
             </SignUpButton>
           </CreateQuizFooter>

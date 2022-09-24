@@ -4,11 +4,12 @@ import { Container, ErrorMessage, InputField, WrapMessage } from './InputStyles'
 type OriginInputProps = {
   value: string;
   name: string;
-  errorMessage: string | undefined | boolean;
+  errorMessage?: string | undefined | boolean;
+  readOnly?: boolean;
   setValue: (quizName: string) => void;
 };
 
-const OriginInput = ({ value, name, errorMessage, setValue }: OriginInputProps) => {
+const OriginInput = ({ value, name, errorMessage, readOnly, setValue }: OriginInputProps) => {
   const messageRef = useRef<HTMLDivElement>();
   const wrapMessageRef = useRef<HTMLDivElement>();
   const [isShowErrorMessage, setIsShowErrorMessage] = useState(false);
@@ -34,7 +35,8 @@ const OriginInput = ({ value, name, errorMessage, setValue }: OriginInputProps) 
         type="text"
         name={name}
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        readOnly={readOnly}
+        onChange={(e: any) => readOnly === false && setValue(e.target.value)}
         onBlur={handleInputBlur}
       />
       {isShowErrorMessage && (
@@ -46,6 +48,10 @@ const OriginInput = ({ value, name, errorMessage, setValue }: OriginInputProps) 
       )}
     </Container>
   );
+};
+
+OriginInput.defaultProps = {
+  readOnly: false,
 };
 
 export default OriginInput;

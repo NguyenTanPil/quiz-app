@@ -91,8 +91,6 @@ const Game = ({ quizList }: Props) => {
     }
   }, [score]);
 
-  console.log({ questions: questions });
-
   if (loading) {
     return <div></div>;
   }

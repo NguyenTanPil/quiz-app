@@ -91,7 +91,7 @@ const ProfileDialog = ({
                     <Dropdown
                       id="nameTitle"
                       activeValue={values.nameTitle}
-                      values={QUIZ_APP_CONSTANTS.NAME_TITLE.titles}
+                      values={QUIZ_APP_CONSTANTS.CREATE_QUIZ.titles}
                       handleSelected={(value) => setFieldValue('nameTitle', value)}
                     />
                   </ElementGroup>

@@ -41,7 +41,7 @@ const SignUp = ({ isLogin, setUser }: Props) => {
   const navigate = useNavigate();
 
   const handleSubmit = (values: any) => {
-    setUser({ ...values, nameTitle: QUIZ_APP_CONSTANTS.NAME_TITLE.initNameTitle });
+    setUser({ ...values, nameTitle: QUIZ_APP_CONSTANTS.CREATE_QUIZ.initNameTitle });
     navigate('/sign-in');
   };
 

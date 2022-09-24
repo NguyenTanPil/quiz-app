@@ -127,5 +127,12 @@ export const deepCloneObject = (object: any) => {
 };
 
 export const convertNumberFormat = (num: number) => {
-  return num < 10 ? '0' + num : num;
+  return num < 10 ? `0${num}` : `${num}`;
+};
+
+export const convertTimeDurationToMinutes = (timeDuration: { hours: string; minutes: string }): number => {
+  const hours = parseInt(timeDuration.hours, 10);
+  const minutes = parseInt(timeDuration.minutes, 10);
+
+  return hours * 60 + minutes;
 };

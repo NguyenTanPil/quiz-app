@@ -21,6 +21,8 @@ const App: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [globalQuiz, setGlobalQuiz] = useState<any[]>([]);
 
+  console.log(globalQuiz);
+
   return (
     <ThemeProvider theme={getTheme('light')}>
       <GlobalStyles />

@@ -58,7 +58,7 @@ export const SignUpButton = styled(ButtonPattern)<Props>`
   }
 `;
 
-export const NoBorderButton = styled(ButtonPattern)`
+export const NoBorderButton = styled(ButtonPattern)<Props>`
   &:hover {
     color: ${(props) => props.theme.mainColor};
   }

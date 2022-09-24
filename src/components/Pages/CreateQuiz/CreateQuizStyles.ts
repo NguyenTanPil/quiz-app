@@ -299,3 +299,53 @@ export const LevelButton = styled(ActionButton)<Props>`
     color: ${(props) => props.theme.backgroundColor};
   }
 `;
+
+export const TimeDuration = styled.div`
+  ${breakpoints({
+    cssProp: 'width',
+    cssPropUnits: '',
+    values: [{ [devices.default]: '100%' }, { [devices.smallDevices]: 'calc(50% - 0.8rem)' }],
+  })};
+
+  h3 {
+    margin-bottom: 1.6rem;
+  }
+`;
+
+export const TimeDurationGroup = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+export const TimeDurationItem = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: 2rem;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  & > span {
+    color: ${(props) => props.theme.fontColor};
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-left: 0.8rem;
+  }
+
+  button {
+    min-width: 8rem;
+  }
+`;
+
+export const TimeStart = styled.div`
+  ${breakpoints({
+    cssProp: 'width',
+    cssPropUnits: '',
+    values: [{ [devices.default]: '100%' }, { [devices.smallDevices]: 'calc(50% - 0.8rem)' }],
+  })};
+
+  h3 {
+    margin-bottom: 1.6rem;
+  }
+`;

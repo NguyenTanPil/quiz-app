@@ -39,7 +39,9 @@ export const DropdownList = styled.ul`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  max-height: calc(4.4rem * 5);
   min-width: 100%;
+  overflow-y: auto;
   position: absolute;
   top: calc(100% + 0.4rem);
   z-index: 200;

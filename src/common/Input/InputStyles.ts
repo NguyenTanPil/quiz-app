@@ -94,7 +94,7 @@ export const IconStatus = styled.div<Props>`
   }
 `;
 
-export const InputField = styled.input`
+export const InputField = styled.input<Props>`
   ${InputPattern};
   border: 0.1rem solid ${(props) => props.theme.borderColor};
 
@@ -200,4 +200,46 @@ export const QuizAnswerInputHeader = styled.div`
   top: 1.2rem;
   left: 1.2rem;
   z-index: 10;
+`;
+
+export const DateTimePickerContainer = styled.div`
+  position: relative;
+`;
+
+export const DisplayNoneDateTimePicker = styled.div<Props>`
+  position: absolute;
+  bottom: 0;
+  right: 5.5rem;
+  visibility: hidden;
+  z-index: 10;
+`;
+
+export const OverrideDateTimePicker = styled.div`
+  position: relative;
+  z-index: 20;
+
+  input {
+    cursor: default;
+    font-size: 1.6rem;
+    padding-right: 5.2rem;
+    position: relative;
+    z-index: 100;
+  }
+
+  button {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    z-index: 200;
+
+    &:hover {
+      color: ${(props) => props.theme.mainColor};
+    }
+
+    svg {
+      font-size: 2rem;
+      font-weight: 600;
+    }
+  }
 `;

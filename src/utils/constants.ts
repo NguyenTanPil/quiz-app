@@ -1,3 +1,5 @@
+import { convertNumberFormat } from '../utils';
+
 export const QUIZ_APP_CONSTANTS = {
   COMMON: {
     oneSecond: 1000,
@@ -20,7 +22,7 @@ export const QUIZ_APP_CONSTANTS = {
     endTime: 0,
     firstNumberQuestion: 1,
   },
-  QUIZ_QUESTION: {
+  CREATE_QUIZ: {
     levels: [
       {
         name: 'Easy',
@@ -36,15 +38,27 @@ export const QUIZ_APP_CONSTANTS = {
       },
     ],
     categories: ['Category 1', 'Category 2', 'Category 3'],
+    initNameTitle: 'Mr.',
+    titles: ['Mr.', 'Ms.', 'Mrs.', 'Dr.'],
+    initialTimeStart: 0,
+    initialTimeDuration: 0,
+    initialQuizName: '',
+    initialQuizList: [],
+    initialHours: '00',
+    initialMinutes: '00',
+    hoursPerDay: 24,
+    minutesPerHour: 60,
     getAllLevels() {
       return this.levels.map((level) => level.name);
     },
     getActiveLevelTypeColor(activeLevel: string) {
       return this.levels.find((level) => level.name === activeLevel)?.typeColor;
     },
-  },
-  NAME_TITLE: {
-    initNameTitle: 'Mr.',
-    titles: ['Mr.', 'Ms.', 'Mrs.', 'Dr.'],
+    getHourList() {
+      return Array.from(Array(this.hoursPerDay).keys()).map((hourNumber) => convertNumberFormat(hourNumber));
+    },
+    getMinuteList() {
+      return Array.from(Array(this.minutesPerHour).keys()).map((minuteNumber) => convertNumberFormat(minuteNumber));
+    },
   },
 };
