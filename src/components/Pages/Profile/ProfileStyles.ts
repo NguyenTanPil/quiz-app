@@ -245,3 +245,7 @@ export const ProfileQuizTime = styled.div`
     font-weight: 400;
   }
 `;
+
+export const NoExam = styled.div`
+  margin-top: 4rem;
+`;

@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { breakpointsProps } from '../common/Slider';
 import { QUIZ_APP_CONSTANTS } from './constants';
 
@@ -135,4 +136,68 @@ export const convertTimeDurationToMinutes = (timeDuration: { hours: string; minu
   const minutes = parseInt(timeDuration.minutes, 10);
 
   return hours * 60 + minutes;
+};
+
+export const convertMinutesToDuration = (time: number) => {
+  const oneMinute = QUIZ_APP_CONSTANTS.COMMON.oneSecond * QUIZ_APP_CONSTANTS.COMMON.secondsPerMinute;
+  const oneHour = oneMinute * QUIZ_APP_CONSTANTS.COMMON.minutesPerHour;
+
+  const minutes = Math.ceil(time / oneMinute);
+
+  if (minutes < QUIZ_APP_CONSTANTS.COMMON.minutesPerHour) {
+    return { hours: '00', minutes: convertNumberFormat(minutes) };
+  }
+
+  const hours = Math.ceil(time / oneHour);
+  return { hours: convertNumberFormat(hours), minutes: convertNumberFormat(minutes) };
+};
+
+export const getObjectKeysChanged = (currentObj: any, changedObj: any) => {
+  const targetObj: { [key: string]: any } = {};
+
+  for (const key in currentObj) {
+    if (currentObj[key] !== changedObj[key]) {
+      targetObj[key] = changedObj[key];
+    }
+  }
+
+  if (Object.keys(targetObj).length > 0) {
+    return { isUpdated: true, data: targetObj };
+  }
+
+  return { isUpdated: false };
+};
+
+export const compareTwoObjects = (currentObj: any, changedObj: any) => {
+  return JSON.stringify(currentObj) === JSON.stringify(changedObj);
+};
+
+export const formatCreatedAt = (time: number) => {
+  const distance = moment().valueOf() - time;
+  const oneMinute = QUIZ_APP_CONSTANTS.COMMON.oneSecond * QUIZ_APP_CONSTANTS.COMMON.secondsPerMinute;
+  const oneHour = oneMinute * QUIZ_APP_CONSTANTS.COMMON.minutesPerHour;
+  const oneDay = oneHour * QUIZ_APP_CONSTANTS.COMMON.hoursPerDay;
+  const oneMonth = oneDay * QUIZ_APP_CONSTANTS.COMMON.daysPerMonth;
+
+  const minutes = Math.ceil(distance / oneMinute);
+
+  if (minutes < QUIZ_APP_CONSTANTS.COMMON.minutesPerHour) {
+    return `${convertNumberFormat(minutes)} minutes ago`;
+  }
+
+  const hours = Math.ceil(distance / oneHour);
+
+  if (hours < QUIZ_APP_CONSTANTS.COMMON.hoursPerDay) {
+    return `${convertNumberFormat(hours)} hours ago`;
+  }
+
+  const days = Math.ceil(distance / oneDay);
+
+  if (days < QUIZ_APP_CONSTANTS.COMMON.daysPerMonth) {
+    return `${convertNumberFormat(days)} days ago`;
+  }
+
+  const months = Math.ceil(distance / oneMonth);
+
+  return `${convertNumberFormat(months)} days ago`;
 };

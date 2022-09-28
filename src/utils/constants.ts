@@ -4,6 +4,9 @@ export const QUIZ_APP_CONSTANTS = {
   COMMON: {
     oneSecond: 1000,
     secondsPerMinute: 60,
+    minutesPerHour: 60,
+    hoursPerDay: 24,
+    daysPerMonth: 30,
     numberStandard: 10,
     oneHundredPercent: 100,
   },
@@ -22,7 +25,7 @@ export const QUIZ_APP_CONSTANTS = {
     endTime: 0,
     firstNumberQuestion: 1,
   },
-  CREATE_QUIZ: {
+  CREATE_EXAM: {
     levels: [
       {
         name: 'Easy',
@@ -42,10 +45,13 @@ export const QUIZ_APP_CONSTANTS = {
     titles: ['Mr.', 'Ms.', 'Mrs.', 'Dr.'],
     initialTimeStart: 0,
     initialTimeDuration: 0,
-    initialQuizName: '',
+    initialExamName: '',
     initialQuizList: [],
     initialHours: '00',
     initialMinutes: '00',
+    initialId: '',
+    initialTotalQuestions: 0,
+    initialCountLimit: 1,
     hoursPerDay: 24,
     minutesPerHour: 60,
     getAllLevels() {
@@ -60,5 +66,26 @@ export const QUIZ_APP_CONSTANTS = {
     getMinuteList() {
       return Array.from(Array(this.minutesPerHour).keys()).map((minuteNumber) => convertNumberFormat(minuteNumber));
     },
+    getLevelNumberByString(level: string) {
+      if (level === 'Easy') {
+        return 0;
+      } else if (level === 'Medium') {
+        return 1;
+      }
+      return 2;
+    },
+    getLevelStringByNumber(num: number) {
+      if (num === 0) {
+        return 'Easy';
+      } else if (num === 1) {
+        return 'Medium';
+      }
+      return 'Hard';
+    },
+  },
+  AUTHEN_FORM: {
+    roles: ['Teacher', 'Student'],
+    teacherRoleNumber: 1,
+    studentRoleNumber: 2,
   },
 };

@@ -40,3 +40,29 @@ export const SectionTitle = styled.h2`
     ],
   })};
 `;
+
+export const EmptyListAction = styled.div`
+  background-color: #f2f2f2;
+  border-radius: 0.8rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  ${breakpoints({
+    cssProp: 'padding',
+    cssPropUnits: '',
+    values: [{ [devices.default]: '2rem 1.2rem' }, { [devices.smallDevices]: '4rem 3.2rem' }],
+  })};
+
+  span {
+    color: ${(props) => props.theme.titleColor};
+    font-size: 2rem;
+    font-weight: 600;
+    margin-top: 1.2rem;
+  }
+
+  button {
+    padding-left: 3.2rem;
+    padding-right: 3.2rem;
+  }
+`;

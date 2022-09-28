@@ -25,8 +25,8 @@ const Sidebar = ({ isLogin, isShowSidebar, setIsShowSidebar }: SideBarProps) => 
         </Header>
         <ListLink>
           <li onClick={() => setIsShowSidebar(false)}>
-            <NavLink to="/create-quiz">
-              <span>Create Quiz</span>
+            <NavLink to="/exams/create-exam">
+              <span>Create Exam</span>
             </NavLink>
           </li>
           <li onClick={() => setIsShowSidebar(false)}>

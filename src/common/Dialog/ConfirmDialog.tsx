@@ -12,7 +12,7 @@ type ConfirmDialogProps = {
   applyButtonContent: string;
   cancelButtonTypeColor: string;
   applyButtonTypeColor: string;
-  handleCancelDialog: () => void;
+  handleCancelDialog?: () => void;
   handleApplyDialog: () => void;
   handleCloseDialog: () => void;
 };
@@ -38,7 +38,7 @@ const ConfirmDialog = ({
   useOnClickOutside(contentRef, handleClose);
 
   const handleCancel = () => {
-    handleCancelDialog();
+    handleCancelDialog && handleCancelDialog();
     DialogUtils.resetScrollbar();
   };
 
@@ -62,9 +62,11 @@ const ConfirmDialog = ({
         </DialogHeader>
         <DialogBody>{content}</DialogBody>
         <DialogFooter justifyContent="center">
-          <SignUpButton typeColor={cancelButtonTypeColor} onClick={handleCancel}>
-            {cancelButtonContent}
-          </SignUpButton>
+          {handleCancelDialog && (
+            <SignUpButton typeColor={cancelButtonTypeColor} onClick={handleCancel}>
+              {cancelButtonContent}
+            </SignUpButton>
+          )}
           <SignUpButton typeColor={applyButtonTypeColor} onClick={handleApply}>
             {applyButtonContent}
           </SignUpButton>

@@ -90,7 +90,7 @@ const CreateQuizDialog = ({
                       <Dropdown
                         id="level"
                         activeValue={values.level}
-                        values={QUIZ_APP_CONSTANTS.CREATE_QUIZ.getAllLevels()}
+                        values={QUIZ_APP_CONSTANTS.CREATE_EXAM.getAllLevels()}
                         handleSelected={(value) => setFieldValue('level', value)}
                       />
                     </ElementGroup>

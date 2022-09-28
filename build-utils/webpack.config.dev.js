@@ -7,6 +7,7 @@ module.exports = {
   },
   output: {
     filename: '[name].[contenthash].js',
+    publicPath: '/',
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],

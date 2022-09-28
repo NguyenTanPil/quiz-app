@@ -1,7 +1,7 @@
 import { Form, Formik } from 'formik';
 import React, { useEffect, useRef } from 'react';
 import { MdOutlineClose } from 'react-icons/md';
-import { DialogUtils } from '../../utils';
+import { compareTwoObjects, DialogUtils } from '../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../utils/constants';
 import useOnClickOutside from '../../utils/useOnClickOutside';
 import { DialogCloseButton, SignUpButton } from '../Button';
@@ -79,11 +79,11 @@ const ProfileDialog = ({
         <DialogBody>
           <Formik
             initialValues={initialValues}
-            onSubmit={(values, actions) => {
+            onSubmit={(values) => {
               handleApply(values);
             }}
           >
-            {({ values, handleSubmit, setFieldValue }) => (
+            {({ dirty, values, handleSubmit, setFieldValue }) => (
               <Form onSubmit={handleSubmit}>
                 <QuizOptions>
                   <ElementGroup>
@@ -91,7 +91,7 @@ const ProfileDialog = ({
                     <Dropdown
                       id="nameTitle"
                       activeValue={values.nameTitle}
-                      values={QUIZ_APP_CONSTANTS.CREATE_QUIZ.titles}
+                      values={QUIZ_APP_CONSTANTS.CREATE_EXAM.titles}
                       handleSelected={(value) => setFieldValue('nameTitle', value)}
                     />
                   </ElementGroup>
@@ -106,10 +106,15 @@ const ProfileDialog = ({
                   </ElementGroup>
                 </QuizOptions>
                 <DialogFooter justifyContent="flex-end">
-                  <SignUpButton typeColor={cancelButtonTypeColor} onClick={handleCancel}>
+                  <SignUpButton type="button" typeColor={cancelButtonTypeColor} onClick={handleCancel}>
                     {cancelButtonContent}
                   </SignUpButton>
-                  <SignUpButton typeColor={applyButtonTypeColor} onClick={handleApply}>
+                  <SignUpButton
+                    type="submit"
+                    disabled={!dirty || compareTwoObjects(initialValues, values)}
+                    typeColor={applyButtonTypeColor}
+                    onClick={handleApply}
+                  >
                     {applyButtonContent}
                   </SignUpButton>
                 </DialogFooter>

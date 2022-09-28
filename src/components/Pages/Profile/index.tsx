@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AiOutlineClockCircle } from 'react-icons/ai';
 import { BiCategory, BiEditAlt } from 'react-icons/bi';
 import { MdOutlineMenuOpen } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { updateUser } from '../../../api/authentication';
+import { getExamsByUserId } from '../../../api/exam';
 import { SignUpButton } from '../../../common/Button';
 import ProfileDialog from '../../../common/Dialog/ProfileDialog';
 import ToolTip from '../../../common/ToolTip';
-import { Wrapper } from '../../../styles/Utils';
-import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
+import { EmptyListAction, Wrapper } from '../../../styles/Utils';
+import { convertNumberFormat, formatCreatedAt, getObjectKeysChanged } from '../../../utils';
+import { Exam } from '../../../utils/types';
 import {
   Actions,
   ButtonActions,
@@ -15,6 +18,7 @@ import {
   Content,
   MoreInfo,
   MoreInfoItem,
+  NoExam,
   ProfileHeader,
   ProfileQuizAvatar,
   ProfileQuizContent,
@@ -36,19 +40,47 @@ type Props = {
 
 const Profile = ({ isLogin, user, setUser }: Props) => {
   const [isShowEditDialog, setIsShowEditDialog] = useState(false);
-  const { name: userName, email, nameTitle } = user;
-
+  const [examList, setExamList] = useState<Exam[]>([]);
   const navigate = useNavigate();
 
   const handleEditProfile = (values: any) => {
-    setUser({ ...user, ...values });
+    const editableInfo = { nameTitle: user.nameTitle, name: user.name };
+
+    const updatedObj = getObjectKeysChanged(editableInfo, values);
+
+    if (updatedObj.isUpdated) {
+      updateUser(user.userId, updatedObj.data);
+      setUser({ ...user, ...values });
+    }
+  };
+
+  const handleCreateNewExam = () => {
+    navigate('/create-quiz');
   };
 
   useEffect(() => {
-    if (!isLogin) {
-      navigate('/sign-in');
+    let isSubscribed = true;
+
+    const fetchExams = async () => {
+      const exams = await getExamsByUserId(user.id);
+
+      if (isSubscribed) {
+        setExamList(exams);
+      }
+    };
+
+    if (user) {
+      fetchExams();
     }
-  }, []);
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [isLogin]);
+
+  if (!examList || !isLogin) {
+    return <>loading...</>;
+  }
 
   return (
     <Container>
@@ -58,7 +90,7 @@ const Profile = ({ isLogin, user, setUser }: Props) => {
           <ProfileDialog
             title="Edit Profile"
             applyButtonContent="Save Changed"
-            initialValues={{ name: userName, nameTitle: nameTitle }}
+            initialValues={{ name: user.name, nameTitle: user.nameTitle }}
             handleCancelDialog={() => setIsShowEditDialog(false)}
             handleApplyDialog={handleEditProfile}
             handleCloseDialog={() => setIsShowEditDialog(false)}
@@ -76,9 +108,9 @@ const Profile = ({ isLogin, user, setUser }: Props) => {
               </UserAvatar>
               <UserDetail>
                 <UserName>
-                  {nameTitle} {userName}
+                  {user.nameTitle} {user.name}
                 </UserName>
-                <UserEmail>{email}</UserEmail>
+                <UserEmail>{user.email}</UserEmail>
               </UserDetail>
             </UserProfile>
             <Actions>
@@ -92,7 +124,7 @@ const Profile = ({ isLogin, user, setUser }: Props) => {
               </ButtonActions>
               <MoreInfo>
                 <MoreInfoItem>
-                  <h5>4</h5>
+                  <h5>{examList.length}</h5>
                   <span>QUIZZES</span>
                 </MoreInfoItem>
                 <MoreInfoItem>
@@ -102,52 +134,43 @@ const Profile = ({ isLogin, user, setUser }: Props) => {
               </MoreInfo>
             </Actions>
           </ProfileHeader>
-          <ProfileQuizList>
-            <ProfileQuizItem>
-              <ProfileQuizAvatar>
-                <img src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=600&h=600" alt="" />
-              </ProfileQuizAvatar>
-              <ProfileQuizContent>
-                <ProfileQuizName>Quiz Name 2</ProfileQuizName>
-                <ProfileQuizDetails>
-                  <div>
-                    <MdOutlineMenuOpen />
-                    <span>09 Quizzes</span>
-                  </div>
-                  <div>
-                    <BiCategory />
-                    <span>Data Science</span>
-                  </div>
-                </ProfileQuizDetails>
-                <ProfileQuizTime>
-                  <AiOutlineClockCircle />
-                  <span>04 month ago</span>
-                </ProfileQuizTime>
-              </ProfileQuizContent>
-            </ProfileQuizItem>
-            <ProfileQuizItem>
-              <ProfileQuizAvatar>
-                <img src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=600&h=600" alt="" />
-              </ProfileQuizAvatar>
-              <ProfileQuizContent>
-                <ProfileQuizName>Quiz Name 1</ProfileQuizName>
-                <ProfileQuizDetails>
-                  <div>
-                    <MdOutlineMenuOpen />
-                    <span>12 Quizzes</span>
-                  </div>
-                  <div>
-                    <BiCategory />
-                    <span>Computer Science</span>
-                  </div>
-                </ProfileQuizDetails>
-                <ProfileQuizTime>
-                  <AiOutlineClockCircle />
-                  <span>01 month ago</span>
-                </ProfileQuizTime>
-              </ProfileQuizContent>
-            </ProfileQuizItem>
-          </ProfileQuizList>
+          {examList.length === 0 ? (
+            <NoExam>
+              <EmptyListAction>
+                <SignUpButton onClick={handleCreateNewExam}>Create An Exam</SignUpButton>
+                <span>Don't have any exams!</span>
+              </EmptyListAction>
+            </NoExam>
+          ) : (
+            <ProfileQuizList>
+              {examList.map((exam) => (
+                <ProfileQuizItem key={exam.id}>
+                  <ProfileQuizAvatar>
+                    <img src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=600&h=600" alt="" />
+                  </ProfileQuizAvatar>
+                  <ProfileQuizContent>
+                    <ProfileQuizName>
+                      <Link to={`/exams/${exam.id}`}>{exam.name}</Link>
+                    </ProfileQuizName>
+                    <ProfileQuizDetails>
+                      <div>
+                        <MdOutlineMenuOpen />
+                        <span>{convertNumberFormat(exam.totalQuestions)} Quizzes</span>
+                      </div>
+                      <div>
+                        <BiCategory />
+                        <span>{exam.categoryId}</span>
+                      </div>
+                    </ProfileQuizDetails>
+                    <ProfileQuizTime>
+                      <AiOutlineClockCircle />
+                      <span>{formatCreatedAt(exam.createdAt)}</span>
+                    </ProfileQuizTime>
+                  </ProfileQuizContent>
+                </ProfileQuizItem>
+              ))}
+            </ProfileQuizList>
+          )}
         </Content>
       </Wrapper>
     </Container>

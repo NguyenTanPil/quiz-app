@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // styles
 import { ThemeProvider } from 'styled-components';
 import GlobalStyles from './styles/GlobalStyles';
@@ -8,20 +8,29 @@ import Header from './components/Header';
 // type
 // other
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import CreateQuiz from './components/Pages/CreateQuiz';
+import CreateExam from './components/Pages/CreateExam';
 import Game from './components/Pages/Game';
 import Home from './components/Pages/Home';
 import Profile from './components/Pages/Profile';
 import SignIn from './components/Pages/SignIn';
 import SignUp from './components/Pages/SignUp';
 import { getTheme } from './styles/theme';
+import { getCookie } from './utils/cookie';
+import RouteGroup from './utils/RouteGroup';
 
 const App: React.FC = () => {
-  const [user, setUser] = useState({ name: 'tanpil', email: 'tanpil@gmail.com' });
-  const [isLogin, setIsLogin] = useState(true);
+  const [user, setUser] = useState();
+  const [isLogin, setIsLogin] = useState(false);
   const [globalQuiz, setGlobalQuiz] = useState<any[]>([]);
 
-  console.log(globalQuiz);
+  useEffect(() => {
+    const userCookie = getCookie('user');
+
+    if (userCookie) {
+      setUser(userCookie);
+      setIsLogin(true);
+    }
+  }, []);
 
   return (
     <ThemeProvider theme={getTheme('light')}>
@@ -30,14 +39,15 @@ const App: React.FC = () => {
         <Header isLogin={isLogin} />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/game" element={<Game quizList={globalQuiz[0]?.quizList} />} />
-          <Route path="/sign-up" element={<SignUp isLogin={isLogin} setUser={setUser} />} />
-          <Route path="/sign-in" element={<SignIn isLogin={isLogin} user={user} setIsLogin={setIsLogin} />} />
-          <Route
-            path="/create-quiz"
-            element={<CreateQuiz isLogin={isLogin} user={user} setGlobalQuiz={setGlobalQuiz} />}
-          />
-          <Route path="/profile" element={<Profile isLogin={isLogin} user={user} setUser={setUser} />} />
+          <Route path="game" element={<Game quizList={globalQuiz[0]?.quizList} />} />
+          <Route path="sign-up" element={<SignUp isLogin={isLogin} setUser={setUser} />} />
+          <Route path="sign-in" element={<SignIn isLogin={isLogin} setUser={setUser} setIsLogin={setIsLogin} />} />
+          <Route path="exams" element={<RouteGroup />}>
+            <Route path=":examId" element={<CreateExam isLogin={isLogin} user={user} />} />
+            <Route path="create-exam" element={<CreateExam isLogin={isLogin} user={user} />} />
+          </Route>
+          <Route path="profile" element={<Profile isLogin={isLogin} user={user} setUser={setUser} />} />
+          <Route path="*" element={<div>not found</div>} />
         </Routes>
         <Footer />
       </Router>

@@ -60,7 +60,11 @@ export const DialogFooter = styled.div<Props>`
   padding: 1.6rem;
 
   & > button {
-    margin-left: 1.2rem;
+    margin-right: 1.2rem;
+
+    &:last-child {
+      margin-right: 0;
+    }
   }
 `;
 

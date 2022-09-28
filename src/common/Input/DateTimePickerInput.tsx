@@ -11,10 +11,11 @@ import OriginInput from './OriginInput';
 
 type DateTimePickerInputProps = {
   id: string;
+  initialTime?: number;
   setDateTime: (value: number) => void;
 };
 
-const DateTimePickerInput = ({ id, setDateTime }: DateTimePickerInputProps) => {
+const DateTimePickerInput = ({ id, initialTime, setDateTime }: DateTimePickerInputProps) => {
   const [value, setValue] = useState<Moment | null>(moment());
   const dateTimePickerRef = useRef<HTMLDivElement>(null);
   const customDateTimeIconRef = useRef<HTMLDivElement>(null);
@@ -23,6 +24,12 @@ const DateTimePickerInput = ({ id, setDateTime }: DateTimePickerInputProps) => {
     setValue(newValue);
     setDateTime(moment(value).valueOf());
   };
+
+  useEffect(() => {
+    if (initialTime) {
+      setValue(moment(initialTime));
+    }
+  }, [initialTime]);
 
   useEffect(() => {
     if (!dateTimePickerRef?.current && !customDateTimeIconRef?.current) return;
@@ -71,7 +78,7 @@ const DateTimePickerInput = ({ id, setDateTime }: DateTimePickerInputProps) => {
         <LocalizationProvider dateAdapter={AdapterMoment}>
           <DateTimePicker
             value={value}
-            minDateTime={moment()}
+            minDateTime={initialTime ? moment(initialTime) : moment()}
             renderInput={(params) => <TextField {...params} />}
             onChange={handleChange}
           />

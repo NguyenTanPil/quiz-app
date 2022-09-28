@@ -206,21 +206,8 @@ export const QuizItemAnswerStatus = styled.div<Props>`
   width: 1.6rem;
 `;
 
-export const NoQuiz = styled(TotalQuiz)`
-  align-items: center;
-  flex-direction: column;
-
-  span {
-    color: ${(props) => props.theme.titleColor};
-    font-size: 2rem;
-    font-weight: 600;
-    margin-top: 1.2rem;
-  }
-
-  button {
-    padding-left: 3.2rem;
-    padding-right: 3.2rem;
-  }
+export const NoQuiz = styled.div`
+  margin-top: 4rem;
 `;
 
 export const CreateQuizFooter = styled.div`

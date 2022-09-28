@@ -42,3 +42,34 @@ export type QuizProps = {
   level: string;
   answers: AnswerProps[];
 };
+
+// export interface UserProps {
+//   id: string;
+//   email: string;
+//   createdAt: number;
+//   name: string;
+//   nameTitle: string;
+//   password: string;
+//   role: number;
+// }
+
+export type Exam = {
+  id: string;
+  categoryId: string;
+  countLimit: number;
+  createdAt: number;
+  creatorId: string;
+  timeDuration: number;
+  timeStart: number;
+  name: string;
+  totalQuestions: number;
+};
+
+export type Quiz = {
+  content: string;
+  correctAnswer: string;
+  inCorrectAnswers: string[];
+  examId: string;
+  id: string;
+  level: number;
+};

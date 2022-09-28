@@ -24,8 +24,8 @@ const Header = ({ isLogin }: Props) => {
           <div>
             <NavList>
               <NavItem>
-                <NavLink to="/create-quiz">
-                  <NoBorderButton>Create Quiz</NoBorderButton>
+                <NavLink to="/exams/create-exam">
+                  <NoBorderButton>Create Exam</NoBorderButton>
                 </NavLink>
               </NavItem>
               <NavItem>

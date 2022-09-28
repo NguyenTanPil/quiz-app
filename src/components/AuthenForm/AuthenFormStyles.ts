@@ -168,3 +168,37 @@ export const ListAuthen = styled.ul`
     margin-left: 1.2rem;
   }
 `;
+
+export const Roles = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  &&& {
+    margin-bottom: 0;
+  }
+
+  & > button {
+    background-color: transparent;
+    color: ${(props) => props.theme.mainColor};
+    margin-bottom: 2.4rem;
+    margin-right: 2.4rem;
+    padding-left: 3.6rem;
+    padding-right: 3.6rem;
+    position: relative;
+    z-index: 200;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    & > div {
+      height: 1.6rem;
+      position: absolute;
+      right: 0.6rem;
+      top: 0.6rem;
+      width: 1.6rem;
+      z-index: 100;
+    }
+  }
+`;

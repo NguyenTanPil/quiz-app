@@ -1,7 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { checkSignIn } from '../../../api/authentication';
+import { ConfirmDialog } from '../../../common/Dialog';
 import signInImage from '../../../images/signIn.svg';
 import { Wrapper } from '../../../styles/Utils';
+import { setCookie } from '../../../utils/cookie';
 import AuthenForm, { formValueProps } from '../../AuthenForm';
 import { Container } from '../SignUp/SignUpStyles';
 
@@ -24,13 +27,20 @@ type Props = {
   [key: string]: any;
 };
 
-const SignIn = ({ isLogin, user, setIsLogin }: Props) => {
+const SignIn = ({ isLogin, setUser, setIsLogin }: Props) => {
   const navigate = useNavigate();
+  const [isShowDialog, setIsShowDialog] = useState(false);
 
-  const handleSubmit = (values: any) => {
-    if (values.email === user.email && values.password === user.password) {
+  const handleSubmit = async (values: any) => {
+    const response = await checkSignIn(values);
+
+    if (response.isSuccess) {
       setIsLogin(true);
-      navigate('/');
+      setUser(response.data);
+      setCookie({ data: response.data, cookieName: 'user', time: 60 * 60 });
+      navigate('/profile');
+    } else {
+      setIsShowDialog(true);
     }
   };
 
@@ -38,11 +48,20 @@ const SignIn = ({ isLogin, user, setIsLogin }: Props) => {
     if (isLogin) {
       navigate('/');
     }
-  }, []);
+  }, [isLogin]);
 
   return (
     <Container>
       <Wrapper>
+        {isShowDialog && (
+          <ConfirmDialog
+            content="Your email or your password is incorrect!"
+            title="Notification"
+            applyButtonContent="Okay"
+            handleApplyDialog={() => setIsShowDialog(false)}
+            handleCloseDialog={() => setIsShowDialog(false)}
+          />
+        )}
         <AuthenForm
           title="Sign In"
           submitButtonText="Sign In"

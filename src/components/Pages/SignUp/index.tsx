@@ -1,12 +1,21 @@
+import moment from 'moment';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createAccount } from '../../../api/authentication';
 import signUpImage from '../../../images/signUp.svg';
 import { Wrapper } from '../../../styles/Utils';
 import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
 import AuthenForm, { formValueProps } from '../../AuthenForm';
 import { Container } from './SignUpStyles';
+import uuid from 'react-uuid';
 
 const signUpFormValues: formValueProps[] = [
+  {
+    type: 'select',
+    placeholder: 'Your Role',
+    name: 'role',
+    initValue: 'Student',
+  },
   {
     type: 'text',
     placeholder: 'Your Name',
@@ -37,11 +46,27 @@ type Props = {
   [key: string]: any;
 };
 
-const SignUp = ({ isLogin, setUser }: Props) => {
+const SignUp = ({ isLogin }: Props) => {
   const navigate = useNavigate();
 
-  const handleSubmit = (values: any) => {
-    setUser({ ...values, nameTitle: QUIZ_APP_CONSTANTS.CREATE_QUIZ.initNameTitle });
+  const handleSubmit = async (values: any) => {
+    const formValues = { ...values };
+
+    formValues.id = uuid();
+    formValues.role =
+      values.role === 'Student'
+        ? QUIZ_APP_CONSTANTS.AUTHEN_FORM.studentRoleNumber
+        : QUIZ_APP_CONSTANTS.AUTHEN_FORM.teacherRoleNumber;
+    formValues.nameTitle = QUIZ_APP_CONSTANTS.CREATE_EXAM.initNameTitle;
+    formValues.createdAt = moment().valueOf();
+
+    delete formValues.repeatPass;
+
+    try {
+      await createAccount(formValues);
+    } catch (error) {
+      console.log({ error });
+    }
     navigate('/sign-in');
   };
 
