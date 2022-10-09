@@ -22,13 +22,7 @@ export const fetchQuizQuestions = async (amount: number, difficulty: Difficulty)
 
 export const fakeFetchQuizList = (quizList: any[]) => {
   return quizList.map((quiz: any) => {
-    const { id, question, correctAnswer: correctAnswerString, inCorrectAnswers: inCorrectAnswersList } = quiz;
-
-    const correctAnswer = { id: '1', content: correctAnswerString };
-    const inCorrectAnswers = inCorrectAnswersList.map((answer: string, idx: number) => ({
-      id: `${idx + 2}`,
-      content: answer,
-    }));
+    const { id, question, correctAnswer, inCorrectAnswers } = quiz;
 
     return {
       id: id,

@@ -223,6 +223,7 @@ export const CreateQuizFooter = styled.div`
 
 export const CategoryQuiz = styled.div`
   flex-direction: column;
+  position: relative;
 
   ${breakpoints({
     cssProp: 'width',
@@ -232,6 +233,10 @@ export const CategoryQuiz = styled.div`
 
   h3 {
     margin-bottom: 1.6rem;
+  }
+
+  input[name='category'] {
+    cursor: pointer;
   }
 `;
 

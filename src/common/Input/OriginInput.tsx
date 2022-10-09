@@ -3,13 +3,15 @@ import { Container, ErrorMessage, InputField, WrapMessage } from './InputStyles'
 
 type OriginInputProps = {
   value: string;
+  type?: string;
   name: string;
-  errorMessage?: string | undefined | boolean;
+  errorMessage?: string | boolean;
   readOnly?: boolean;
-  setValue: (quizName: string) => void;
+  setValue?: (quizName: string) => void;
+  onClick?: () => void;
 };
 
-const OriginInput = ({ value, name, errorMessage, readOnly, setValue }: OriginInputProps) => {
+const OriginInput = ({ value, type, name, errorMessage, readOnly, setValue, onClick }: OriginInputProps) => {
   const messageRef = useRef<HTMLDivElement>();
   const wrapMessageRef = useRef<HTMLDivElement>();
   const [isShowErrorMessage, setIsShowErrorMessage] = useState(false);
@@ -19,6 +21,12 @@ const OriginInput = ({ value, name, errorMessage, readOnly, setValue }: OriginIn
       setIsShowErrorMessage(true);
     } else {
       setIsShowErrorMessage(false);
+    }
+  };
+
+  const handleChange = (value: string) => {
+    if (readOnly === false) {
+      setValue && setValue(value);
     }
   };
 
@@ -32,11 +40,12 @@ const OriginInput = ({ value, name, errorMessage, readOnly, setValue }: OriginIn
   return (
     <Container>
       <InputField
-        type="text"
+        type={type}
         name={name}
         value={value}
         readOnly={readOnly}
-        onChange={(e: any) => readOnly === false && setValue(e.target.value)}
+        onChange={(e: any) => handleChange(e.target.value)}
+        onClick={() => onClick && onClick()}
         onBlur={handleInputBlur}
       />
       {isShowErrorMessage && (
@@ -52,6 +61,7 @@ const OriginInput = ({ value, name, errorMessage, readOnly, setValue }: OriginIn
 
 OriginInput.defaultProps = {
   readOnly: false,
+  type: 'text',
 };
 
 export default OriginInput;

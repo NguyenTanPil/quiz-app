@@ -22,6 +22,7 @@ const App: React.FC = () => {
   const [user, setUser] = useState();
   const [isLogin, setIsLogin] = useState(false);
   const [globalQuiz, setGlobalQuiz] = useState<any[]>([]);
+  const [data, setData] = useState();
 
   useEffect(() => {
     const userCookie = getCookie('user');
@@ -39,7 +40,7 @@ const App: React.FC = () => {
         <Header isLogin={isLogin} />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="game" element={<Game quizList={globalQuiz[0]?.quizList} />} />
+          <Route path="game" element={<Game />} />
           <Route path="sign-up" element={<SignUp isLogin={isLogin} setUser={setUser} />} />
           <Route path="sign-in" element={<SignIn isLogin={isLogin} setUser={setUser} setIsLogin={setIsLogin} />} />
           <Route path="exams" element={<RouteGroup />}>

@@ -24,6 +24,7 @@ module.exports = {
     open: true,
     hot: true,
     historyApiFallback: true,
+    contentBase: 'public',
   },
   module: {
     rules: [

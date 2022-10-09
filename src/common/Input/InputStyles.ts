@@ -14,6 +14,7 @@ const InputPattern = css`
   display: block;
   font-size: 1.8rem;
   font-weight: 700;
+  min-height: 4.8rem;
   outline: none;
   padding: 1.2rem 3.2rem 1.2rem 1.6rem;
   position: relative;

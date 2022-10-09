@@ -1,6 +1,8 @@
 import moment from 'moment';
-import React, { useState, useEffect, useRef } from 'react';
-import { BiCopy, BiEditAlt } from 'react-icons/bi';
+import React, { useEffect, useState } from 'react';
+import { BiCopy, BiEditAlt, BiPlus } from 'react-icons/bi';
+import { HiPlus } from 'react-icons/hi';
+import { FiEdit } from 'react-icons/fi';
 import { CgTrash } from 'react-icons/cg';
 import { FiPlusSquare } from 'react-icons/fi';
 import { MdOutlineMenuOpen } from 'react-icons/md';
@@ -56,6 +58,7 @@ import {
   TimeStart,
   TotalQuiz,
 } from './CreateExamStyles';
+import CreateCategoryDialog from '../../../common/Dialog/CreateCategoryDialog';
 
 const initialQuiz: QuizProps = {
   id: uuid(),
@@ -78,7 +81,7 @@ type ExamProps = {
   name: string;
   timeStart: number;
   quizList: QuizProps[];
-  category: string;
+  category: { id: string; name: string };
   countLimit: number;
   totalQuestions: number;
   timeDuration: {
@@ -92,7 +95,7 @@ const initialExam: ExamProps = {
   name: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialExamName,
   timeStart: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialTimeStart,
   quizList: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialQuizList,
-  category: QUIZ_APP_CONSTANTS.CREATE_EXAM.categories[0],
+  category: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialCategory,
   countLimit: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialCountLimit,
   totalQuestions: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialTotalQuestions,
   timeDuration: {
@@ -107,7 +110,8 @@ const CreateExam = ({ isLogin, user }: Props) => {
   const [originExam, setOriginExam] = useState<ExamProps>(initialExam);
 
   const [exam, setExam] = useState<ExamProps>(initialExam);
-  const [isShowCreateDialog, setIsShowCreateDialog] = useState(false);
+  const [isShowCreateQuestionDialog, setIsShowCreateQuestionDialog] = useState(false);
+  const [isShowCreateCategoryDialog, setIsShowCreateCategoryDialog] = useState(false);
   const [editId, setEditId] = useState<string | undefined>(undefined);
   const [deleteId, setDeleteId] = useState<string | undefined>(undefined);
 
@@ -161,7 +165,7 @@ const CreateExam = ({ isLogin, user }: Props) => {
     const timeDurationFormat = convertTimeDurationToMinutes(exam.timeDuration);
 
     const formValues = {
-      categoryId: exam.category,
+      categoryId: exam.category.id,
       countLimit: exam.countLimit,
       createdAt: moment().valueOf(),
       creatorId: user.id,
@@ -253,7 +257,7 @@ const CreateExam = ({ isLogin, user }: Props) => {
             quizList,
             countLimit,
             totalQuestions,
-            category: categoryId,
+            category: { id: categoryId, name: '' },
             timeDuration: convertMinutesToDuration(timeDuration),
           };
 
@@ -281,14 +285,26 @@ const CreateExam = ({ isLogin, user }: Props) => {
   return (
     <Container>
       {/* start dialogs */}
-      {isShowCreateDialog && (
+      {isShowCreateQuestionDialog && (
         <CreateQuizDialog
           title="Create A New Quiz"
           applyButtonContent="Create"
           initialQuiz={initialQuiz}
-          handleCancelDialog={() => setIsShowCreateDialog(false)}
+          handleCancelDialog={() => setIsShowCreateQuestionDialog(false)}
           handleApplyDialog={(values) => handleCreateNewQuiz(values)}
-          handleCloseDialog={() => setIsShowCreateDialog(false)}
+          handleCloseDialog={() => setIsShowCreateQuestionDialog(false)}
+        />
+      )}
+      {isShowCreateCategoryDialog && (
+        <CreateCategoryDialog
+          title="Quiz Category"
+          applyButtonContent="Apply"
+          initialCategory={exam.category.id}
+          handleCancelDialog={() => setIsShowCreateCategoryDialog(false)}
+          handleApplyDialog={(values) =>
+            setExam((prev) => ({ ...prev, category: { id: values.id, name: values.name } }))
+          }
+          handleCloseDialog={() => setIsShowCreateCategoryDialog(false)}
         />
       )}
       {editId && (
@@ -328,7 +344,7 @@ const CreateExam = ({ isLogin, user }: Props) => {
             </QuizName>
             <CreateNewQuiz>
               <LabelGroup>Create a quiz</LabelGroup>
-              <SignUpButton onClick={() => setIsShowCreateDialog(true)}>
+              <SignUpButton onClick={() => setIsShowCreateQuestionDialog(true)}>
                 <FiPlusSquare />
                 <span>New Quiz</span>
               </SignUpButton>
@@ -337,11 +353,11 @@ const CreateExam = ({ isLogin, user }: Props) => {
           <QuizOptions>
             <CategoryQuiz>
               <LabelGroup>Quiz Category</LabelGroup>
-              <Dropdown
-                id="category"
-                activeValue={exam.category}
-                values={QUIZ_APP_CONSTANTS.CREATE_EXAM.categories}
-                handleSelected={(value) => setExam((prev) => ({ ...prev, category: value }))}
+              <OriginInput
+                name="category"
+                readOnly={true}
+                value={exam.category.name ? exam.category.name : 'Click to choose'}
+                onClick={() => setIsShowCreateCategoryDialog(true)}
               />
             </CategoryQuiz>
             <LevelQuiz>
@@ -403,7 +419,7 @@ const CreateExam = ({ isLogin, user }: Props) => {
           ) : (
             <NoQuiz>
               <EmptyListAction>
-                <SignUpButton onClick={() => setIsShowCreateDialog(true)}>Create Now</SignUpButton>
+                <SignUpButton onClick={() => setIsShowCreateQuestionDialog(true)}>Create Now</SignUpButton>
                 <span>Don't have any quizzes!</span>
               </EmptyListAction>
             </NoQuiz>

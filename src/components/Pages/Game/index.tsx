@@ -15,7 +15,54 @@ type Props = {
   [key: string]: any;
 };
 
-const Game = ({ quizList }: Props) => {
+const quizList = [
+  {
+    id: '1',
+    question: 'Hôm nay là thứ mấy?',
+    correctAnswer: { id: '1', content: 'Chủ nhật' },
+    inCorrectAnswers: [
+      {
+        id: '2',
+        content: 'Thứ 2',
+      },
+      {
+        id: '3',
+        content: 'Thứ 3',
+      },
+      {
+        id: '4',
+        content: 'Thứ tư',
+      },
+    ],
+    answerClicked: undefined,
+    isCorrect: undefined,
+    answers: ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ tư'],
+  },
+  {
+    id: '2',
+    question: 'Hôm nay là tháng mấy?',
+    correctAnswer: { id: '1', content: 'Tháng 10' },
+    inCorrectAnswers: [
+      {
+        id: '2',
+        content: 'Tháng 9',
+      },
+      {
+        id: '3',
+        content: 'Tháng 12',
+      },
+      {
+        id: '4',
+        content: 'Tháng 11',
+      },
+    ],
+    answerClicked: undefined,
+    isCorrect: undefined,
+    answers: ['Tháng 10', 'Tháng 9', 'Tháng 12', 'Tháng 11'],
+  },
+];
+
+const Game = () => {
   const [loading, setLoading] = useState(true);
   const [isShowCloseDialog, setIsShowCloseDialog] = useState(false);
   const [isShowCompleteDialog, setIsShowCompleteDialog] = useState(false);

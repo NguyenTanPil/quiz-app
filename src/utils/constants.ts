@@ -40,7 +40,6 @@ export const QUIZ_APP_CONSTANTS = {
         typeColor: 'errorColor',
       },
     ],
-    categories: ['Category 1', 'Category 2', 'Category 3'],
     initNameTitle: 'Mr.',
     titles: ['Mr.', 'Ms.', 'Mrs.', 'Dr.'],
     initialTimeStart: 0,
@@ -49,6 +48,10 @@ export const QUIZ_APP_CONSTANTS = {
     initialQuizList: [],
     initialHours: '00',
     initialMinutes: '00',
+    initialCategory: {
+      id: '',
+      name: '',
+    },
     initialId: '',
     initialTotalQuestions: 0,
     initialCountLimit: 1,

@@ -92,6 +92,7 @@ export const QuizAnswers = styled.div`
 
 export const ElementGroup = styled.div`
   margin-top: 1.2rem;
+  position: relative;
 
   &:last-child {
     margin-top: 2.4rem;
@@ -104,6 +105,15 @@ export const ElementGroup = styled.div`
     margin-bottom: 0.8rem;
     margin-top: 0;
     text-align: left;
+  }
+
+  input {
+    padding-right: 1.6rem;
+  }
+
+  input[type='color'] {
+    cursor: pointer;
+    padding: 0.8rem 1.2rem;
   }
 `;
 
@@ -131,4 +141,93 @@ export const QuizOptions = styled.div`
 
 export const ProfileContent = styled(CreateQuizContent)`
   max-width: 60rem;
+`;
+
+export const CategoryList = styled.ul`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: -2.4rem;
+  padding: 1.6rem;
+`;
+
+export const CategoryItem = styled.li`
+  border: 0.1rem solid ${(props) => props.theme.borderColor};
+  border-radius: 0.8rem;
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  margin-top: 2.4rem;
+  padding: 1.2rem;
+  position: relative;
+
+  ${breakpoints({
+    cssProp: 'width',
+    cssPropUnits: '',
+    values: [{ [devices.default]: '100%' }, { [devices.mediumDevices]: 'calc(50% - 1rem)' }],
+  })};
+`;
+
+export const CategoryColor = styled.div<Props>`
+  background-color: ${(props) => props.bg};
+  border-radius: 0.4rem;
+  height: 4rem;
+  min-width: 4rem;
+  width: 4rem;
+`;
+
+export const CategoryContent = styled.div`
+  flex-grow: 1;
+  margin-left: 1.2rem;
+  text-align: left;
+
+  h4 {
+    color: ${(props) => props.theme.titleColor};
+    font-size: 1.6rem;
+    margin: 0;
+  }
+
+  p {
+    color: ${(props) => props.theme.fontColor};
+    display: -webkit-box;
+    font-size: 1.4rem;
+    margin: 0;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+`;
+
+export const SelectedCategory = styled.div`
+  margin-bottom: 0.8rem;
+`;
+
+export const ActionsCategory = styled.div`
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-left: 1.2rem;
+  min-height: 100%;
+`;
+
+export const CreateCategory = styled.div`
+  margin-bottom: 1.2rem;
+  padding-left: 1.6rem;
+  padding-right: 1.6rem;
+`;
+
+export const CreateCategoryActions = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 2rem;
+
+  & > button {
+    margin-right: 1.2rem;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
 `;
