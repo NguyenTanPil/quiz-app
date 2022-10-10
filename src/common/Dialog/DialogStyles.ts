@@ -50,14 +50,24 @@ export const DialogBody = styled.div`
   font-size: 1.4rem;
   font-weight: 400;
   line-height: 2.4rem;
-  padding: 1.6rem;
+  padding-bottom: 1.6rem;
+  padding-top: 1.6rem;
   text-align: center;
+
+  ${breakpoints({
+    cssProp: ['padding-left', 'padding-right'],
+    cssPropUnits: 'rem',
+    values: [{ [devices.default]: 0 }, { [devices.smallDevices]: 1.6 }],
+  })};
 `;
 
 export const DialogFooter = styled.div<Props>`
   display: flex;
   justify-content: ${(props) => props.justifyContent};
-  padding: 1.6rem;
+  padding-bottom: ${(props) => props.pb || 1.6}rem;
+  padding-left: ${(props) => props.pl || 1.6}rem;
+  padding-right: ${(props) => props.pr || 1.6}rem;
+  padding-top: ${(props) => props.pt || 1.6}rem;
 
   & > button {
     margin-right: 1.2rem;
@@ -88,6 +98,11 @@ export const QuizAnswers = styled.div`
       values: [{ [devices.default]: '100%' }, { [devices.smallDevices]: 'calc(50% - 0.8rem)' }],
     })}
   }
+`;
+
+export const FormBody = styled.div`
+  padding-left: 1.6rem;
+  padding-right: 1.6rem;
 `;
 
 export const ElementGroup = styled.div`
@@ -158,6 +173,7 @@ export const CategoryItem = styled.li`
   display: flex;
   align-items: flex-start;
   margin-top: 2.4rem;
+  min-height: 9.8rem;
   padding: 1.2rem;
   position: relative;
 
@@ -183,8 +199,12 @@ export const CategoryContent = styled.div`
 
   h4 {
     color: ${(props) => props.theme.titleColor};
+    display: -webkit-box;
     font-size: 1.6rem;
     margin: 0;
+    overflow: hidden;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
   }
 
   p {
@@ -212,9 +232,15 @@ export const ActionsCategory = styled.div`
 `;
 
 export const CreateCategory = styled.div`
+  padding-left: 1.6rem;
+  padding-right: 1.6rem;
+`;
+
+export const SearchCategory = styled.div`
   margin-bottom: 1.2rem;
   padding-left: 1.6rem;
   padding-right: 1.6rem;
+  padding-top: 2.4rem;
 `;
 
 export const CreateCategoryActions = styled.div`
@@ -230,4 +256,10 @@ export const CreateCategoryActions = styled.div`
       margin-right: 0;
     }
   }
+`;
+
+export const PaginationWrap = styled.div`
+  margin-top: 1.2rem;
+  padding-left: 1.6rem;
+  padding-right: 1.6rem;
 `;

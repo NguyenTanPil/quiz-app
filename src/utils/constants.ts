@@ -9,6 +9,7 @@ export const QUIZ_APP_CONSTANTS = {
     daysPerMonth: 30,
     numberStandard: 10,
     oneHundredPercent: 100,
+    initialCurrentPage: 1,
   },
   SLIDER: {
     transitionSecondsDefault: 0.45,
@@ -57,6 +58,7 @@ export const QUIZ_APP_CONSTANTS = {
     initialCountLimit: 1,
     hoursPerDay: 24,
     minutesPerHour: 60,
+    categoryPageSize: 4,
     getAllLevels() {
       return this.levels.map((level) => level.name);
     },

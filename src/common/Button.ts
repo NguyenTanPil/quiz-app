@@ -115,15 +115,18 @@ export const OtherAuthenButton = styled(ButtonPattern)<Props>`
 `;
 
 export const ActionButton = styled(OtherAuthenButton)<Props>`
-  background-color: ${(props) => props.theme.backgroundColor};
+  background-color: ${(props) => (props.disabled ? props.theme.borderColor : props.theme.backgroundColor)};
   border: 0.2rem solid ${(props) => props.theme.borderColor};
   color: ${(props) => props.theme.fontColor};
+  cursor: ${(props) => (props.disabled ? 'default' : 'pointer')};
   font-size: 1.6rem;
   height: 3.6rem;
   width: 3.6rem;
 
   &:hover {
-    border-color: ${(props) => props.theme[`${props.typeColor || 'mainColor'}`]};
-    color: ${(props) => props.theme[`${props.typeColor || 'mainColor'}`]};
+    background-color: ${(props) => (props.disabled ? props.theme.borderColor : props.theme.backgroundColor)};
+    border-color: ${(props) =>
+      props.disabled ? props.theme.borderColor : props.theme[`${props.typeColor || 'mainColor'}`]};
+    color: ${(props) => (props.disabled ? props.theme.fontColor : props.theme[`${props.typeColor || 'mainColor'}`])};
   }
 `;

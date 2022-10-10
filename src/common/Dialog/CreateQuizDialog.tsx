@@ -18,6 +18,7 @@ import {
   ElementGroup,
   QuizAnswers,
   QuizOptions,
+  FormBody,
 } from './DialogStyles';
 
 type CreateQuizDialogProps = {
@@ -83,7 +84,7 @@ const CreateQuizDialog = ({
           >
             {({ dirty, values, setFieldValue, handleSubmit }) => (
               <Form id="create-quiz-form" onSubmit={handleSubmit}>
-                <DialogBody>
+                <FormBody>
                   <QuizOptions>
                     <ElementGroup>
                       <h3>Quiz Level</h3>
@@ -130,8 +131,8 @@ const CreateQuizDialog = ({
                       ))}
                     </QuizAnswers>
                   </ElementGroup>
-                </DialogBody>
-                <DialogFooter justifyContent="flex-end">
+                </FormBody>
+                <DialogFooter justifyContent="flex-end" pt={3.2}>
                   <SignUpButton type="button" typeColor="errorColor" onClick={handleCancel}>
                     {cancelButtonContent}
                   </SignUpButton>

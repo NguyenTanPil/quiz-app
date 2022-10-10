@@ -2,6 +2,7 @@ import { Form, Formik } from 'formik';
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { BiEditAlt } from 'react-icons/bi';
 import { MdOutlineClose } from 'react-icons/md';
+import NoDataToShow from '../../components/NoDataToShow';
 import { CategoryQuiz, LabelGroup } from '../../components/Pages/CreateExam/CreateExamStyles';
 import { compareTwoObjects, DialogUtils, getObjectKeysChanged } from '../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../utils/constants';
@@ -9,7 +10,9 @@ import { QuizProps } from '../../utils/types';
 import useOnClickOutside from '../../utils/useOnClickOutside';
 import { ActionButton, DialogCloseButton, SignUpButton } from '../Button';
 import Dropdown from '../Dropdown';
+import useDebounce from '../hooks/useDebounce';
 import { OriginInput, QuizAnswerInput, RadioBox, Textarea, ValidTextInput } from '../Input';
+import Pagination from '../Pagination';
 import ToolTip from '../ToolTip';
 import {
   Container,
@@ -29,6 +32,9 @@ import {
   ActionsCategory,
   CreateCategory,
   CreateCategoryActions,
+  SearchCategory,
+  PaginationWrap,
+  FormBody,
 } from './DialogStyles';
 
 const categoryListTemp = [
@@ -47,7 +53,21 @@ const categoryListTemp = [
     bg: '#dddfff',
   },
   {
-    id: '12334',
+    id: '123345',
+    name: 'Category Name 24',
+    notes:
+      'I want to wrap a text within only two lines inside div of specific width. If text goes beyond the length of two lines then I want to show ellipses. Is there a way to do that using CSS',
+    bg: '#dddfff',
+  },
+  {
+    id: '123346',
+    name: 'Category Name 24',
+    notes:
+      'I want to wrap a text within only two lines inside div of specific width. If text goes beyond the length of two lines then I want to show ellipses. Is there a way to do that using CSS',
+    bg: '#dddfff',
+  },
+  {
+    id: '123347',
     name: 'Category Name 24',
     notes:
       'I want to wrap a text within only two lines inside div of specific width. If text goes beyond the length of two lines then I want to show ellipses. Is there a way to do that using CSS',
@@ -79,6 +99,19 @@ const CreateCategoryDialog = ({
   const [isCreate, setIsCreate] = useState(false);
   const [editCategoryId, setEditCategoryId] = useState<string | undefined>(undefined);
 
+  const [searchContent, setSearchContent] = useState('');
+  const [categoryCurrentPage, setCategoryCurrentPage] = useState<number>(() => {
+    if (initialCategory) {
+      const currentIndex =
+        categoryListTemp.findIndex((category) => category.id === initialCategory) ||
+        QUIZ_APP_CONSTANTS.COMMON.initialCurrentPage;
+      return Math.ceil((currentIndex + 0.5) / QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize);
+    }
+
+    return QUIZ_APP_CONSTANTS.COMMON.initialCurrentPage;
+  });
+
+  const debouncedValue = useDebounce<string>(searchContent, 500);
   const contentRef = useRef<HTMLDivElement>();
   const initialValues = useMemo(() => {
     if (editCategoryId) {
@@ -135,6 +168,24 @@ const CreateCategoryDialog = ({
     DialogUtils.disableScrollbar();
   }, []);
 
+  useEffect(() => {
+    setCategoryList((prev) => {
+      if (debouncedValue === '') {
+        return categoryListTemp;
+      }
+
+      const regex = new RegExp(debouncedValue, 'gi');
+      return prev.filter((category) => category.name.match(regex));
+    });
+  }, [debouncedValue]);
+
+  useEffect(() => {
+    const startIndex = (categoryCurrentPage - 1) * QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize;
+    const endIndex = startIndex + QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize;
+
+    setCategoryList(() => categoryListTemp.slice(startIndex, endIndex));
+  }, [categoryCurrentPage]);
+
   return (
     <Container>
       <CreateQuizContent ref={contentRef}>
@@ -163,7 +214,7 @@ const CreateCategoryDialog = ({
             >
               {({ values, setFieldValue, handleSubmit }) => (
                 <Form id="create-category-form" onSubmit={handleSubmit}>
-                  <DialogBody>
+                  <FormBody>
                     <QuizOptions>
                       <ElementGroup>
                         <LabelGroup>Category Name</LabelGroup>
@@ -209,7 +260,7 @@ const CreateCategoryDialog = ({
                         {editCategoryId === undefined ? 'Add' : 'Update'}
                       </SignUpButton>
                     </CreateCategoryActions>
-                  </DialogBody>
+                  </FormBody>
                 </Form>
               )}
             </Formik>
@@ -220,39 +271,66 @@ const CreateCategoryDialog = ({
               </SignUpButton>
             </CreateCategory>
           )}
-          <CategoryList>
-            {categoryList.map((item) => (
-              <CategoryItem key={item.id}>
-                <CategoryColor bg={item.bg} />
-                <CategoryContent>
-                  <h4>{item.name}</h4>
-                  <p>{item.notes}</p>
-                </CategoryContent>
-                <ActionsCategory>
-                  <SelectedCategory>
-                    <ToolTip content="Select Category">
-                      <RadioBox
-                        isActive={categoryId === item.id ? true : undefined}
-                        handleChecked={() => setCategoryId(item.id)}
-                      />
-                    </ToolTip>
-                  </SelectedCategory>
-                  <ToolTip content="Edit Category">
-                    <ActionButton
-                      onClick={() => {
-                        setIsCreate(false);
-                        setEditCategoryId(item.id);
-                      }}
-                    >
-                      <BiEditAlt />
-                    </ActionButton>
-                  </ToolTip>
-                </ActionsCategory>
-              </CategoryItem>
-            ))}
-          </CategoryList>
+          <SearchCategory>
+            <OriginInput
+              type="search"
+              name="searchCategory"
+              value={searchContent}
+              placeholder="Enter category name..."
+              setValue={(value) => setSearchContent(value)}
+            />
+          </SearchCategory>
+          {categoryList.length === 0 ? (
+            <NoDataToShow message="No data to show!" />
+          ) : (
+            <>
+              <CategoryList>
+                {categoryList.map((item) => (
+                  <CategoryItem key={item.id}>
+                    <CategoryColor bg={item.bg} />
+                    <CategoryContent>
+                      <h4>{item.name}</h4>
+                      <p>{item.notes}</p>
+                    </CategoryContent>
+                    <ActionsCategory>
+                      <SelectedCategory>
+                        <ToolTip content="Select Category">
+                          <RadioBox
+                            isActive={categoryId === item.id ? true : undefined}
+                            handleChecked={() => setCategoryId(item.id)}
+                          />
+                        </ToolTip>
+                      </SelectedCategory>
+                      <ToolTip content="Edit Category">
+                        <ActionButton
+                          onClick={() => {
+                            setIsCreate(false);
+                            setEditCategoryId(item.id);
+                          }}
+                        >
+                          <BiEditAlt />
+                        </ActionButton>
+                      </ToolTip>
+                    </ActionsCategory>
+                  </CategoryItem>
+                ))}
+              </CategoryList>
+              {categoryListTemp.length > 0 && (
+                <PaginationWrap>
+                  <Pagination
+                    pageSize={QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize}
+                    totalPage={Math.ceil(categoryListTemp.length / QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize)}
+                    currentPage={categoryCurrentPage}
+                    totalElement={categoryListTemp.length}
+                    onNext={() => setCategoryCurrentPage((prev) => prev + 1)}
+                    onPrev={() => setCategoryCurrentPage((prev) => prev - 1)}
+                  />
+                </PaginationWrap>
+              )}
+            </>
+          )}
         </DialogBody>
-        <DialogFooter justifyContent="flex-end">
+        <DialogFooter justifyContent="flex-end" pt={0.04} pr={3.2} pb={3.2} pl={3.2}>
           <SignUpButton type="button" typeColor="errorColor" onClick={handleCancel}>
             {cancelButtonContent}
           </SignUpButton>

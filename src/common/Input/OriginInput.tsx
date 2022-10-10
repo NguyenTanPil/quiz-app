@@ -5,13 +5,23 @@ type OriginInputProps = {
   value: string;
   type?: string;
   name: string;
+  placeholder?: string;
   errorMessage?: string | boolean;
   readOnly?: boolean;
   setValue?: (quizName: string) => void;
   onClick?: () => void;
 };
 
-const OriginInput = ({ value, type, name, errorMessage, readOnly, setValue, onClick }: OriginInputProps) => {
+const OriginInput = ({
+  value,
+  type,
+  name,
+  placeholder,
+  errorMessage,
+  readOnly,
+  setValue,
+  onClick,
+}: OriginInputProps) => {
   const messageRef = useRef<HTMLDivElement>();
   const wrapMessageRef = useRef<HTMLDivElement>();
   const [isShowErrorMessage, setIsShowErrorMessage] = useState(false);
@@ -44,6 +54,7 @@ const OriginInput = ({ value, type, name, errorMessage, readOnly, setValue, onCl
         name={name}
         value={value}
         readOnly={readOnly}
+        placeholder={placeholder}
         onChange={(e: any) => handleChange(e.target.value)}
         onClick={() => onClick && onClick()}
         onBlur={handleInputBlur}
@@ -62,6 +73,7 @@ const OriginInput = ({ value, type, name, errorMessage, readOnly, setValue, onCl
 OriginInput.defaultProps = {
   readOnly: false,
   type: 'text',
+  placeholder: '',
 };
 
 export default OriginInput;
