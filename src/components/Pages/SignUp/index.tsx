@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createAccount } from '../../../api/authentication';
 import signUpImage from '../../../images/signUp.svg';
@@ -8,6 +8,7 @@ import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
 import AuthenForm, { formValueProps } from '../../AuthenForm';
 import { Container } from './SignUpStyles';
 import uuid from 'react-uuid';
+import { ConfirmDialog } from '../../../common/Dialog';
 
 const signUpFormValues: formValueProps[] = [
   {
@@ -48,26 +49,25 @@ type Props = {
 
 const SignUp = ({ isLogin }: Props) => {
   const navigate = useNavigate();
+  const [isShowErrorDialog, setIsShowErrorDialog] = useState(false);
 
   const handleSubmit = async (values: any) => {
     const formValues = { ...values };
 
-    formValues.id = uuid();
     formValues.role =
       values.role === 'Student'
         ? QUIZ_APP_CONSTANTS.AUTHEN_FORM.studentRoleNumber
         : QUIZ_APP_CONSTANTS.AUTHEN_FORM.teacherRoleNumber;
     formValues.nameTitle = QUIZ_APP_CONSTANTS.CREATE_EXAM.initNameTitle;
-    formValues.createdAt = moment().valueOf();
 
     delete formValues.repeatPass;
 
-    try {
-      await createAccount(formValues);
-    } catch (error) {
-      console.log({ error });
+    const response = await createAccount(formValues);
+    if (response.isSuccess) {
+      navigate('/sign-in');
+    } else {
+      setIsShowErrorDialog(true);
     }
-    navigate('/sign-in');
   };
 
   useEffect(() => {
@@ -78,6 +78,17 @@ const SignUp = ({ isLogin }: Props) => {
 
   return (
     <Container>
+      {/* starts dialogs */}
+      {isShowErrorDialog && (
+        <ConfirmDialog
+          content="Your email is exists!"
+          title="Notification"
+          applyButtonContent="Try Again"
+          handleApplyDialog={() => setIsShowErrorDialog(false)}
+          handleCloseDialog={() => setIsShowErrorDialog(false)}
+        />
+      )}
+      {/* starts dialogs */}
       <Wrapper>
         <AuthenForm
           title="Sign Up"

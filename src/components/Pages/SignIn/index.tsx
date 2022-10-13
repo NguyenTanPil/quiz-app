@@ -29,18 +29,27 @@ type Props = {
 
 const SignIn = ({ isLogin, setUser, setIsLogin }: Props) => {
   const navigate = useNavigate();
-  const [isShowDialog, setIsShowDialog] = useState(false);
+  const [isShowErrorDialog, setIsShowErrorDialog] = useState(false);
 
   const handleSubmit = async (values: any) => {
     const response = await checkSignIn(values);
 
     if (response.isSuccess) {
+      const user = response.data.user;
+      const bearerToken = response.data['bearer-token'];
+
+      setUser({
+        nameTitle: 'Mr.',
+        name: user.name,
+        email: user.email,
+      });
+
       setIsLogin(true);
-      setUser(response.data);
-      setCookie({ data: response.data, cookieName: 'user', time: 60 * 60 });
+      setCookie({ data: { user }, cookieName: 'user', time: 60 * 60 * 2 });
+      setCookie({ data: bearerToken, cookieName: 'bearerToken', time: 60 * 60 * 2 });
       navigate('/profile');
     } else {
-      setIsShowDialog(true);
+      setIsShowErrorDialog(true);
     }
   };
 
@@ -53,13 +62,13 @@ const SignIn = ({ isLogin, setUser, setIsLogin }: Props) => {
   return (
     <Container>
       <Wrapper>
-        {isShowDialog && (
+        {isShowErrorDialog && (
           <ConfirmDialog
             content="Your email or your password is incorrect!"
             title="Notification"
-            applyButtonContent="Okay"
-            handleApplyDialog={() => setIsShowDialog(false)}
-            handleCloseDialog={() => setIsShowDialog(false)}
+            applyButtonContent="Try Again"
+            handleApplyDialog={() => setIsShowErrorDialog(false)}
+            handleCloseDialog={() => setIsShowErrorDialog(false)}
           />
         )}
         <AuthenForm

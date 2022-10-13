@@ -42,7 +42,6 @@ const ProfileDialog = ({
   handleCloseDialog,
 }: ProfileDialogProps) => {
   const contentRef = useRef<HTMLDivElement>();
-
   const handleClose = () => {
     handleCloseDialog();
     DialogUtils.resetScrollbar();

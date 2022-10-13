@@ -10,6 +10,15 @@ export const QUIZ_APP_CONSTANTS = {
     numberStandard: 10,
     oneHundredPercent: 100,
     initialCurrentPage: 1,
+    baseUrl: 'https://infinite-beach-99697.herokuapp.com/api/',
+  },
+  API: {
+    baseUrl: 'https://infinite-beach-99697.herokuapp.com/api/',
+    signUpUrl: 'register',
+    signInUrl: 'login',
+    createCategoryUrl: 'creator/category/create',
+    updateCategoryUrl: 'creator/category/update',
+    getCategoryByUserIdUrl: 'creator/category/',
   },
   SLIDER: {
     transitionSecondsDefault: 0.45,
@@ -90,7 +99,7 @@ export const QUIZ_APP_CONSTANTS = {
   },
   AUTHEN_FORM: {
     roles: ['Teacher', 'Student'],
-    teacherRoleNumber: 1,
-    studentRoleNumber: 2,
+    teacherRoleNumber: '1',
+    studentRoleNumber: '2',
   },
 };

@@ -2,6 +2,7 @@ import { Form, Formik } from 'formik';
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { BiEditAlt } from 'react-icons/bi';
 import { MdOutlineClose } from 'react-icons/md';
+import { getCategoryOfUser } from '../../api/category';
 import NoDataToShow from '../../components/NoDataToShow';
 import { CategoryQuiz, LabelGroup } from '../../components/Pages/CreateExam/CreateExamStyles';
 import { compareTwoObjects, DialogUtils, getObjectKeysChanged } from '../../utils';
@@ -85,6 +86,13 @@ type CreateCategoryDialogProps = {
   handleCloseDialog: () => void;
 };
 
+type CategoryItemProps = {
+  id: string;
+  name: string;
+  notes: string;
+  bg: string;
+};
+
 const CreateCategoryDialog = ({
   title,
   cancelButtonContent,
@@ -94,8 +102,8 @@ const CreateCategoryDialog = ({
   handleApplyDialog,
   handleCloseDialog,
 }: CreateCategoryDialogProps) => {
-  const [categoryList, setCategoryList] = useState(categoryListTemp);
-  const [categoryId, setCategoryId] = useState(initialCategory || categoryListTemp[0].id);
+  const [categoryList, setCategoryList] = useState<CategoryItemProps[]>([]);
+  const [categoryId, setCategoryId] = useState(initialCategory);
   const [isCreate, setIsCreate] = useState(false);
   const [editCategoryId, setEditCategoryId] = useState<string | undefined>(undefined);
 
@@ -113,6 +121,7 @@ const CreateCategoryDialog = ({
 
   const debouncedValue = useDebounce<string>(searchContent, 500);
   const contentRef = useRef<HTMLDivElement>();
+  const originCategoryList = useRef([]);
   const initialValues = useMemo(() => {
     if (editCategoryId) {
       const editCategoryIndex = categoryList.findIndex((category) => category.id === editCategoryId) || 0;
@@ -171,7 +180,7 @@ const CreateCategoryDialog = ({
   useEffect(() => {
     setCategoryList((prev) => {
       if (debouncedValue === '') {
-        return categoryListTemp;
+        return originCategoryList.current;
       }
 
       const regex = new RegExp(debouncedValue, 'gi');
@@ -183,8 +192,41 @@ const CreateCategoryDialog = ({
     const startIndex = (categoryCurrentPage - 1) * QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize;
     const endIndex = startIndex + QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize;
 
-    setCategoryList(() => categoryListTemp.slice(startIndex, endIndex));
+    setCategoryList(() => originCategoryList.current.slice(startIndex, endIndex));
   }, [categoryCurrentPage]);
+
+  useEffect(() => {
+    let isSubscribed = true;
+
+    const fetchCategoryList = async () => {
+      const response = await getCategoryOfUser();
+
+      if (response.isSuccess) {
+        const responseList = response.data.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          notes: item.note,
+          bg: item.color,
+        }));
+
+        if (isSubscribed) {
+          setCategoryList(responseList);
+          setCategoryId(categoryId || responseList.id);
+          originCategoryList.current = responseList;
+        }
+      }
+    };
+
+    fetchCategoryList();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, []);
+
+  if (originCategoryList.current.length === 0) {
+    return <div>Nothing to show</div>;
+  }
 
   return (
     <Container>
@@ -315,13 +357,15 @@ const CreateCategoryDialog = ({
                   </CategoryItem>
                 ))}
               </CategoryList>
-              {categoryListTemp.length > 0 && (
+              {originCategoryList.current.length > 0 && (
                 <PaginationWrap>
                   <Pagination
                     pageSize={QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize}
-                    totalPage={Math.ceil(categoryListTemp.length / QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize)}
+                    totalPage={Math.ceil(
+                      originCategoryList.current.length / QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize,
+                    )}
                     currentPage={categoryCurrentPage}
-                    totalElement={categoryListTemp.length}
+                    totalElement={originCategoryList.current.length}
                     onNext={() => setCategoryCurrentPage((prev) => prev + 1)}
                     onPrev={() => setCategoryCurrentPage((prev) => prev - 1)}
                   />

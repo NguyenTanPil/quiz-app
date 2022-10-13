@@ -1,28 +1,37 @@
-import { addDoc, collection, doc, DocumentData, getDocs, query, updateDoc, where } from 'firebase/firestore';
+import axios from 'axios';
+import { collection, doc, DocumentData, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import db from '../firebase';
+import { QUIZ_APP_CONSTANTS } from '../utils/constants';
 
 export const createAccount = async (formValues: any) => {
-  const response = await addDoc(collection(db, 'users'), formValues);
+  const url = QUIZ_APP_CONSTANTS.API.baseUrl + QUIZ_APP_CONSTANTS.API.signUpUrl;
 
-  return response;
+  try {
+    const response = await axios({
+      method: 'post',
+      url,
+      data: formValues,
+    });
+    return { isSuccess: true, data: response.data.data };
+  } catch (error: any) {
+    return { isSuccess: false, data: error.response?.data.errors };
+  }
 };
 
 export const checkSignIn = async (formValues: any) => {
+  const url = QUIZ_APP_CONSTANTS.API.baseUrl + QUIZ_APP_CONSTANTS.API.signInUrl;
   const { email, password } = formValues;
-  const users: DocumentData[] = [];
 
-  const q = query(collection(db, 'users'), where('email', '==', email), where('password', '==', password));
-  const response = await getDocs(q);
-
-  if (response.empty) {
-    return { isSuccess: false };
+  try {
+    const response = await axios({
+      method: 'post',
+      url,
+      data: { email, password },
+    });
+    return { isSuccess: true, data: response.data.data };
+  } catch (error: any) {
+    return { isSuccess: false, data: error.response?.data.error };
   }
-
-  response.forEach((doc) => {
-    users.push({ userId: doc.id, ...doc.data() });
-  });
-
-  return { isSuccess: true, data: users[0] };
 };
 
 export const updateUser = async (userId: string, formValues: any) => {
