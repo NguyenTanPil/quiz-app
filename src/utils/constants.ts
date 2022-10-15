@@ -10,15 +10,17 @@ export const QUIZ_APP_CONSTANTS = {
     numberStandard: 10,
     oneHundredPercent: 100,
     initialCurrentPage: 1,
-    baseUrl: 'https://infinite-beach-99697.herokuapp.com/api/',
   },
   API: {
-    baseUrl: 'https://infinite-beach-99697.herokuapp.com/api/',
+    baseUrl: 'http://127.0.0.1:8000/api/',
     signUpUrl: 'register',
     signInUrl: 'login',
     createCategoryUrl: 'creator/category/create',
-    updateCategoryUrl: 'creator/category/update',
-    getCategoryByUserIdUrl: 'creator/category/',
+    updateCategoryUrl: 'creator/category/update/',
+    getCategoryByUserIdUrl: 'creator/category',
+    getCategoryByIdUrl: 'creator/category/',
+    createExamUrl: 'creator/questionbank/create',
+    getExamByIdUrl: 'creator/questionbank/',
   },
   SLIDER: {
     transitionSecondsDefault: 0.45,
@@ -38,20 +40,21 @@ export const QUIZ_APP_CONSTANTS = {
   CREATE_EXAM: {
     levels: [
       {
-        name: 'Easy',
+        name: 'easy',
         typeColor: 'successColor',
       },
       {
-        name: 'Medium',
+        name: 'medium',
         typeColor: 'warningColor',
       },
       {
-        name: 'Hard',
+        name: 'hard',
         typeColor: 'errorColor',
       },
     ],
     initNameTitle: 'Mr.',
     titles: ['Mr.', 'Ms.', 'Mrs.', 'Dr.'],
+    countLimitList: ['1', '3', '5', 'Limited'],
     initialTimeStart: 0,
     initialTimeDuration: 0,
     initialExamName: '',
@@ -62,9 +65,14 @@ export const QUIZ_APP_CONSTANTS = {
       id: '',
       name: '',
     },
+    initialQuizStructure: {
+      easy: 0,
+      medium: 0,
+      hard: 0,
+    },
     initialId: '',
+    initialCountLimit: '1',
     initialTotalQuestions: 0,
-    initialCountLimit: 1,
     hoursPerDay: 24,
     minutesPerHour: 60,
     categoryPageSize: 4,
@@ -81,20 +89,29 @@ export const QUIZ_APP_CONSTANTS = {
       return Array.from(Array(this.minutesPerHour).keys()).map((minuteNumber) => convertNumberFormat(minuteNumber));
     },
     getLevelNumberByString(level: string) {
-      if (level === 'Easy') {
+      if (level === 'easy') {
         return 0;
-      } else if (level === 'Medium') {
+      } else if (level === 'medium') {
         return 1;
       }
       return 2;
     },
     getLevelStringByNumber(num: number) {
       if (num === 0) {
-        return 'Easy';
+        return 'easy';
       } else if (num === 1) {
-        return 'Medium';
+        return 'medium';
       }
-      return 'Hard';
+      return 'hard';
+    },
+    getCountLimitNumber(str: string) {
+      const countLimitIndex = this.countLimitList.findIndex((count) => count === str);
+
+      if (countLimitIndex === this.countLimitList.length - 1) {
+        return 1000;
+      }
+
+      return parseInt(this.countLimitList[countLimitIndex]);
     },
   },
   AUTHEN_FORM: {

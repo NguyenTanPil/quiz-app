@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { checkSignIn } from '../../../api/authentication';
+import { useAppDispatch } from '../../../app/hooks';
 import { ConfirmDialog } from '../../../common/Dialog';
+import { createToken, createUser } from '../../../features/user/userSlice';
 import signInImage from '../../../images/signIn.svg';
 import { Wrapper } from '../../../styles/Utils';
+import { getLoginStatus } from '../../../utils';
 import { setCookie } from '../../../utils/cookie';
 import AuthenForm, { formValueProps } from '../../AuthenForm';
 import { Container } from '../SignUp/SignUpStyles';
@@ -23,33 +26,39 @@ const signInFormValues: formValueProps[] = [
   },
 ];
 
-type Props = {
-  [key: string]: any;
-};
-
-const SignIn = ({ isLogin, setUser, setIsLogin }: Props) => {
+const SignIn = () => {
   const navigate = useNavigate();
-  const [isShowErrorDialog, setIsShowErrorDialog] = useState(false);
+  const dispatch = useAppDispatch();
+  const isLogin = getLoginStatus();
+  const [errorDialog, setErrorDialog] = useState({ message: '', isShow: false });
 
   const handleSubmit = async (values: any) => {
     const response = await checkSignIn(values);
 
     if (response.isSuccess) {
       const user = response.data.user;
-      const bearerToken = response.data['bearer-token'];
+      const token = response.data['bearer-token'];
 
-      setUser({
-        nameTitle: 'Mr.',
+      const formattedUser = {
+        id: user.id,
         name: user.name,
         email: user.email,
-      });
+        role: parseInt(user.role),
+        avatar: user.avatar,
+        nameTitle: user.nameTitle,
+        createdAt: user.created_at,
+      };
 
-      setIsLogin(true);
-      setCookie({ data: { user }, cookieName: 'user', time: 60 * 60 * 2 });
-      setCookie({ data: bearerToken, cookieName: 'bearerToken', time: 60 * 60 * 2 });
+      dispatch(createUser(formattedUser));
+      dispatch(createToken(token));
+      setCookie({ data: user, cookieName: 'user', time: 60 * 60 * 2 });
+      setCookie({ data: token, cookieName: 'token', time: 60 * 60 * 2 });
       navigate('/profile');
     } else {
-      setIsShowErrorDialog(true);
+      setErrorDialog({
+        isShow: true,
+        message: response.message,
+      });
     }
   };
 
@@ -62,13 +71,13 @@ const SignIn = ({ isLogin, setUser, setIsLogin }: Props) => {
   return (
     <Container>
       <Wrapper>
-        {isShowErrorDialog && (
+        {errorDialog.isShow && (
           <ConfirmDialog
             content="Your email or your password is incorrect!"
             title="Notification"
             applyButtonContent="Try Again"
-            handleApplyDialog={() => setIsShowErrorDialog(false)}
-            handleCloseDialog={() => setIsShowErrorDialog(false)}
+            handleApplyDialog={() => setErrorDialog({ message: '', isShow: false })}
+            handleCloseDialog={() => setErrorDialog({ message: '', isShow: false })}
           />
         )}
         <AuthenForm

@@ -16,6 +16,7 @@ export const Content = styled.div<Props>`
   ${(props) => props.position === 'top' && 'bottom: calc(100% + 1.4rem)'};
   ${(props) => props.position === 'bottom' && 'top: calc(100% + 1.4rem)'};
   left: 50%;
+  text-transform: capitalize;
   transform: translateX(-50%);
   transition: opacity 0.2s ease-out 0.4s;
   visibility: hidden;

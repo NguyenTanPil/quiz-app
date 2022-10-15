@@ -79,7 +79,7 @@ const CreateQuizDialog = ({
           <Formik
             initialValues={initialQuiz}
             onSubmit={(values) => {
-              handleApply({ ...values, id: initialQuiz.id });
+              handleApply({ ...values });
             }}
           >
             {({ dirty, values, setFieldValue, handleSubmit }) => (

@@ -39,7 +39,6 @@ import {
   LevelButton,
   LevelItem,
   LevelList,
-  LevelQuiz,
   NoQuiz,
   QuizItem,
   QuizItemActions,
@@ -57,13 +56,15 @@ import {
   TimeDurationItem,
   TimeStart,
   TotalQuiz,
+  InputQuizStructure,
+  StructureItem,
 } from './CreateExamStyles';
 import CreateCategoryDialog from '../../../common/Dialog/CreateCategoryDialog';
 
 const initialQuiz: QuizProps = {
-  id: uuid(),
+  id: '',
   question: '',
-  level: 'Easy',
+  level: 'easy',
   answers: [
     { id: '1', content: '', isCorrect: undefined },
     { id: '2', content: '', isCorrect: undefined },
@@ -72,9 +73,11 @@ const initialQuiz: QuizProps = {
   ],
 };
 
-type Props = {
-  [key: string]: any;
-};
+interface QuizStructureTemplateState {
+  easy: number;
+  medium: number;
+  hard: number;
+}
 
 type ExamProps = {
   id: string;
@@ -82,7 +85,8 @@ type ExamProps = {
   timeStart: number;
   quizList: QuizProps[];
   category: { id: string; name: string };
-  countLimit: number;
+  quizStructure: QuizStructureTemplateState;
+  countLimit: string;
   totalQuestions: number;
   timeDuration: {
     hours: string;
@@ -98,13 +102,14 @@ const initialExam: ExamProps = {
   category: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialCategory,
   countLimit: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialCountLimit,
   totalQuestions: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialTotalQuestions,
+  quizStructure: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialQuizStructure,
   timeDuration: {
     hours: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialHours,
     minutes: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialMinutes,
   },
 };
 
-const CreateExam = ({ isLogin, user }: Props) => {
+const CreateExam = () => {
   const navigate = useNavigate();
   const { examId } = useParams();
   const [originExam, setOriginExam] = useState<ExamProps>(initialExam);
@@ -144,21 +149,19 @@ const CreateExam = ({ isLogin, user }: Props) => {
   };
 
   const handleSaveExam = async () => {
-    const examId = uuid();
-
     const newQuizList = exam.quizList.map((quiz) => {
-      const { id, question, level, answers } = quiz;
+      const { question, level, answers } = quiz;
 
       const correctAnswer = answers.find((answer) => answer.isCorrect)?.content;
       const inCorrectAnswers = answers.filter((answer) => !answer.isCorrect).map((answer) => answer.content);
 
       return {
-        id,
-        examId,
         content: question,
         level: QUIZ_APP_CONSTANTS.CREATE_EXAM.getLevelNumberByString(level),
         correctAnswer,
-        inCorrectAnswers,
+        inCorrectAnswer: inCorrectAnswers,
+        bottom_question_ids: [],
+        top_question_ids: [],
       };
     });
 
@@ -166,20 +169,24 @@ const CreateExam = ({ isLogin, user }: Props) => {
 
     const formValues = {
       categoryId: exam.category.id,
-      countLimit: exam.countLimit,
-      createdAt: moment().valueOf(),
-      creatorId: user.id,
-      id: examId,
       name: exam.name,
+      countLimit: parseInt(exam.countLimit),
       timeDuration: timeDurationFormat,
       timeStart: exam.timeStart,
-      totalQuestions: newQuizList.length,
+      isPublished: 1,
+      structureExam: {
+        esay: exam.quizStructure.easy,
+        normal: exam.quizStructure.medium,
+        difficult: exam.quizStructure.hard,
+      },
+      note: '',
+      questionList: newQuizList,
     };
 
-    try {
-      await createExam(formValues, newQuizList);
-    } catch (error) {
-      console.log({ error });
+    const response = await createExam(formValues);
+
+    if (response.isSuccess) {
+      console.log({ exam: response.data });
     }
   };
 
@@ -222,50 +229,27 @@ const CreateExam = ({ isLogin, user }: Props) => {
     }
   };
 
+  const getTotalQuestionByLevel = (levelName: string) => {
+    return exam.quizList.filter((question) => question.level === levelName).length;
+  };
+
   useEffect(() => {
     if (!examId) return;
 
     let isSubscribed = true;
 
     const fetchExistExam = async () => {
-      const currentExam = await getExamById(examId);
+      const response = await getExamById(examId);
 
-      if (currentExam.data) {
-        const { categoryId, countLimit, id, name, timeDuration, timeStart, totalQuestions } = currentExam.data;
-        const quizListRes = await getQuizzes(id);
-
-        const quizList = quizListRes.map((quiz) => ({
-          id: quiz.id,
-          question: quiz.content,
-          level: QUIZ_APP_CONSTANTS.CREATE_EXAM.getLevelStringByNumber(quiz.level),
-          answers: shuffleArray([
-            { id: '1', content: quiz.correctAnswer, isCorrect: true },
-
-            ...quiz.inCorrectAnswers.map((answer, idx) => ({
-              id: `${idx + 2}`,
-              content: answer,
-              isCorrect: false,
-            })),
-          ]),
-        }));
-
+      if (response.isSuccess) {
         if (isSubscribed) {
-          const newExam = {
-            id,
-            name,
-            timeStart,
-            quizList,
-            countLimit,
-            totalQuestions,
-            category: { id: categoryId, name: '' },
-            timeDuration: convertMinutesToDuration(timeDuration),
-          };
-
-          setOriginExam(newExam);
-          setExam(newExam);
+          console.log({ examGetter: response.data });
+          setOriginExam(response.data);
+          setExam(response.data);
         }
       } else {
-        navigate('/exams/create-exam');
+        // navigate('/exams/create-exam');
+        console.log({ errorData: response.message });
       }
     };
 
@@ -360,16 +344,15 @@ const CreateExam = ({ isLogin, user }: Props) => {
                 onClick={() => setIsShowCreateCategoryDialog(true)}
               />
             </CategoryQuiz>
-            <LevelQuiz>
-              <LabelGroup>Quiz Level</LabelGroup>
-              <LevelList>
-                {QUIZ_APP_CONSTANTS.CREATE_EXAM.levels.map((level) => (
-                  <LevelItem key={level.name} typeColor={level.typeColor}>
-                    {level.name}
-                  </LevelItem>
-                ))}
-              </LevelList>
-            </LevelQuiz>
+            <CategoryQuiz>
+              <LabelGroup>Count Limit</LabelGroup>
+              <Dropdown
+                id="countLimit"
+                activeValue={exam.countLimit}
+                values={QUIZ_APP_CONSTANTS.CREATE_EXAM.countLimitList}
+                handleSelected={(value) => setExam((prev) => ({ ...prev, countLimit: value }))}
+              />
+            </CategoryQuiz>
           </QuizOptions>
           <QuizOptions>
             <TimeDuration>
@@ -408,13 +391,59 @@ const CreateExam = ({ isLogin, user }: Props) => {
               />
             </TimeStart>
           </QuizOptions>
+          <QuizOptions>
+            <LabelGroup>Structure of Quiz</LabelGroup>
+            <InputQuizStructure>
+              {QUIZ_APP_CONSTANTS.CREATE_EXAM.levels.map((level) => {
+                const { name, typeColor } = level;
+                const inputValue = exam.quizStructure[name as keyof QuizStructureTemplateState];
 
+                return (
+                  <StructureItem key={`quiz-structure-${name}`} borderColorHover={typeColor}>
+                    <ToolTip content={`${name} Level`}>
+                      <LevelItem typeColor={typeColor} as="div">
+                        {name[0]}
+                      </LevelItem>
+                    </ToolTip>
+                    <OriginInput
+                      name={name}
+                      type="number"
+                      min={0}
+                      max={getTotalQuestionByLevel(name)}
+                      value={isNaN(inputValue) ? 0 : inputValue}
+                      errorMessage={
+                        inputValue > getTotalQuestionByLevel(name)
+                          ? `Value must be less than or equal to ${getTotalQuestionByLevel(name)}`
+                          : ''
+                      }
+                      setValue={(value) =>
+                        setExam((prev) => ({
+                          ...prev,
+                          quizStructure: {
+                            ...prev.quizStructure,
+                            [name]: parseInt(value),
+                          },
+                        }))
+                      }
+                    />
+                  </StructureItem>
+                );
+              })}
+            </InputQuizStructure>
+          </QuizOptions>
           {exam.quizList.length > 0 ? (
             <TotalQuiz>
               <h3>
                 <MdOutlineMenuOpen />
                 <span>{convertNumberFormat(exam.quizList.length)} Quizzes</span>
               </h3>
+              <LevelList>
+                {QUIZ_APP_CONSTANTS.CREATE_EXAM.levels.map((level) => (
+                  <LevelItem key={level.name} typeColor={level.typeColor}>
+                    {level.name}
+                  </LevelItem>
+                ))}
+              </LevelList>
             </TotalQuiz>
           ) : (
             <NoQuiz>
@@ -469,7 +498,16 @@ const CreateExam = ({ isLogin, user }: Props) => {
           </QuizList>
           <CreateQuizFooter>
             <SignUpButton
-              disabled={compareTwoObjects(originExam, exam)}
+              disabled={
+                examId
+                  ? compareTwoObjects(originExam, exam)
+                  : exam.name === QUIZ_APP_CONSTANTS.CREATE_EXAM.initialExamName ||
+                    exam.timeStart === QUIZ_APP_CONSTANTS.CREATE_EXAM.initialTimeStart ||
+                    exam.category === QUIZ_APP_CONSTANTS.CREATE_EXAM.initialCategory ||
+                    exam.timeDuration.hours === QUIZ_APP_CONSTANTS.CREATE_EXAM.initialHours ||
+                    exam.timeDuration.minutes === QUIZ_APP_CONSTANTS.CREATE_EXAM.initialMinutes ||
+                    compareTwoObjects(exam.quizStructure, QUIZ_APP_CONSTANTS.CREATE_EXAM.initialQuizStructure)
+              }
               onClick={examId ? handleUpdateExam : handleSaveExam}
             >
               Save

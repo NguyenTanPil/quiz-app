@@ -185,7 +185,7 @@ export const CategoryItem = styled.li`
 `;
 
 export const CategoryColor = styled.div<Props>`
-  background-color: ${(props) => props.bg};
+  background-color: ${(props) => props.color};
   border-radius: 0.4rem;
   height: 4rem;
   min-width: 4rem;

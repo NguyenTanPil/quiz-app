@@ -23,6 +23,17 @@ const GlobalStyles = createGlobalStyle`
     color: inherit;
   }
 
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+      display: none; 
+      -webkit-appearance: none;
+      margin: 0; 
+  }
+
+  input[type=number] {
+      -moz-appearance:textfield;
+  }
+
   .MuiCalendarPicker-root button.Mui-selected {
     background-color: #9852f9 !important;
   }

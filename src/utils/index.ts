@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { breakpointsProps } from '../common/Slider';
 import { QUIZ_APP_CONSTANTS } from './constants';
+import { getCookie } from './cookie';
 
 export const shuffleArray = (array: any[]) => {
   return [...array].sort(() => Math.random() - 0.5);
@@ -200,4 +201,14 @@ export const formatCreatedAt = (time: number) => {
   const months = Math.ceil(distance / oneMonth);
 
   return `${convertNumberFormat(months)} days ago`;
+};
+
+export const getLoginStatus = (): boolean => {
+  const user = getCookie('user');
+
+  if (user) {
+    return true;
+  }
+
+  return false;
 };

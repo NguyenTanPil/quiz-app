@@ -2,12 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Container, ErrorMessage, InputField, WrapMessage } from './InputStyles';
 
 type OriginInputProps = {
-  value: string;
+  value: string | number;
   type?: string;
   name: string;
   placeholder?: string;
   errorMessage?: string | boolean;
   readOnly?: boolean;
+  min?: number;
+  max?: number;
   setValue?: (quizName: string) => void;
   onClick?: () => void;
 };
@@ -19,6 +21,8 @@ const OriginInput = ({
   placeholder,
   errorMessage,
   readOnly,
+  min,
+  max,
   setValue,
   onClick,
 }: OriginInputProps) => {
@@ -55,6 +59,8 @@ const OriginInput = ({
         value={value}
         readOnly={readOnly}
         placeholder={placeholder}
+        min={min}
+        max={max}
         onChange={(e: any) => handleChange(e.target.value)}
         onClick={() => onClick && onClick()}
         onBlur={handleInputBlur}

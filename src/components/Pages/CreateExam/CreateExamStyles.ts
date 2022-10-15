@@ -77,12 +77,21 @@ export const TotalQuiz = styled.div`
   background-color: #f2f2f2;
   border-radius: 0.8rem;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
   margin-top: 4rem;
+
+  ${breakpoints({
+    cssProp: 'flex-direction',
+    cssPropUnits: '',
+    values: [{ [devices.default]: 'column' }, { [devices.smallDevices]: 'row' }],
+  })};
 
   ${breakpoints({
     cssProp: 'padding',
     cssPropUnits: '',
-    values: [{ [devices.default]: '2rem 1.2rem' }, { [devices.smallDevices]: '4rem 3.2rem' }],
+    values: [{ [devices.default]: '2rem 1.2rem' }, { [devices.smallDevices]: '3.2rem 3.2rem' }],
   })};
 
   h3 {
@@ -102,6 +111,83 @@ export const TotalQuiz = styled.div`
       font-weight: 600;
       margin-right: 0.4rem;
     }
+  }
+
+  & > ul {
+    ${breakpoints({
+      cssProp: 'margin-top',
+      cssPropUnits: 'rem',
+      values: [{ [devices.default]: 2 }, { [devices.smallDevices]: 0 }],
+    })};
+  }
+`;
+
+export const InputQuizStructure = styled.ul`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+
+  ${breakpoints({
+    cssProp: 'flex-direction',
+    cssPropUnits: '',
+    values: [{ [devices.default]: 'column' }, { [devices.smallDevices]: 'row' }],
+  })};
+
+  && {
+    margin-top: 1.6rem;
+  }
+`;
+
+export const StructureItem = styled.li<Props>`
+  display: flex;
+  align-items: flex-start;
+
+  ${breakpoints({
+    cssProp: 'margin-bottom',
+    cssPropUnits: '',
+    values: [{ [devices.default]: '2rem' }, { [devices.smallDevices]: '0' }],
+  })};
+
+  ${breakpoints({
+    cssProp: 'width',
+    cssPropUnits: '',
+    values: [{ [devices.default]: '100%' }, { [devices.smallDevices]: 'calc((100% / 3) - 0.8rem)' }],
+  })};
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  & > div:first-child > div:first-child {
+    border-right: 0;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 4.8rem;
+    margin-right: 0;
+    min-width: 4.8rem;
+  }
+
+  & > div:last-child {
+    flex-grow: 1;
+  }
+
+  input {
+    border-left: 0;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    padding-right: 1.6rem;
+
+    &:focus {
+      border-color: ${(props) => props.theme[props.borderColorHover]};
+    }
+  }
+
+  input + div > div {
+    padding-left: 0;
   }
 `;
 
@@ -228,7 +314,7 @@ export const CategoryQuiz = styled.div`
   ${breakpoints({
     cssProp: 'width',
     cssPropUnits: '',
-    values: [{ [devices.default]: '100%' }, { [devices.smallDevices]: 'calc(40% - 0.8rem)' }],
+    values: [{ [devices.default]: '100%' }, { [devices.smallDevices]: 'calc(50% - 0.8rem)' }],
   })};
 
   h3 {
@@ -243,22 +329,11 @@ export const CategoryQuiz = styled.div`
 export const QuizOptions = styled(TotalQuiz)`
   align-items: center;
   flex-wrap: wrap;
+  align-items: flex-start;
   justify-content: space-between;
 
   & > div {
     margin-bottom: 1.2rem;
-  }
-`;
-
-export const LevelQuiz = styled.div`
-  ${breakpoints({
-    cssProp: 'width',
-    cssPropUnits: '',
-    values: [{ [devices.default]: '100%' }, { [devices.smallDevices]: 'calc(60% - 0.8rem)' }],
-  })};
-
-  h3 {
-    margin-bottom: 1.6rem;
   }
 `;
 
@@ -276,6 +351,7 @@ export const LevelItem = styled.li<Props>`
   margin-right: 0.8rem;
   min-height: 4.6rem;
   padding: 1.2rem 1.6rem;
+  text-transform: capitalize;
   width: fit-content;
 `;
 

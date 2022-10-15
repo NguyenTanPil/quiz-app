@@ -49,7 +49,7 @@ type Props = {
 
 const SignUp = ({ isLogin }: Props) => {
   const navigate = useNavigate();
-  const [isShowErrorDialog, setIsShowErrorDialog] = useState(false);
+  const [errorDialog, setErrorDialog] = useState({message: '', isShow: false});
 
   const handleSubmit = async (values: any) => {
     const formValues = { ...values };
@@ -66,7 +66,10 @@ const SignUp = ({ isLogin }: Props) => {
     if (response.isSuccess) {
       navigate('/sign-in');
     } else {
-      setIsShowErrorDialog(true);
+      setErrorDialog({
+        isShow: true,
+        message: response.message,
+      });
     }
   };
 
@@ -79,13 +82,13 @@ const SignUp = ({ isLogin }: Props) => {
   return (
     <Container>
       {/* starts dialogs */}
-      {isShowErrorDialog && (
+      {errorDialog.isShow && (
         <ConfirmDialog
-          content="Your email is exists!"
+          content={errorDialog.message}
           title="Notification"
           applyButtonContent="Try Again"
-          handleApplyDialog={() => setIsShowErrorDialog(false)}
-          handleCloseDialog={() => setIsShowErrorDialog(false)}
+          handleApplyDialog={() => setErrorDialog({ message: '', isShow: false })}
+          handleCloseDialog={() => setErrorDialog({ message: '', isShow: false })}
         />
       )}
       {/* starts dialogs */}

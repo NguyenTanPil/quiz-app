@@ -1,80 +1,47 @@
 import { Form, Formik } from 'formik';
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { BiEditAlt } from 'react-icons/bi';
 import { MdOutlineClose } from 'react-icons/md';
-import { getCategoryOfUser } from '../../api/category';
+import { createCategory, getCategoryOfUser, updateCategory } from '../../api/category';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import NoDataToShow from '../../components/NoDataToShow';
-import { CategoryQuiz, LabelGroup } from '../../components/Pages/CreateExam/CreateExamStyles';
+import { LabelGroup } from '../../components/Pages/CreateExam/CreateExamStyles';
+import {
+  addNewCategory,
+  CategoryState,
+  createCategoryList,
+  selectCategoryList,
+  updateCategoryListById,
+} from '../../features/category/categorySlice';
 import { compareTwoObjects, DialogUtils, getObjectKeysChanged } from '../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../utils/constants';
-import { QuizProps } from '../../utils/types';
 import useOnClickOutside from '../../utils/useOnClickOutside';
 import { ActionButton, DialogCloseButton, SignUpButton } from '../Button';
-import Dropdown from '../Dropdown';
 import useDebounce from '../hooks/useDebounce';
-import { OriginInput, QuizAnswerInput, RadioBox, Textarea, ValidTextInput } from '../Input';
+import { OriginInput, RadioBox, Textarea } from '../Input';
 import Pagination from '../Pagination';
 import ToolTip from '../ToolTip';
 import {
+  ActionsCategory,
+  CategoryColor,
+  CategoryContent,
+  CategoryItem,
+  CategoryList,
   Container,
+  CreateCategory,
+  CreateCategoryActions,
   CreateQuizContent,
   DialogBody,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   ElementGroup,
-  QuizAnswers,
-  QuizOptions,
-  CategoryList,
-  CategoryItem,
-  CategoryContent,
-  CategoryColor,
-  SelectedCategory,
-  ActionsCategory,
-  CreateCategory,
-  CreateCategoryActions,
-  SearchCategory,
-  PaginationWrap,
   FormBody,
+  PaginationWrap,
+  QuizOptions,
+  SearchCategory,
+  SelectedCategory,
 } from './DialogStyles';
-
-const categoryListTemp = [
-  {
-    id: '123',
-    name: 'Category Name 1',
-    notes:
-      'I want to wrap a text within only two lines inside div of specific width. If text goes beyond the length of two lines then I want to show ellipses. Is there a way to do that using CSS',
-    bg: '#ddffff',
-  },
-  {
-    id: '1233',
-    name: 'Category Name 2',
-    notes:
-      'I want to wrap a text within only two lines inside div of specific width. If text goes beyond the length of two lines then I want to show ellipses. Is there a way to do that using CSS',
-    bg: '#dddfff',
-  },
-  {
-    id: '123345',
-    name: 'Category Name 24',
-    notes:
-      'I want to wrap a text within only two lines inside div of specific width. If text goes beyond the length of two lines then I want to show ellipses. Is there a way to do that using CSS',
-    bg: '#dddfff',
-  },
-  {
-    id: '123346',
-    name: 'Category Name 24',
-    notes:
-      'I want to wrap a text within only two lines inside div of specific width. If text goes beyond the length of two lines then I want to show ellipses. Is there a way to do that using CSS',
-    bg: '#dddfff',
-  },
-  {
-    id: '123347',
-    name: 'Category Name 24',
-    notes:
-      'I want to wrap a text within only two lines inside div of specific width. If text goes beyond the length of two lines then I want to show ellipses. Is there a way to do that using CSS',
-    bg: '#dddfff',
-  },
-];
 
 type CreateCategoryDialogProps = {
   title: string;
@@ -86,13 +53,6 @@ type CreateCategoryDialogProps = {
   handleCloseDialog: () => void;
 };
 
-type CategoryItemProps = {
-  id: string;
-  name: string;
-  notes: string;
-  bg: string;
-};
-
 const CreateCategoryDialog = ({
   title,
   cancelButtonContent,
@@ -102,7 +62,10 @@ const CreateCategoryDialog = ({
   handleApplyDialog,
   handleCloseDialog,
 }: CreateCategoryDialogProps) => {
-  const [categoryList, setCategoryList] = useState<CategoryItemProps[]>([]);
+  const originCategoryList = useAppSelector(selectCategoryList);
+  const dispatch = useAppDispatch();
+
+  const [categoryList, setCategoryList] = useState<CategoryState[]>([]);
   const [categoryId, setCategoryId] = useState(initialCategory);
   const [isCreate, setIsCreate] = useState(false);
   const [editCategoryId, setEditCategoryId] = useState<string | undefined>(undefined);
@@ -111,7 +74,7 @@ const CreateCategoryDialog = ({
   const [categoryCurrentPage, setCategoryCurrentPage] = useState<number>(() => {
     if (initialCategory) {
       const currentIndex =
-        categoryListTemp.findIndex((category) => category.id === initialCategory) ||
+        originCategoryList.findIndex((category: CategoryState) => category.id === initialCategory) ||
         QUIZ_APP_CONSTANTS.COMMON.initialCurrentPage;
       return Math.ceil((currentIndex + 0.5) / QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize);
     }
@@ -121,19 +84,19 @@ const CreateCategoryDialog = ({
 
   const debouncedValue = useDebounce<string>(searchContent, 500);
   const contentRef = useRef<HTMLDivElement>();
-  const originCategoryList = useRef([]);
   const initialValues = useMemo(() => {
     if (editCategoryId) {
-      const editCategoryIndex = categoryList.findIndex((category) => category.id === editCategoryId) || 0;
+      const editCategoryIndex = categoryList.findIndex((category: CategoryState) => category.id === editCategoryId);
       const editCategory = categoryList[editCategoryIndex];
+
       return {
         categoryName: editCategory.name,
-        categoryNotes: editCategory.notes,
-        categoryBg: editCategory.bg,
+        categoryNote: editCategory.note,
+        categoryBg: editCategory.color,
       };
     }
 
-    return { categoryName: '', categoryBg: '#9852f9', categoryNotes: '' };
+    return { categoryName: '', categoryBg: '#9852f9', categoryNote: '' };
   }, [editCategoryId]);
 
   const handleClose = () => {
@@ -148,27 +111,42 @@ const CreateCategoryDialog = ({
     DialogUtils.resetScrollbar();
   };
 
-  const handleCreateNewCategory = (values: any) => {
-    setCategoryList((prev) => [...prev, { id: '1234556', ...values }]);
+  const handleCreateNewCategory = async (values: any) => {
+    const response = await createCategory({
+      name: values.name,
+      note: values.note,
+      isPublished: 1,
+      color: values.color,
+    });
+
+    if (response.isSuccess) {
+      const { id, name, note, isPublished, color } = response.data;
+      const newCategory = { id, name, note, isPublished, color };
+
+      setCategoryList((prev) => [...prev, newCategory]);
+      dispatch(addNewCategory(newCategory));
+    }
   };
 
-  const handleUpdateCategory = (values: any) => {
-    const editCategoryIndex = categoryList.findIndex((category) => category.id === editCategoryId) || 0;
+  const handleUpdateCategory = async (values: any) => {
+    const editCategoryIndex = categoryList.findIndex((category: CategoryState) => category.id === editCategoryId) || 0;
     const updatedCategory = { ...categoryList[editCategoryIndex] };
     const changedKeys = getObjectKeysChanged(updatedCategory, { ...values, id: editCategoryId });
 
-    if (changedKeys.isUpdated === false) return;
+    if (changedKeys.isUpdated === false || editCategoryId === undefined) return;
+    setCategoryList((prev) =>
+      prev.map((category) => (category.id === editCategoryId ? { ...updatedCategory, ...changedKeys.data } : category)),
+    );
 
-    for (const key in changedKeys.data) {
-      updatedCategory[key as keyof typeof updatedCategory] = changedKeys.data[key];
-    }
-
-    setCategoryList((prev) => prev.map((category) => (category.id === editCategoryId ? updatedCategory : category)));
+    const response = await updateCategory(changedKeys.data, editCategoryId);
+    dispatch(updateCategoryListById({ ...updatedCategory, ...changedKeys.data }));
   };
 
   const handleApply = () => {
-    const categoryIndex = categoryList.findIndex((category) => category.id === categoryId) || 0;
-    handleApplyDialog(categoryList[categoryIndex]);
+    const categoryIndex = categoryList.findIndex((category) => category.id === categoryId);
+    handleApplyDialog(
+      categoryIndex === -1 ? QUIZ_APP_CONSTANTS.CREATE_EXAM.initialCategory : categoryList[categoryIndex],
+    );
     DialogUtils.resetScrollbar();
     handleCloseDialog();
   };
@@ -180,7 +158,7 @@ const CreateCategoryDialog = ({
   useEffect(() => {
     setCategoryList((prev) => {
       if (debouncedValue === '') {
-        return originCategoryList.current;
+        return originCategoryList;
       }
 
       const regex = new RegExp(debouncedValue, 'gi');
@@ -192,7 +170,7 @@ const CreateCategoryDialog = ({
     const startIndex = (categoryCurrentPage - 1) * QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize;
     const endIndex = startIndex + QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize;
 
-    setCategoryList(() => originCategoryList.current.slice(startIndex, endIndex));
+    setCategoryList(() => originCategoryList.slice(startIndex, endIndex));
   }, [categoryCurrentPage]);
 
   useEffect(() => {
@@ -205,14 +183,14 @@ const CreateCategoryDialog = ({
         const responseList = response.data.map((item: any) => ({
           id: item.id,
           name: item.name,
-          notes: item.note,
-          bg: item.color,
+          note: item.note,
+          color: item.color,
         }));
 
         if (isSubscribed) {
           setCategoryList(responseList);
           setCategoryId(categoryId || responseList.id);
-          originCategoryList.current = responseList;
+          dispatch(createCategoryList(responseList));
         }
       }
     };
@@ -223,10 +201,6 @@ const CreateCategoryDialog = ({
       isSubscribed = false;
     };
   }, []);
-
-  if (originCategoryList.current.length === 0) {
-    return <div>Nothing to show</div>;
-  }
 
   return (
     <Container>
@@ -243,7 +217,7 @@ const CreateCategoryDialog = ({
               initialValues={initialValues}
               enableReinitialize={true}
               onSubmit={(values, actions) => {
-                const prevValues = { name: values.categoryName, notes: values.categoryNotes, bg: values.categoryBg };
+                const prevValues = { name: values.categoryName, note: values.categoryNote, color: values.categoryBg };
 
                 if (isCreate) {
                   handleCreateNewCategory(prevValues);
@@ -278,12 +252,12 @@ const CreateCategoryDialog = ({
                       </ElementGroup>
                     </QuizOptions>
                     <ElementGroup>
-                      <h3>Category Notes</h3>
+                      <h3>Category note</h3>
                       <Textarea
-                        id="category-notes"
-                        value={values.categoryNotes}
+                        id="category-note"
+                        value={values.categoryNote}
                         setValue={(value) => {
-                          setFieldValue('categoryNotes', value);
+                          setFieldValue('categoryNote', value);
                         }}
                       />
                     </ElementGroup>
@@ -323,16 +297,16 @@ const CreateCategoryDialog = ({
             />
           </SearchCategory>
           {categoryList.length === 0 ? (
-            <NoDataToShow message="No data to show!" />
+            <NoDataToShow message="No categories to show!" />
           ) : (
             <>
               <CategoryList>
                 {categoryList.map((item) => (
                   <CategoryItem key={item.id}>
-                    <CategoryColor bg={item.bg} />
+                    <CategoryColor color={item.color} />
                     <CategoryContent>
                       <h4>{item.name}</h4>
-                      <p>{item.notes}</p>
+                      <p>{item.note}</p>
                     </CategoryContent>
                     <ActionsCategory>
                       <SelectedCategory>
@@ -357,15 +331,13 @@ const CreateCategoryDialog = ({
                   </CategoryItem>
                 ))}
               </CategoryList>
-              {originCategoryList.current.length > 0 && (
+              {originCategoryList.length > QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize && (
                 <PaginationWrap>
                   <Pagination
                     pageSize={QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize}
-                    totalPage={Math.ceil(
-                      originCategoryList.current.length / QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize,
-                    )}
+                    totalPage={Math.ceil(originCategoryList.length / QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize)}
                     currentPage={categoryCurrentPage}
-                    totalElement={originCategoryList.current.length}
+                    totalElement={originCategoryList.length}
                     onNext={() => setCategoryCurrentPage((prev) => prev + 1)}
                     onPrev={() => setCategoryCurrentPage((prev) => prev - 1)}
                   />
@@ -378,7 +350,7 @@ const CreateCategoryDialog = ({
           <SignUpButton type="button" typeColor="errorColor" onClick={handleCancel}>
             {cancelButtonContent}
           </SignUpButton>
-          <SignUpButton type="button" typeColor="successColor" onClick={handleApply}>
+          <SignUpButton type="button" typeColor="successColor" disabled={!categoryId} onClick={handleApply}>
             {applyButtonContent}
           </SignUpButton>
         </DialogFooter>

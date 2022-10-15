@@ -42,7 +42,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="game" element={<Game />} />
           <Route path="sign-up" element={<SignUp isLogin={isLogin} setUser={setUser} />} />
-          <Route path="sign-in" element={<SignIn isLogin={isLogin} setUser={setUser} setIsLogin={setIsLogin} />} />
+          <Route path="sign-in" element={<SignIn />} />
           <Route path="exams" element={<RouteGroup />}>
             <Route path=":examId" element={<CreateExam isLogin={isLogin} user={user} />} />
             <Route path="create-exam" element={<CreateExam isLogin={isLogin} user={user} />} />
