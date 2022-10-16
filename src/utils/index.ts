@@ -156,7 +156,7 @@ export const convertMinutesToDuration = (time: number) => {
 export const getObjectKeysChanged = (currentObj: any, changedObj: any) => {
   const targetObj: { [key: string]: any } = {};
 
-  for (const key in currentObj) {
+  for (const key in changedObj) {
     if (currentObj[key] !== changedObj[key]) {
       targetObj[key] = changedObj[key];
     }

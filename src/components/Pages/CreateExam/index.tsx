@@ -1,30 +1,24 @@
-import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { BiCopy, BiEditAlt, BiPlus } from 'react-icons/bi';
-import { HiPlus } from 'react-icons/hi';
-import { FiEdit } from 'react-icons/fi';
+import { BiCopy, BiEditAlt } from 'react-icons/bi';
 import { CgTrash } from 'react-icons/cg';
 import { FiPlusSquare } from 'react-icons/fi';
 import { MdOutlineMenuOpen } from 'react-icons/md';
 import { SiOpslevel } from 'react-icons/si';
 import { useNavigate, useParams } from 'react-router-dom';
 import uuid from 'react-uuid';
-import { createExam, getExamById, updateExam } from '../../../api/exam';
-import { getQuizzes } from '../../../api/quiz';
+import { createExam, getExamById } from '../../../api/exam';
 import { ActionButton, SignUpButton } from '../../../common/Button';
-import { ConfirmDialog, CreateQuizDialog } from '../../../common/Dialog';
+import { ConfirmDialog, CreateQuizDialog, CreateCategoryDialog } from '../../../common/Dialog';
 import Dropdown from '../../../common/Dropdown';
 import { DateTimePickerInput, OriginInput } from '../../../common/Input';
 import ToolTip from '../../../common/ToolTip';
 import { EmptyListAction, WrapperSection } from '../../../styles/Utils';
 import {
   compareTwoObjects,
-  convertMinutesToDuration,
   convertNumberFormat,
   convertTimeDurationToMinutes,
   deepCloneObject,
   getObjectKeysChanged,
-  shuffleArray,
 } from '../../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
 import { AnswerProps, QuizProps } from '../../../utils/types';
@@ -35,6 +29,7 @@ import {
   CreateNewQuiz,
   CreateQuizFooter,
   CreateQuizHeader,
+  InputQuizStructure,
   LabelGroup,
   LevelButton,
   LevelItem,
@@ -51,18 +46,16 @@ import {
   QuizList,
   QuizName,
   QuizOptions,
+  StructureItem,
   TimeDuration,
   TimeDurationGroup,
   TimeDurationItem,
   TimeStart,
   TotalQuiz,
-  InputQuizStructure,
-  StructureItem,
 } from './CreateExamStyles';
-import CreateCategoryDialog from '../../../common/Dialog/CreateCategoryDialog';
 
 const initialQuiz: QuizProps = {
-  id: '',
+  id: uuid(),
   question: '',
   level: 'easy',
   answers: [
@@ -121,6 +114,7 @@ const CreateExam = () => {
   const [deleteId, setDeleteId] = useState<string | undefined>(undefined);
 
   const handleCreateNewQuiz = (values: QuizProps) => {
+    console.log({ values });
     setExam((prev) => ({ ...prev, quizList: [...prev.quizList, values] }));
   };
 
@@ -197,16 +191,21 @@ const CreateExam = () => {
     if (examDiffs?.data) {
       if (examDiffs.data.hasOwnProperty('quizList')) {
         examDiffs.data.quizList.forEach((quiz: QuizProps, idx: number) => {
-          const quizDiffs = getObjectKeysChanged(originExam.quizList[idx], quiz);
-          quizListDiffs.push({ ...quizDiffs.data, id: quiz.id });
+          if (originExam.quizList[idx]) {
+            const quizDiffs = getObjectKeysChanged(originExam.quizList[idx], quiz);
+            quizDiffs?.data && quizListDiffs.push({ ...quizDiffs.data, id: quiz.id });
+          } else {
+            quizListDiffs.push(quiz);
+          }
         });
+      }
 
-        delete examDiffs.data.quizList;
-      } else {
-        examDiffs.data.categoryId = examDiffs.data.category;
+      if (examDiffs.data.hasOwnProperty('category')) {
+        examDiffs.data.categoryId = examDiffs.data.category.id;
         delete examDiffs.data.category;
       }
 
+      console.log({ quizListDiffs });
       quizListDiffs = quizListDiffs.map((quiz) => {
         if (quiz.hasOwnProperty('answers')) {
           const answers = quiz.answers;
@@ -215,13 +214,14 @@ const CreateExam = () => {
             .filter((answer: AnswerProps) => !answer.isCorrect)
             .map((answer: AnswerProps) => answer.content);
 
-          delete quiz.answers;
+          // delete quiz.answers;
           return { ...quiz, correctAnswer, inCorrectAnswers };
         }
       });
 
       try {
-        await updateExam({ ...examDiffs.data, id: exam.id }, quizListDiffs, exam.id);
+        // await updateExam({ ...examDiffs.data, id: exam.id }, quizListDiffs, exam.id);
+        console.log({ examDiffs, quizListDiffs });
         setOriginExam(exam);
       } catch (error) {
         console.log({ error });
@@ -243,13 +243,11 @@ const CreateExam = () => {
 
       if (response.isSuccess) {
         if (isSubscribed) {
-          console.log({ examGetter: response.data });
           setOriginExam(response.data);
           setExam(response.data);
         }
       } else {
-        // navigate('/exams/create-exam');
-        console.log({ errorData: response.message });
+        navigate('/exams/create-exam');
       }
     };
 

@@ -51,7 +51,7 @@ const SignIn = () => {
 
       dispatch(createUser(formattedUser));
       dispatch(createToken(token));
-      setCookie({ data: user, cookieName: 'user', time: 60 * 60 * 2 });
+      setCookie({ data: formattedUser, cookieName: 'user', time: 60 * 60 * 2 });
       setCookie({ data: token, cookieName: 'token', time: 60 * 60 * 2 });
       navigate('/profile');
     } else {

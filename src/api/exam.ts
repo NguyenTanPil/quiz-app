@@ -1,24 +1,42 @@
-import { addDoc, collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
-import db from '../firebase';
-import { QUIZ_APP_CONSTANTS } from '../utils/constants';
-import { Exam, Quiz } from '../utils/types';
-import { createQuiz, updateQuiz } from './quiz';
 import axios from 'axios';
-import { getCookie } from '../utils/cookie';
+import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
+import db from '../firebase';
 import { convertMinutesToDuration } from '../utils';
+import { QUIZ_APP_CONSTANTS } from '../utils/constants';
+import { getCookie } from '../utils/cookie';
+import { Exam } from '../utils/types';
 import { getCategoryById } from './category';
+import { updateQuiz } from './quiz';
 
-export const getExamsByUserId = async (userId: string) => {
-  const exams: Exam[] = [];
+export const getExamsByUserId = async () => {
+  const token = getCookie('token');
+  const url = QUIZ_APP_CONSTANTS.API.baseUrl + QUIZ_APP_CONSTANTS.API.getExamByUserIdUrl;
 
-  const q = query(collection(db, 'exams'), where('creatorId', '==', userId));
-  const response = await getDocs(q);
+  try {
+    const response = await axios({
+      method: 'get',
+      url,
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-  response.forEach((doc) => {
-    exams.push(doc.data() as Exam);
-  });
+    const data = await Promise.all(
+      response.data.data.map(async (exam: any) => {
+        const category = await getCategoryById('0d191462-bd66-4143-b37c-ddf92f74b19e');
 
-  return exams;
+        return {
+          id: exam.main[0].id,
+          name: exam.main[0].name,
+          category: { id: category.data.id, name: category.data.name },
+          totalQuestions: exam.sub.total,
+          createdAt: exam.main[0].created_at,
+        };
+      }),
+    );
+
+    return { isSuccess: true, data };
+  } catch (error: any) {
+    return { isSuccess: false, message: error.message };
+  }
 };
 
 export const createExam = async (formValues: any) => {

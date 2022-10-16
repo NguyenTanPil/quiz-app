@@ -10,6 +10,10 @@ export const QUIZ_APP_CONSTANTS = {
     numberStandard: 10,
     oneHundredPercent: 100,
     initialCurrentPage: 1,
+    itemsPerPage: 4,
+    startIndex: 0,
+    emptyArrayLength: 0,
+    debounceSeconds: 500,
   },
   API: {
     baseUrl: 'http://127.0.0.1:8000/api/',
@@ -21,6 +25,7 @@ export const QUIZ_APP_CONSTANTS = {
     getCategoryByIdUrl: 'creator/category/',
     createExamUrl: 'creator/questionbank/create',
     getExamByIdUrl: 'creator/questionbank/',
+    getExamByUserIdUrl: 'creator/questionbank',
   },
   SLIDER: {
     transitionSecondsDefault: 0.45,

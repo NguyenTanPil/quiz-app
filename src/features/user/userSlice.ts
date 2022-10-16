@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../../app/store';
+import { getCookie } from '../../utils/cookie';
 
 interface UserDetailState {
   id: string;
@@ -17,14 +18,23 @@ interface UserState {
   token: string;
 }
 
-const initialState: UserState = {
-  user: { id: '', name: '', email: '', role: 2, avatar: '', nameTitle: 'Mr.', createdAt: 0 },
-  token: '',
+const getInitialState = (): UserState => {
+  const token = getCookie('token');
+  const user = getCookie('user');
+
+  if (token) {
+    return { user, token };
+  }
+
+  return {
+    user: { id: '', name: '', email: '', role: 2, avatar: '', nameTitle: 'Mr.', createdAt: 0 },
+    token: '',
+  };
 };
 
 export const userSlice = createSlice({
   name: 'user',
-  initialState,
+  initialState: getInitialState(),
   reducers: {
     createUser(state, action: PayloadAction<UserDetailState>) {
       state.user = action.payload;

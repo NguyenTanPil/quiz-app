@@ -146,22 +146,33 @@ export const ProfileQuizList = styled.ul`
   background-color: #f2f2f2;
   border-radius: 0.8rem;
   display: flex;
-  flex-direction: column;
-  margin-top: 4rem;
 
   ${breakpoints({
-    cssProp: 'padding',
+    cssProp: 'flex-direction',
     cssPropUnits: '',
-    values: [{ [devices.default]: '2rem 1.2rem' }, { [devices.smallDevices]: '4rem 3.2rem' }],
+    values: [{ [devices.default]: 'column' }, { [devices.smallDevices]: 'row' }],
+  })};
+
+  ${breakpoints({
+    cssProp: ['padding-left', 'padding-right'],
+    cssPropUnits: 'rem',
+    values: [{ [devices.default]: 1.2 }, { [devices.smallDevices]: 3.2 }],
   })};
 `;
 
 export const ProfileQuizItem = styled.li`
-  background-color: ${(props) => props.theme.backgroundColor};
+  border: 0.1rem solid ${(props) => props.theme.borderColor};
   border-radius: 0.4rem;
+  box-sizing: border-box;
   display: flex;
   margin-bottom: 2.4rem;
   padding: 1.2rem;
+
+  ${breakpoints({
+    cssProp: 'width',
+    cssPropUnits: '',
+    values: [{ [devices.default]: '100%' }, { [devices.mediumDevices]: 'calc(50% - 0.8rem)' }],
+  })};
 
   &:last-child {
     margin-bottom: 0;
@@ -247,5 +258,94 @@ export const ProfileQuizTime = styled.div`
 `;
 
 export const NoExam = styled.div`
+  width: 100%;
+`;
+
+export const ExamBlock = styled.div`
+  background-color: #f2f2f2;
+  border-radius: 0.8rem;
+  display: flex;
+  flex-direction: column;
   margin-top: 4rem;
+  padding-bottom: 2rem;
+  padding-top: 2rem;
+`;
+
+export const BlockHeader = styled.h3`
+  color: ${(props) => props.theme.mainColor};
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0;
+
+  ${breakpoints({
+    cssProp: ['padding-left', 'padding-right'],
+    cssPropUnits: 'rem',
+    values: [{ [devices.default]: 1.2 }, { [devices.smallDevices]: 3.2 }],
+  })};
+`;
+
+export const BlockFilter = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+
+  & > div {
+    margin-top: 2.4rem;
+
+    ${breakpoints({
+      cssProp: ['margin-left', 'margin-right'],
+      cssPropUnits: 'rem',
+      values: [{ [devices.default]: 1.2 }, { [devices.smallDevices]: 3.2 }],
+    })};
+
+    & > button {
+      width: 100%;
+    }
+  }
+
+  & > div:first-child {
+    flex-grow: 2;
+    min-width: 24.8rem;
+  }
+
+  & > div:last-child {
+    flex-grow: 1;
+  }
+`;
+
+export const BlockContent = styled.div`
+  margin-top: 3.2rem;
+
+  & > ul {
+    padding-top: 0;
+
+    ${breakpoints({
+      cssProp: ['padding-left', 'padding-right'],
+      cssPropUnits: 'rem',
+      values: [{ [devices.default]: 1.2 }, { [devices.smallDevices]: 3.2 }],
+    })};
+
+    & > li {
+      min-height: auto;
+    }
+  }
+`;
+
+export const PaginationWrap = styled.div`
+  margin-top: 2.4rem;
+
+  ${breakpoints({
+    cssProp: ['margin-left', 'margin-right'],
+    cssPropUnits: 'rem',
+    values: [{ [devices.default]: 1.2 }, { [devices.smallDevices]: 3.2 }],
+  })};
+`;
+
+export const CreateCategoryBlock = styled.div`
+  margin-top: 2.4rem;
+
+  ${breakpoints({
+    cssProp: ['margin-left', 'margin-right'],
+    cssPropUnits: 'rem',
+    values: [{ [devices.default]: 0 }, { [devices.smallDevices]: 1.6 }],
+  })};
 `;

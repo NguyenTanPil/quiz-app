@@ -1,11 +1,9 @@
-import { Form, Formik } from 'formik';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { BiEditAlt } from 'react-icons/bi';
 import { MdOutlineClose } from 'react-icons/md';
 import { createCategory, getCategoryOfUser, updateCategory } from '../../api/category';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import NoDataToShow from '../../components/NoDataToShow';
-import { LabelGroup } from '../../components/Pages/CreateExam/CreateExamStyles';
 import {
   addNewCategory,
   CategoryState,
@@ -13,32 +11,25 @@ import {
   selectCategoryList,
   updateCategoryListById,
 } from '../../features/category/categorySlice';
-import { compareTwoObjects, DialogUtils, getObjectKeysChanged } from '../../utils';
+import { DialogUtils, getObjectKeysChanged } from '../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../utils/constants';
 import useOnClickOutside from '../../utils/useOnClickOutside';
 import { ActionButton, DialogCloseButton, SignUpButton } from '../Button';
 import useDebounce from '../hooks/useDebounce';
-import { OriginInput, RadioBox, Textarea } from '../Input';
+import { OriginInput, RadioBox } from '../Input';
 import Pagination from '../Pagination';
 import ToolTip from '../ToolTip';
+import CreateCategoryForm from './CreateCategoryForm';
+import { ActionsCategory, CategoryColor, CategoryContent, CategoryItem, CategoryList } from '../Styles';
 import {
-  ActionsCategory,
-  CategoryColor,
-  CategoryContent,
-  CategoryItem,
-  CategoryList,
   Container,
   CreateCategory,
-  CreateCategoryActions,
   CreateQuizContent,
   DialogBody,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  ElementGroup,
-  FormBody,
   PaginationWrap,
-  QuizOptions,
   SearchCategory,
   SelectedCategory,
 } from './DialogStyles';
@@ -82,7 +73,7 @@ const CreateCategoryDialog = ({
     return QUIZ_APP_CONSTANTS.COMMON.initialCurrentPage;
   });
 
-  const debouncedValue = useDebounce<string>(searchContent, 500);
+  const debouncedValue = useDebounce<string>(searchContent, QUIZ_APP_CONSTANTS.COMMON.debounceSeconds);
   const contentRef = useRef<HTMLDivElement>();
   const initialValues = useMemo(() => {
     if (editCategoryId) {
@@ -156,13 +147,15 @@ const CreateCategoryDialog = ({
   }, []);
 
   useEffect(() => {
-    setCategoryList((prev) => {
+    setCategoryList(() => {
       if (debouncedValue === '') {
-        return originCategoryList;
+        return originCategoryList.slice(0, QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize);
       }
 
       const regex = new RegExp(debouncedValue, 'gi');
-      return prev.filter((category) => category.name.match(regex));
+      return originCategoryList
+        .filter((category) => regex.test(category.name))
+        .slice(0, QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize);
     });
   }, [debouncedValue]);
 
@@ -213,76 +206,24 @@ const CreateCategoryDialog = ({
         </DialogHeader>
         <DialogBody>
           {isCreate || editCategoryId ? (
-            <Formik
+            <CreateCategoryForm
               initialValues={initialValues}
-              enableReinitialize={true}
-              onSubmit={(values, actions) => {
-                const prevValues = { name: values.categoryName, note: values.categoryNote, color: values.categoryBg };
-
-                if (isCreate) {
-                  handleCreateNewCategory(prevValues);
-                  actions.resetForm();
-                } else {
-                  handleUpdateCategory(prevValues);
-                  setEditCategoryId(undefined);
-                }
-              }}
-            >
-              {({ values, setFieldValue, handleSubmit }) => (
-                <Form id="create-category-form" onSubmit={handleSubmit}>
-                  <FormBody>
-                    <QuizOptions>
-                      <ElementGroup>
-                        <LabelGroup>Category Name</LabelGroup>
-                        <OriginInput
-                          name="categoryName"
-                          value={values.categoryName}
-                          errorMessage={values.categoryName === '' && 'Category name is not empty'}
-                          setValue={(value) => setFieldValue('categoryName', value)}
-                        />
-                      </ElementGroup>
-                      <ElementGroup>
-                        <h3>Category Color</h3>
-                        <OriginInput
-                          type="color"
-                          name="categoryBg"
-                          value={values.categoryBg}
-                          setValue={(value) => setFieldValue('categoryBg', value)}
-                        />
-                      </ElementGroup>
-                    </QuizOptions>
-                    <ElementGroup>
-                      <h3>Category note</h3>
-                      <Textarea
-                        id="category-note"
-                        value={values.categoryNote}
-                        setValue={(value) => {
-                          setFieldValue('categoryNote', value);
-                        }}
-                      />
-                    </ElementGroup>
-                    <CreateCategoryActions>
-                      <SignUpButton
-                        type="button"
-                        typeColor="errorColor"
-                        onClick={() => (isCreate ? setIsCreate(false) : setEditCategoryId(undefined))}
-                      >
-                        Close
-                      </SignUpButton>
-                      <SignUpButton
-                        type="submit"
-                        disabled={isCreate ? values.categoryName === '' : compareTwoObjects(values, initialValues)}
-                      >
-                        {editCategoryId === undefined ? 'Add' : 'Update'}
-                      </SignUpButton>
-                    </CreateCategoryActions>
-                  </FormBody>
-                </Form>
-              )}
-            </Formik>
+              isCreate={isCreate}
+              editCategoryId={editCategoryId}
+              setIsCreate={setIsCreate}
+              setEditCategoryId={setEditCategoryId}
+              handleUpdateCategory={handleUpdateCategory}
+              handleCreateNewCategory={handleCreateNewCategory}
+            />
           ) : (
             <CreateCategory>
-              <SignUpButton type="button" onClick={() => setIsCreate(true)}>
+              <SignUpButton
+                type="button"
+                onClick={() => {
+                  setIsCreate(true);
+                  setEditCategoryId(undefined);
+                }}
+              >
                 New category
               </SignUpButton>
             </CreateCategory>
