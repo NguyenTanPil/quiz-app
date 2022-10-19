@@ -17,6 +17,7 @@ export const Container = styled.div`
   left: 50%;
   transform: translate(-50%, -6rem);
   width: 8rem;
+  z-index: 100;
 `;
 
 const clockAnimationKeyframe = keyframes`

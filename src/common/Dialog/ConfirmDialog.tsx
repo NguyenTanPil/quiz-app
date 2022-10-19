@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Container, Content, DialogBody, DialogFooter, DialogHeader, DialogTitle } from './DialogStyles';
 import { MdOutlineClose } from 'react-icons/md';
 import { DialogCloseButton, SignUpButton } from '../Button';
-import useOnClickOutside from '../../utils/useOnClickOutside';
+import useOnClickOutside from '../hooks/useOnClickOutside';
 import { DialogUtils } from '../../utils';
 
 type ConfirmDialogProps = {

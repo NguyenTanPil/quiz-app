@@ -12,6 +12,8 @@ type OriginInputProps = {
   max?: number;
   setValue?: (quizName: string) => void;
   onClick?: () => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
 };
 
 const OriginInput = ({
@@ -25,16 +27,22 @@ const OriginInput = ({
   max,
   setValue,
   onClick,
+  onFocus,
+  onBlur,
 }: OriginInputProps) => {
   const messageRef = useRef<HTMLDivElement>();
   const wrapMessageRef = useRef<HTMLDivElement>();
   const [isShowErrorMessage, setIsShowErrorMessage] = useState(false);
 
   const handleInputBlur = () => {
-    if (errorMessage) {
-      setIsShowErrorMessage(true);
+    if (onBlur) {
+      onBlur();
     } else {
-      setIsShowErrorMessage(false);
+      if (errorMessage) {
+        setIsShowErrorMessage(true);
+      } else {
+        setIsShowErrorMessage(false);
+      }
     }
   };
 
@@ -64,6 +72,7 @@ const OriginInput = ({
         onChange={(e: any) => handleChange(e.target.value)}
         onClick={() => onClick && onClick()}
         onBlur={handleInputBlur}
+        onFocus={() => onFocus && onFocus()}
       />
       {isShowErrorMessage && (
         <ErrorMessage ref={wrapMessageRef}>

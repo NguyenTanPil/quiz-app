@@ -13,7 +13,7 @@ import {
 } from '../../features/category/categorySlice';
 import { DialogUtils, getObjectKeysChanged } from '../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../utils/constants';
-import useOnClickOutside from '../../utils/useOnClickOutside';
+import useOnClickOutside from '../hooks/useOnClickOutside';
 import { ActionButton, DialogCloseButton, SignUpButton } from '../Button';
 import useDebounce from '../hooks/useDebounce';
 import { OriginInput, RadioBox } from '../Input';

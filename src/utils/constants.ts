@@ -14,6 +14,7 @@ export const QUIZ_APP_CONSTANTS = {
     startIndex: 0,
     emptyArrayLength: 0,
     debounceSeconds: 500,
+    suggestNotFound: 'Not Found',
   },
   API: {
     baseUrl: 'http://127.0.0.1:8000/api/',
@@ -26,6 +27,7 @@ export const QUIZ_APP_CONSTANTS = {
     createExamUrl: 'creator/questionbank/create',
     getExamByIdUrl: 'creator/questionbank/',
     getExamByUserIdUrl: 'creator/questionbank',
+    updateUserUrl: 'update',
   },
   SLIDER: {
     transitionSecondsDefault: 0.45,

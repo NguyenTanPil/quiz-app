@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import db from '../firebase';
-import { convertMinutesToDuration } from '../utils';
+import { convertMinutesToDuration, shuffleArray } from '../utils';
 import { QUIZ_APP_CONSTANTS } from '../utils/constants';
 import { getCookie } from '../utils/cookie';
 import { Exam } from '../utils/types';
@@ -21,7 +21,7 @@ export const getExamsByUserId = async () => {
 
     const data = await Promise.all(
       response.data.data.map(async (exam: any) => {
-        const category = await getCategoryById('0d191462-bd66-4143-b37c-ddf92f74b19e');
+        const category = await getCategoryById(exam.main[0].categoryId);
 
         return {
           id: exam.main[0].id,
@@ -113,8 +113,8 @@ export const getExamById = async (examId: string) => {
       return { isSuccess: false, data: response.data.errors[0].id };
     }
 
-    const category = await getCategoryById('0d191462-bd66-4143-b37c-ddf92f74b19e');
     const examRes = response.data.data;
+    const category = await getCategoryById(examRes.general.main[0].categoryId);
     const structureExam = JSON.parse(examRes.general.main[0].structureExam);
 
     const questions = examRes.question.map((q: any) => {
@@ -141,6 +141,56 @@ export const getExamById = async (examId: string) => {
     };
 
     return { isSuccess: true, data };
+  } catch (error: any) {
+    return { isSuccess: false, message: error.message };
+  }
+};
+
+export const getGeneraExamById = async (examId: string) => {
+  const token = getCookie('token');
+  const url = QUIZ_APP_CONSTANTS.API.baseUrl + QUIZ_APP_CONSTANTS.API.getExamByIdUrl + examId;
+
+  try {
+    const response = await axios({
+      method: 'get',
+      url,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.data.status !== '200') {
+      return { isSuccess: false, data: response.data.errors[0].id };
+    }
+
+    const examRes = response.data.data;
+
+    const questions = examRes.question.map((q: any) => {
+      const { id, content: question } = q.content[0];
+      const answers = q.answer.map((answer: any) => ({ ...answer[0], isCorrect: !!answer[0].isCorrect }));
+      const correctAnswerTemp = answers.filter((answer: any) => answer.isCorrect)[0];
+      const inCorrectAnswerTemp = answers.filter((answer: any) => !answer.isCorrect);
+      const correctAnswer = { id: correctAnswerTemp.id, content: correctAnswerTemp.content };
+      const inCorrectAnswers = inCorrectAnswerTemp.map((answer: any) => ({ id: answer.id, content: answer.content }));
+
+      return {
+        id,
+        question,
+        answerClicked: undefined,
+        isCorrect: undefined,
+        answers: shuffleArray([...inCorrectAnswers, correctAnswer]),
+        correctAnswer,
+        inCorrectAnswers,
+      };
+    });
+
+    return {
+      isSuccess: true,
+      data: {
+        questions,
+        timeDuration: examRes.general.main[0].timeDuration * QUIZ_APP_CONSTANTS.COMMON.minutesPerHour,
+      },
+    };
   } catch (error: any) {
     return { isSuccess: false, message: error.message };
   }

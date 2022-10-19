@@ -1,6 +1,10 @@
 import styled from 'styled-components';
 import { breakpoints, devices } from '../../../styles/breakpoints';
 
+type Props = {
+  [key: string]: any;
+};
+
 export const Container = styled.main`
   margin-bottom: 6rem;
   margin-top: 4rem;
@@ -266,27 +270,14 @@ export const ExamBlock = styled.div`
   border-radius: 0.8rem;
   display: flex;
   flex-direction: column;
-  margin-top: 4rem;
+  margin-top: 3.2rem;
   padding-bottom: 2rem;
   padding-top: 2rem;
 `;
 
-export const BlockHeader = styled.h3`
-  color: ${(props) => props.theme.mainColor};
-  font-size: 2rem;
-  font-weight: 600;
-  margin: 0;
-
-  ${breakpoints({
-    cssProp: ['padding-left', 'padding-right'],
-    cssPropUnits: 'rem',
-    values: [{ [devices.default]: 1.2 }, { [devices.smallDevices]: 3.2 }],
-  })};
-`;
-
-export const BlockFilter = styled.div`
+export const BlockFilter = styled.div<Props>`
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: ${(props) => (props.noWrap ? 'nowrap' : 'wrap')};
 
   & > div {
     margin-top: 2.4rem;
@@ -302,8 +293,26 @@ export const BlockFilter = styled.div`
     }
   }
 
+  & > span {
+    margin-top: 2.4rem;
+
+    ${breakpoints({
+      cssProp: 'margin-right',
+      cssPropUnits: 'rem',
+      values: [{ [devices.default]: 1.2 }, { [devices.smallDevices]: 3.2 }],
+    })};
+
+    button {
+      min-height: 4.8rem;
+
+      svg {
+        font-size: 2rem;
+      }
+    }
+  }
+
   & > div:first-child {
-    flex-grow: 2;
+    flex-grow: 3;
     min-width: 24.8rem;
   }
 
@@ -347,5 +356,15 @@ export const CreateCategoryBlock = styled.div`
     cssProp: ['margin-left', 'margin-right'],
     cssPropUnits: 'rem',
     values: [{ [devices.default]: 0 }, { [devices.smallDevices]: 1.6 }],
+  })};
+`;
+
+export const StudentResult = styled.div`
+  margin-top: 3.2rem;
+
+  ${breakpoints({
+    cssProp: ['padding-left', 'padding-right'],
+    cssPropUnits: 'rem',
+    values: [{ [devices.default]: 1.2 }, { [devices.smallDevices]: 3.2 }],
   })};
 `;

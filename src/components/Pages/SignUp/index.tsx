@@ -1,14 +1,12 @@
-import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createAccount } from '../../../api/authentication';
+import { ConfirmDialog } from '../../../common/Dialog';
 import signUpImage from '../../../images/signUp.svg';
 import { Wrapper } from '../../../styles/Utils';
 import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
 import AuthenForm, { formValueProps } from '../../AuthenForm';
 import { Container } from './SignUpStyles';
-import uuid from 'react-uuid';
-import { ConfirmDialog } from '../../../common/Dialog';
 
 const signUpFormValues: formValueProps[] = [
   {
@@ -43,13 +41,9 @@ const signUpFormValues: formValueProps[] = [
   },
 ];
 
-type Props = {
-  [key: string]: any;
-};
-
-const SignUp = ({ isLogin }: Props) => {
+const SignUp = () => {
   const navigate = useNavigate();
-  const [errorDialog, setErrorDialog] = useState({message: '', isShow: false});
+  const [errorDialog, setErrorDialog] = useState({ message: '', isShow: false });
 
   const handleSubmit = async (values: any) => {
     const formValues = { ...values };
@@ -73,11 +67,11 @@ const SignUp = ({ isLogin }: Props) => {
     }
   };
 
-  useEffect(() => {
-    if (isLogin) {
-      navigate('/');
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (isLogin) {
+  //     navigate('/');
+  //   }
+  // }, []);
 
   return (
     <Container>

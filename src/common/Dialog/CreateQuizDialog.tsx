@@ -4,7 +4,7 @@ import { MdOutlineClose } from 'react-icons/md';
 import { DialogUtils } from '../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../utils/constants';
 import { QuizProps } from '../../utils/types';
-import useOnClickOutside from '../../utils/useOnClickOutside';
+import useOnClickOutside from '../hooks/useOnClickOutside';
 import { DialogCloseButton, SignUpButton } from '../Button';
 import Dropdown from '../Dropdown';
 import { QuizAnswerInput, Textarea } from '../Input';

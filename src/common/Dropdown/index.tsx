@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Container, DropdownItem, DropdownList, SelectedValue } from './DropdownStyles';
+import { Container, SelectedValue } from './DropdownStyles';
 import { RiArrowDropDownFill } from 'react-icons/ri';
 import { DropdownSelectedButton } from '../Button';
-import useOnClickOutside from '../../utils/useOnClickOutside';
+import useOnClickOutside from '../hooks/useOnClickOutside';
+import { DropdownItem, DropdownList } from '../Styles';
 
 type DropdownProps = {
   id: string;

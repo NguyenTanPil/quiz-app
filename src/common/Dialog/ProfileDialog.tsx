@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { MdOutlineClose } from 'react-icons/md';
 import { compareTwoObjects, DialogUtils } from '../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../utils/constants';
-import useOnClickOutside from '../../utils/useOnClickOutside';
+import useOnClickOutside from '../hooks/useOnClickOutside';
 import { DialogCloseButton, SignUpButton } from '../Button';
 import Dropdown from '../Dropdown';
 import { OriginInput } from '../Input';

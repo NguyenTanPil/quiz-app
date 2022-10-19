@@ -1,21 +1,20 @@
 import React, { useState } from 'react';
 import { BiBarChart } from 'react-icons/bi';
 import { NavLink } from 'react-router-dom';
+import { useAppSelector } from '../../app/hooks';
 import { NoBorderButton, SignUpButton } from '../../common/Button';
+import { selectUser } from '../../features/user/userSlice';
 import { Wrapper } from '../../styles/Utils';
 import Sidebar from '../Sidebar';
 import { Container, Content, HeaderAvatar, Logo, NavItem, NavList, ShowSidebarBox } from './HeaderStyles';
 
-type Props = {
-  [key: string]: any;
-};
-
-const Header = ({ isLogin }: Props) => {
+const Header = () => {
   const [isShowSidebar, setIsShowSidebar] = useState(false);
+  const user = useAppSelector(selectUser);
 
   return (
     <Container>
-      <Sidebar isLogin={isLogin} isShowSidebar={isShowSidebar} setIsShowSidebar={setIsShowSidebar} />
+      <Sidebar isLogin={user.id !== ''} isShowSidebar={isShowSidebar} setIsShowSidebar={setIsShowSidebar} />
       <Wrapper>
         <Content>
           <Logo to="/">
@@ -44,8 +43,8 @@ const Header = ({ isLogin }: Props) => {
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink to={isLogin ? '/profile' : '/sign-in'}>
-                  {isLogin ? (
+                <NavLink to={user.id !== '' ? '/profile' : '/sign-in'}>
+                  {user.id !== '' ? (
                     <HeaderAvatar>
                       <img
                         src="https://lh3.googleusercontent.com/a-/AFdZucrdbwb3FFVarH2n7n2AMaXpHYdR2oExsH9wf-R6=s96-c?w=200&h=200"

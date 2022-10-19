@@ -9,10 +9,11 @@ export const Container = styled.div`
   background: ${(props) => props.theme.background};
   border: 0.2rem solid ${(props) => props.theme.borderColor};
   border-radius: 0.8rem;
-  box-shadow: 0 -3em 3em rgb(73 73 73 / 10%), 0.3em 0.3em 1em rgb(73 73 73 / 10%);
-  max-width: 1100px;
+  /* box-shadow: 0 -3em 3em rgb(73 73 73 / 10%), 0.3em 0.3em 1em rgb(73 73 73 / 10%); */
+  max-width: 110rem;
   /* overflow-x: auto; */
   padding: 2rem 4rem;
+  position: relative;
   text-align: center;
 
   ${breakpoints({
@@ -20,6 +21,20 @@ export const Container = styled.div`
     cssPropUnits: '',
     values: [{ [devices.default]: '2rem' }, { [devices.smallDevices]: '2rem 4rem' }],
   })};
+`;
+
+export const FlagButton = styled.div<Props>`
+  position: absolute;
+  right: 4rem;
+  top: 1.6rem;
+
+  button {
+    color: ${(props) => (props.isFlag ? props.theme.mainColor : props.theme.fontColor)};
+  }
+
+  svg {
+    font-size: 2rem;
+  }
 `;
 
 export const ProgressBar = styled.div`

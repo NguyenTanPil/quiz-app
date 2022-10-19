@@ -1,6 +1,6 @@
 import React from 'react';
 import { BsArrowRightShort } from 'react-icons/bs';
-import { AnswerButton, SignUpButton } from '../../common/Button';
+import { ActionButton, AnswerButton, SignUpButton } from '../../common/Button';
 import { QUIZ_APP_CONSTANTS } from '../../utils/constants';
 import { QuestionState } from '../../utils/types';
 import {
@@ -8,47 +8,73 @@ import {
   AnswerItem,
   AnswerList,
   Container,
+  FlagButton,
   ProgressBar,
   ProgressBarFill,
   ProgressBarStatus,
   QuestionContent,
   TotalQuestionCount,
 } from './QuestionCardStyles';
+import { RiFlag2Fill } from 'react-icons/ri';
+import ToolTip from '../../common/ToolTip';
 
 type Props = {
   totalQuestions: number;
   questionNumber: number;
   score: number;
-  questionDetails: QuestionState;
+  questionsSelected: number;
+  questionDetails: any;
   isCompleted: boolean;
+  isTestMode: boolean;
+  isSubmit: boolean;
   checkAnswer: (answerId: string, questionId: string) => void;
   nextQuestion: () => void;
   setIsShowDialog: (value: boolean) => void;
+  toggleFlag: (value: string) => void;
 };
 
 const QuestionCard = ({
   questionDetails,
   score,
+  questionsSelected,
   totalQuestions,
   isCompleted,
   questionNumber,
   checkAnswer,
+  isSubmit,
   nextQuestion,
   setIsShowDialog,
+  toggleFlag,
+  isTestMode,
 }: Props) => {
-  const { id, question, correctAnswer, answerClicked, isCorrect, answers } = questionDetails;
+  const { id, isFlag, question, correctAnswer, answerClicked, isCorrect, answers } = questionDetails;
 
   return (
     <Container>
+      {isTestMode && !isSubmit && (
+        <FlagButton isFlag={isFlag}>
+          <ToolTip content={isFlag ? 'Un Flag' : 'Flag'}>
+            <ActionButton onClick={() => toggleFlag(id)}>
+              <RiFlag2Fill />
+            </ActionButton>
+          </ToolTip>
+        </FlagButton>
+      )}
       <ProgressBar>
         <TotalQuestionCount>
-          <span>Score {score}</span>
+          <span>
+            {isTestMode ? 'Selected' : 'Score'} {isTestMode ? questionsSelected : score}
+          </span>
           <span>
             Question {questionNumber} to {totalQuestions}
           </span>
         </TotalQuestionCount>
         <ProgressBarFill>
-          <ProgressBarStatus status={(score / totalQuestions) * QUIZ_APP_CONSTANTS.COMMON.oneHundredPercent} />
+          <ProgressBarStatus
+            status={
+              ((isTestMode ? questionsSelected : score) / totalQuestions) * QUIZ_APP_CONSTANTS.COMMON.oneHundredPercent
+            }
+          />
         </ProgressBarFill>
       </ProgressBar>
       <QuestionContent>
@@ -58,10 +84,16 @@ const QuestionCard = ({
         {answers.map((answer: any) => (
           <AnswerItem key={answer.id}>
             <AnswerButton
-              disabled={isCompleted || isCorrect !== undefined}
+              disabled={isSubmit ? true : isTestMode ? false : isCompleted || isCorrect !== undefined}
               value={answer.content}
-              isCorrect={correctAnswer.content === answer.content && answerClicked !== undefined}
+              isCorrect={
+                isSubmit
+                  ? correctAnswer.content === answer.content
+                  : correctAnswer.content === answer.content && answerClicked !== undefined
+              }
               userClicked={answerClicked === answer.id}
+              isSubmit={isSubmit}
+              isTestMode={isSubmit ? false : isTestMode}
               onClick={() => checkAnswer(answer.id, id)}
             >
               <span dangerouslySetInnerHTML={{ __html: answer.content }}></span>
@@ -70,10 +102,20 @@ const QuestionCard = ({
         ))}
       </AnswerList>
       <Actions>
-        <SignUpButton typeColor="errorColor" onClick={() => setIsShowDialog(true)}>
-          <span>Close</span>
+        <SignUpButton
+          typeColor={isTestMode && !isSubmit ? 'successColor' : 'errorColor'}
+          onClick={() => setIsShowDialog(true)}
+        >
+          <span>{isTestMode && !isSubmit ? 'Submit' : 'Close'}</span>
         </SignUpButton>
-        <SignUpButton disabled={questionNumber === totalQuestions || isCorrect === undefined} onClick={nextQuestion}>
+        <SignUpButton
+          disabled={
+            isTestMode
+              ? questionNumber === totalQuestions
+              : questionNumber === totalQuestions || isCorrect === undefined
+          }
+          onClick={nextQuestion}
+        >
           <span>Next Question</span>
           <BsArrowRightShort />
         </SignUpButton>

@@ -22,7 +22,7 @@ export const TryAgain = styled.div`
     ${breakpoints({
       cssProp: 'width',
       cssPropUnits: '',
-      values: [{ [devices.default]: '100%' }, { [devices.smallDevices]: 'fit-content' }],
+      values: [{ [devices.default]: '100%' }, { [devices.smallDevices]: '16rem' }],
     })};
   }
 `;

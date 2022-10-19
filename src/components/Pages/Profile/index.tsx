@@ -7,24 +7,27 @@ import { createCategory, getCategoryOfUser, updateCategory } from '../../../api/
 import { getExamsByUserId } from '../../../api/exam';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { ActionButton, SignUpButton } from '../../../common/Button';
-import { ActionsCategory, CategoryColor, CategoryContent, CategoryItem, CategoryList } from '../../../common/Styles';
-import { ProfileDialog, CreateCategoryForm } from '../../../common/Dialog';
+import { CreateCategoryForm, ProfileDialog } from '../../../common/Dialog';
 import Dropdown from '../../../common/Dropdown';
 import useDebounce from '../../../common/hooks/useDebounce';
 import { OriginInput } from '../../../common/Input';
+import { SuggestInput } from '../../../common/Input';
+import { TiExportOutline } from 'react-icons/ti';
+import NavTab from '../../../common/NavTab';
 import Pagination from '../../../common/Pagination';
+import { ActionsCategory, CategoryColor, CategoryContent, CategoryItem, CategoryList } from '../../../common/Styles';
+import Table from '../../../common/Table';
 import ToolTip from '../../../common/ToolTip';
 import { addNewCategory, updateCategoryListById } from '../../../features/category/categorySlice';
 import { selectUser, updateUser } from '../../../features/user/userSlice';
 import { EmptyListAction, Wrapper } from '../../../styles/Utils';
-import { convertNumberFormat, formatCreatedAt, getObjectKeysChanged } from '../../../utils';
+import { convertNumberFormat, formatCreatedAt, GameUtils, getObjectKeysChanged } from '../../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
 import NoDataToShow from '../../NoDataToShow';
 import {
   Actions,
   BlockContent,
   BlockFilter,
-  BlockHeader,
   ButtonActions,
   Container,
   Content,
@@ -42,12 +45,15 @@ import {
   ProfileQuizList,
   ProfileQuizName,
   ProfileQuizTime,
+  StudentResult,
   UserAvatar,
   UserDetail,
   UserEmail,
   UserName,
   UserProfile,
 } from './ProfileStyles';
+import { CSVLink } from 'react-csv';
+import { updateUserDetail } from '../../../api/authentication';
 
 const Profile = () => {
   const user = useAppSelector(selectUser);
@@ -72,6 +78,7 @@ const Profile = () => {
     search: '',
     currentPage: QUIZ_APP_CONSTANTS.COMMON.initialCurrentPage,
   });
+  const [searchExamInStudent, setSearchExamInStudent] = useState('');
 
   const debouncedExamValue = useDebounce<string>(examFilter.search, QUIZ_APP_CONSTANTS.COMMON.debounceSeconds);
   const debouncedCategoryValue = useDebounce<string>(categoryFilter.search, QUIZ_APP_CONSTANTS.COMMON.debounceSeconds);
@@ -90,13 +97,16 @@ const Profile = () => {
     return { categoryName: '', categoryBg: '#9852f9', categoryNote: '' };
   }, [editCategoryId]);
 
-  const handleEditProfile = (values: any) => {
+  const handleEditProfile = async (values: any) => {
     const editableInfo = { nameTitle: user.nameTitle, name: user.name };
     const updatedObj = getObjectKeysChanged(editableInfo, values);
 
     if (updatedObj.isUpdated) {
-      // updateUser(user.userId, updatedObj.data);
-      dispatch(updateUser({ ...user, ...updatedObj.data }));
+      const response = await updateUserDetail(updatedObj.data);
+
+      if (response.isSuccess) {
+        dispatch(updateUser({ ...user, ...updatedObj.data }));
+      }
     }
   };
 
@@ -218,7 +228,7 @@ const Profile = () => {
     setCategoryList(() => originCategoryList.slice(startIndex, endIndex));
   }, [categoryFilter.currentPage]);
 
-  if (!examList || !user.id) {
+  if (user.id === '') {
     return <>loading...</>;
   }
 
@@ -274,163 +284,206 @@ const Profile = () => {
               </MoreInfo>
             </Actions>
           </ProfileHeader>
-          <ExamBlock>
-            <BlockHeader>All Exam</BlockHeader>
-            <BlockFilter>
-              <OriginInput
-                type="search"
-                name="searchExam"
-                value={examFilter.search}
-                placeholder="Enter exam name..."
-                setValue={(value) => setExamFilter((prev) => ({ ...prev, search: value }))}
-              />
-              <Dropdown
-                id="category"
-                activeValue={examFilter.categoryName}
-                values={categoryList.map((item) => item.name)}
-                handleSelected={(value) => setExamFilter((prev) => ({ ...prev, categoryName: value }))}
-              />
-            </BlockFilter>
-            <BlockContent>
-              {originExamList.length === QUIZ_APP_CONSTANTS.COMMON.emptyArrayLength ? (
-                <NoExam>
-                  <EmptyListAction>
-                    <SignUpButton onClick={handleCreateNewExam}>Create An Exam</SignUpButton>
-                    <span>Don't have any exams!</span>
-                  </EmptyListAction>
-                </NoExam>
-              ) : (
-                <>
-                  {examList.length === QUIZ_APP_CONSTANTS.COMMON.emptyArrayLength ? (
-                    <NoDataToShow message="No exams to show!" />
-                  ) : (
-                    <ProfileQuizList>
-                      {examList.map((exam) => (
-                        <ProfileQuizItem key={exam.id}>
-                          <ProfileQuizAvatar>
-                            <img
-                              src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=600&h=600"
-                              alt=""
-                            />
-                          </ProfileQuizAvatar>
-                          <ProfileQuizContent>
-                            <ProfileQuizName>
-                              <Link to={`/exams/${exam.id}`}>{exam.name}</Link>
-                            </ProfileQuizName>
-                            <ProfileQuizDetails>
-                              <div>
-                                <MdOutlineMenuOpen />
-                                <span>{convertNumberFormat(exam.totalQuestions)} Questions</span>
-                              </div>
-                              <div>
-                                <BiCategory />
-                                <span>{exam.category.name}</span>
-                              </div>
-                            </ProfileQuizDetails>
-                            <ProfileQuizTime>
-                              <AiOutlineClockCircle />
-                              <span>{formatCreatedAt(exam.createdAt)}</span>
-                            </ProfileQuizTime>
-                          </ProfileQuizContent>
-                        </ProfileQuizItem>
-                      ))}
-                    </ProfileQuizList>
-                  )}
-                </>
-              )}
-
-              {originExamList.length > QUIZ_APP_CONSTANTS.COMMON.itemsPerPage && (
-                <PaginationWrap>
-                  <Pagination
-                    pageSize={QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize}
-                    totalPage={Math.ceil(originExamList.length / QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize)}
-                    currentPage={examFilter.currentPage}
-                    totalElement={originExamList.length}
-                    onNext={() => setExamFilter((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
-                    onPrev={() => setExamFilter((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
-                  />
-                </PaginationWrap>
-              )}
-            </BlockContent>
-          </ExamBlock>
-          <ExamBlock>
-            <BlockHeader>All Category</BlockHeader>
-            {(isCreateCategory || editCategoryId) && (
-              <CreateCategoryBlock>
-                <CreateCategoryForm
-                  initialValues={initialValues}
-                  isCreate={isCreateCategory}
-                  editCategoryId={editCategoryId}
-                  setIsCreate={setIsCreateCategory}
-                  setEditCategoryId={setEditCategoryId}
-                  handleUpdateCategory={handleUpdateCategory}
-                  handleCreateNewCategory={handleCreateNewCategory}
+          <NavTab tabList={['All Exam', 'All Category', 'Students']}>
+            <ExamBlock>
+              <BlockFilter>
+                <OriginInput
+                  type="search"
+                  name="searchExam"
+                  value={examFilter.search}
+                  placeholder="Enter exam name..."
+                  setValue={(value) => setExamFilter((prev) => ({ ...prev, search: value }))}
                 />
-              </CreateCategoryBlock>
-            )}
-            <BlockFilter>
-              <OriginInput
-                type="search"
-                name="searchCategory"
-                value={categoryFilter.search}
-                placeholder="Enter category name..."
-                setValue={(value) => setCategoryFilter((prev) => ({ ...prev, search: value }))}
-              />
-              <div>
-                <SignUpButton
-                  type="button"
-                  onClick={() => {
-                    setIsCreateCategory(true);
-                    setEditCategoryId(undefined);
-                  }}
-                >
-                  Create now
-                </SignUpButton>
-              </div>
-            </BlockFilter>
-            <BlockContent>
-              {categoryList.length === QUIZ_APP_CONSTANTS.COMMON.emptyArrayLength ? (
-                <NoDataToShow message="No exams to show!" />
-              ) : (
-                <CategoryList>
-                  {categoryList.map((item) => (
-                    <CategoryItem key={item.id}>
-                      <CategoryColor color={item.color} />
-                      <CategoryContent>
-                        <h4>{item.name}</h4>
-                        <p>{item.note}</p>
-                      </CategoryContent>
-                      <ActionsCategory>
-                        <ToolTip content="Edit Category">
-                          <ActionButton
-                            onClick={() => {
-                              setIsCreateCategory(false);
-                              setEditCategoryId(item.id);
-                            }}
-                          >
-                            <BiEditAlt />
-                          </ActionButton>
-                        </ToolTip>
-                      </ActionsCategory>
-                    </CategoryItem>
-                  ))}
-                </CategoryList>
-              )}
+                <Dropdown
+                  id="category"
+                  activeValue={examFilter.categoryName}
+                  values={categoryList.map((item) => item.name)}
+                  handleSelected={(value) => setExamFilter((prev) => ({ ...prev, categoryName: value }))}
+                />
+              </BlockFilter>
+              <BlockContent>
+                {originExamList.length === QUIZ_APP_CONSTANTS.COMMON.emptyArrayLength ? (
+                  <NoExam>
+                    <EmptyListAction>
+                      <SignUpButton onClick={handleCreateNewExam}>Create An Exam</SignUpButton>
+                      <span>Don't have any exams!</span>
+                    </EmptyListAction>
+                  </NoExam>
+                ) : (
+                  <>
+                    {examList.length === QUIZ_APP_CONSTANTS.COMMON.emptyArrayLength ? (
+                      <NoDataToShow message="No exams to show!" />
+                    ) : (
+                      <ProfileQuizList>
+                        {examList.map((exam) => (
+                          <ProfileQuizItem key={exam.id}>
+                            <ProfileQuizAvatar>
+                              <img
+                                src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=600&h=600"
+                                alt=""
+                              />
+                            </ProfileQuizAvatar>
+                            <ProfileQuizContent>
+                              <ProfileQuizName>
+                                <Link to={`/exams/${exam.id}`}>{exam.name}</Link>
+                              </ProfileQuizName>
+                              <ProfileQuizDetails>
+                                <div>
+                                  <MdOutlineMenuOpen />
+                                  <span>{convertNumberFormat(exam.totalQuestions)} Questions</span>
+                                </div>
+                                <div>
+                                  <BiCategory />
+                                  <span>{exam.category.name}</span>
+                                </div>
+                              </ProfileQuizDetails>
+                              <ProfileQuizTime>
+                                <AiOutlineClockCircle />
+                                <span>{formatCreatedAt(exam.createdAt / 1000)}</span>
+                              </ProfileQuizTime>
+                            </ProfileQuizContent>
+                          </ProfileQuizItem>
+                        ))}
+                      </ProfileQuizList>
+                    )}
+                  </>
+                )}
 
-              {categoryList.length > QUIZ_APP_CONSTANTS.COMMON.itemsPerPage && (
-                <PaginationWrap>
-                  <Pagination
-                    pageSize={QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize}
-                    totalPage={Math.ceil(originExamList.length / QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize)}
-                    currentPage={examFilter.currentPage}
-                    totalElement={originExamList.length}
-                    onNext={() => setExamFilter((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
-                    onPrev={() => setExamFilter((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
+                {originExamList.length > QUIZ_APP_CONSTANTS.COMMON.itemsPerPage && (
+                  <PaginationWrap>
+                    <Pagination
+                      pageSize={QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize}
+                      totalPage={Math.ceil(originExamList.length / QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize)}
+                      currentPage={examFilter.currentPage}
+                      totalElement={originExamList.length}
+                      onNext={() => setExamFilter((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
+                      onPrev={() => setExamFilter((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
+                    />
+                  </PaginationWrap>
+                )}
+              </BlockContent>
+            </ExamBlock>
+            <ExamBlock>
+              {(isCreateCategory || editCategoryId) && (
+                <CreateCategoryBlock>
+                  <CreateCategoryForm
+                    initialValues={initialValues}
+                    isCreate={isCreateCategory}
+                    editCategoryId={editCategoryId}
+                    setIsCreate={setIsCreateCategory}
+                    setEditCategoryId={setEditCategoryId}
+                    handleUpdateCategory={handleUpdateCategory}
+                    handleCreateNewCategory={handleCreateNewCategory}
                   />
-                </PaginationWrap>
+                </CreateCategoryBlock>
               )}
-            </BlockContent>
-          </ExamBlock>
+              <BlockFilter>
+                <OriginInput
+                  type="search"
+                  name="searchCategory"
+                  value={categoryFilter.search}
+                  placeholder="Enter category name..."
+                  setValue={(value) => setCategoryFilter((prev) => ({ ...prev, search: value }))}
+                />
+                <div>
+                  <SignUpButton
+                    type="button"
+                    onClick={() => {
+                      setIsCreateCategory(true);
+                      setEditCategoryId(undefined);
+                    }}
+                  >
+                    Create now
+                  </SignUpButton>
+                </div>
+              </BlockFilter>
+              <BlockContent>
+                {categoryList.length === QUIZ_APP_CONSTANTS.COMMON.emptyArrayLength ? (
+                  <NoDataToShow message="No exams to show!" />
+                ) : (
+                  <CategoryList>
+                    {categoryList.map((item) => (
+                      <CategoryItem key={item.id}>
+                        <CategoryColor color={item.color} />
+                        <CategoryContent>
+                          <h4>{item.name}</h4>
+                          <p>{item.note}</p>
+                        </CategoryContent>
+                        <ActionsCategory>
+                          <ToolTip content="Edit Category">
+                            <ActionButton
+                              onClick={() => {
+                                setIsCreateCategory(false);
+                                setEditCategoryId(item.id);
+                              }}
+                            >
+                              <BiEditAlt />
+                            </ActionButton>
+                          </ToolTip>
+                        </ActionsCategory>
+                      </CategoryItem>
+                    ))}
+                  </CategoryList>
+                )}
+
+                {categoryList.length > QUIZ_APP_CONSTANTS.COMMON.itemsPerPage && (
+                  <PaginationWrap>
+                    <Pagination
+                      pageSize={QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize}
+                      totalPage={Math.ceil(originExamList.length / QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize)}
+                      currentPage={examFilter.currentPage}
+                      totalElement={originExamList.length}
+                      onNext={() => setExamFilter((prev) => ({ ...prev, currentPage: prev.currentPage + 1 }))}
+                      onPrev={() => setExamFilter((prev) => ({ ...prev, currentPage: prev.currentPage - 1 }))}
+                    />
+                  </PaginationWrap>
+                )}
+              </BlockContent>
+            </ExamBlock>
+            <ExamBlock>
+              <BlockFilter noWrap={true}>
+                <SuggestInput
+                  name="searchExamInStudent"
+                  placeholder="Enter your exam..."
+                  suggestList={originExamList.map((exam) => exam.name)}
+                  setValue={(value) => setSearchExamInStudent(value)}
+                />
+                <span>
+                  <CSVLink
+                    data={[
+                      { id: '1', name: 'Nguyen Tan Pil', score: 0.7 * 10, time: GameUtils.getFormattedTime(6 * 1000) },
+                    ]}
+                    headers={[
+                      { label: 'Id', key: 'id' },
+                      { label: 'Name', key: 'name' },
+                      { label: 'Score', key: 'score' },
+                      { label: 'Time', key: 'time' },
+                    ]}
+                    filename="student.csv"
+                  >
+                    <ToolTip content="Export csv file">
+                      <SignUpButton disabled={searchExamInStudent === ''}>
+                        <TiExportOutline />
+                      </SignUpButton>
+                    </ToolTip>
+                  </CSVLink>
+                </span>
+              </BlockFilter>
+              <StudentResult>
+                {searchExamInStudent === '' ? (
+                  <NoDataToShow message="No students to show!" />
+                ) : (
+                  <Table
+                    rowData={[
+                      { id: '1', name: 'Nguyen Tan Pil', score: 0.7 * 10, time: GameUtils.getFormattedTime(6 * 1000) },
+                    ]}
+                    columnDefs={[{ field: 'id' }, { field: 'name' }, { field: 'score' }, { field: 'time' }]}
+                    widthArr={[10, 40, 25, 25]}
+                  />
+                )}
+              </StudentResult>
+            </ExamBlock>
+          </NavTab>
         </Content>
       </Wrapper>
     </Container>

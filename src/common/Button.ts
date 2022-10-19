@@ -23,13 +23,33 @@ const ButtonPattern = styled.button`
   text-transform: capitalize;
 `;
 
-const getBackgroundAnswerButton = ({ isCorrect, userClicked }: { isCorrect: boolean; userClicked: boolean }) => {
-  if (isCorrect) {
-    return '#45EBA5';
-  } else if (userClicked) {
-    return '#E33E5A';
+const getBackgroundAnswerButton = ({
+  isCorrect,
+  userClicked,
+  isTestMode,
+  isSubmit,
+}: {
+  isCorrect: boolean;
+  userClicked: boolean;
+  isTestMode: boolean;
+  isSubmit: boolean;
+}) => {
+  if (isTestMode) {
+    if (userClicked) {
+      return '#9852f9';
+    } else if (isCorrect && isSubmit) {
+      return '#45EBA5';
+    } else {
+      return 'transparent';
+    }
   } else {
-    return 'transparent';
+    if (isCorrect) {
+      return '#45EBA5';
+    } else if (userClicked) {
+      return '#E33E5A';
+    } else {
+      return 'transparent';
+    }
   }
 };
 
@@ -64,15 +84,25 @@ export const NoBorderButton = styled(ButtonPattern)<Props>`
   }
 `;
 
-export const DropdownSelectedButton = styled(ButtonPattern)``;
+export const DropdownSelectedButton = styled(ButtonPattern)`
+  justify-content: flex-start;
+  width: 100%;
+`;
 
 export const AnswerButton = styled(ButtonPattern)<AnswerButtonProps>`
-  background: ${({ isCorrect, userClicked }) => getBackgroundAnswerButton({ isCorrect, userClicked })};
-  border-color: ${({ isCorrect, userClicked }) => getBackgroundAnswerButton({ isCorrect, userClicked })};
+  background: ${({ isCorrect, userClicked, isTestMode, isSubmit }) =>
+    getBackgroundAnswerButton({ isCorrect, userClicked, isTestMode, isSubmit })};
+  border-color: ${({ isCorrect, userClicked, isTestMode, isSubmit }) =>
+    getBackgroundAnswerButton({ isCorrect, userClicked, isTestMode, isSubmit })};
   border: 0.2rem solid ${(props) => props.theme.borderColor};
   border-radius: 1.2rem;
-  color: ${(props) => (props.isCorrect || props.userClicked ? props.theme.backgroundColor : props.theme.fontColor)};
-  cursor: ${(props) => (props.disabled ? 'default' : 'cursor')};
+  color: ${(props) =>
+    !props.isTestMode && (props.userClicked || props.isCorrect)
+      ? props.theme.backgroundColor
+      : props.isTestMode && props.userClicked
+      ? props.theme.backgroundColor
+      : props.theme.fontColor};
+  cursor: ${(props) => (props.disabled ? 'default' : 'pointer')};
   display: block;
   min-height: 14.4rem;
   width: 100%;

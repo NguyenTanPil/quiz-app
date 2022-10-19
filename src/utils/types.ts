@@ -28,6 +28,8 @@ export enum Difficulty {
 export type AnswerButtonProps = {
   isCorrect: boolean;
   userClicked: boolean;
+  isTestMode: boolean;
+  isSubmit: boolean;
 };
 
 export type AnswerProps = {

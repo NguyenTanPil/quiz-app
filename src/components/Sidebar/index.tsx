@@ -3,7 +3,7 @@ import { Container, Content, Header, ListLink } from './SidebarStyles';
 import { CgPushChevronRight } from 'react-icons/cg';
 import { NoBorderButton } from '../../common/Button';
 import { NavLink } from 'react-router-dom';
-import useOnClickOutside from '../../utils/useOnClickOutside';
+import useOnClickOutside from '../../common/hooks/useOnClickOutside';
 
 type SideBarProps = {
   isLogin: boolean;

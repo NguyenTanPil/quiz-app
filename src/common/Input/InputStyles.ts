@@ -244,3 +244,15 @@ export const OverrideDateTimePicker = styled.div`
     }
   }
 `;
+
+export const SuggestInputContainer = styled.div<Props>`
+  position: relative;
+
+  &&& {
+    min-width: auto;
+  }
+
+  input {
+    padding-right: 1.6rem;
+  }
+`;
