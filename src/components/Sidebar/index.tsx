@@ -8,10 +8,11 @@ import useOnClickOutside from '../../common/hooks/useOnClickOutside';
 type SideBarProps = {
   isLogin: boolean;
   isShowSidebar: boolean;
-  setIsShowSidebar: any;
+  setIsShowSidebar: (value: boolean) => void;
+  setIsShowJoinDialog: (value: boolean) => void;
 };
 
-const Sidebar = ({ isLogin, isShowSidebar, setIsShowSidebar }: SideBarProps) => {
+const Sidebar = ({ isLogin, isShowSidebar, setIsShowSidebar, setIsShowJoinDialog }: SideBarProps) => {
   const contentRef = useRef<HTMLDivElement>();
   useOnClickOutside(contentRef, () => setIsShowSidebar(false));
 
@@ -29,10 +30,13 @@ const Sidebar = ({ isLogin, isShowSidebar, setIsShowSidebar }: SideBarProps) => 
               <span>Create Exam</span>
             </NavLink>
           </li>
-          <li onClick={() => setIsShowSidebar(false)}>
-            <NavLink to="/">
-              <span>Join now</span>
-            </NavLink>
+          <li
+            onClick={() => {
+              setIsShowSidebar(false);
+              setIsShowJoinDialog(true);
+            }}
+          >
+            <span>Join now</span>
           </li>
           <li onClick={() => setIsShowSidebar(false)}>
             <NavLink to="/">

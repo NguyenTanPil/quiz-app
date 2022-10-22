@@ -20,6 +20,7 @@ const Counter = ({ isPause, isStop, time, handleCompletedTest }: Props) => {
     }
 
     if (seconds === QUIZ_APP_CONSTANTS.GAME.endTime) {
+      handleCompletedTest(0);
       return;
     }
 
@@ -33,12 +34,6 @@ const Counter = ({ isPause, isStop, time, handleCompletedTest }: Props) => {
       clearInterval(timer);
     };
   }, [isPause, seconds]);
-
-  useEffect(() => {
-    if (seconds === QUIZ_APP_CONSTANTS.GAME.endTime) {
-      handleCompletedTest(0);
-    }
-  }, [seconds]);
 
   useEffect(() => {
     setSeconds(time);

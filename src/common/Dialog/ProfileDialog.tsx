@@ -16,6 +16,7 @@ import {
   ElementGroup,
   ProfileContent,
   QuizOptions,
+  BodyDialogWrap,
 } from './DialogStyles';
 
 type ProfileDialogProps = {
@@ -75,52 +76,54 @@ const ProfileDialog = ({
             <MdOutlineClose />
           </DialogCloseButton>
         </DialogHeader>
-        <DialogBody>
-          <Formik
-            initialValues={initialValues}
-            onSubmit={(values) => {
-              handleApply(values);
-            }}
-          >
-            {({ dirty, values, handleSubmit, setFieldValue }) => (
-              <Form onSubmit={handleSubmit}>
-                <QuizOptions>
-                  <ElementGroup>
-                    <h3>Name Title</h3>
-                    <Dropdown
-                      id="nameTitle"
-                      activeValue={values.nameTitle}
-                      values={QUIZ_APP_CONSTANTS.CREATE_EXAM.titles}
-                      handleSelected={(value) => setFieldValue('nameTitle', value)}
-                    />
-                  </ElementGroup>
-                  <ElementGroup>
-                    <h3>User Name</h3>
-                    <OriginInput
-                      value={values.name}
-                      name="name"
-                      errorMessage={values.name === '' ? 'Please enter your user name' : ''}
-                      setValue={(value) => setFieldValue('name', value)}
-                    />
-                  </ElementGroup>
-                </QuizOptions>
-                <DialogFooter justifyContent="flex-end">
-                  <SignUpButton type="button" typeColor={cancelButtonTypeColor} onClick={handleCancel}>
-                    {cancelButtonContent}
-                  </SignUpButton>
-                  <SignUpButton
-                    type="submit"
-                    disabled={!dirty || compareTwoObjects(initialValues, values)}
-                    typeColor={applyButtonTypeColor}
-                    onClick={handleApply}
-                  >
-                    {applyButtonContent}
-                  </SignUpButton>
-                </DialogFooter>
-              </Form>
-            )}
-          </Formik>
-        </DialogBody>
+        <BodyDialogWrap>
+          <DialogBody>
+            <Formik
+              initialValues={initialValues}
+              onSubmit={(values) => {
+                handleApply(values);
+              }}
+            >
+              {({ dirty, values, handleSubmit, setFieldValue }) => (
+                <Form onSubmit={handleSubmit}>
+                  <QuizOptions>
+                    <ElementGroup>
+                      <h3>Name Title</h3>
+                      <Dropdown
+                        id="nameTitle"
+                        activeValue={values.nameTitle}
+                        values={QUIZ_APP_CONSTANTS.CREATE_EXAM.titles}
+                        handleSelected={(value) => setFieldValue('nameTitle', value)}
+                      />
+                    </ElementGroup>
+                    <ElementGroup>
+                      <h3>User Name</h3>
+                      <OriginInput
+                        value={values.name}
+                        name="name"
+                        errorMessage={values.name === '' ? 'Please enter your user name' : ''}
+                        setValue={(value) => setFieldValue('name', value)}
+                      />
+                    </ElementGroup>
+                  </QuizOptions>
+                  <DialogFooter justifyContent="flex-end">
+                    <SignUpButton type="button" typeColor={cancelButtonTypeColor} onClick={handleCancel}>
+                      {cancelButtonContent}
+                    </SignUpButton>
+                    <SignUpButton
+                      type="submit"
+                      disabled={!dirty || compareTwoObjects(initialValues, values)}
+                      typeColor={applyButtonTypeColor}
+                      onClick={handleApply}
+                    >
+                      {applyButtonContent}
+                    </SignUpButton>
+                  </DialogFooter>
+                </Form>
+              )}
+            </Formik>
+          </DialogBody>
+        </BodyDialogWrap>
       </ProfileContent>
     </Container>
   );

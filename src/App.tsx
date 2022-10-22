@@ -1,12 +1,8 @@
 import React from 'react';
-// styles
 import { ThemeProvider } from 'styled-components';
 import GlobalStyles from './styles/GlobalStyles';
-// components
 import Footer from './components/Footer';
 import Header from './components/Header';
-// type
-// other
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import CreateExam from './components/Pages/CreateExam';
 import Game from './components/Pages/Game';
@@ -16,11 +12,13 @@ import SignIn from './components/Pages/SignIn';
 import SignUp from './components/Pages/SignUp';
 import { getTheme } from './styles/theme';
 import RouteGroup from './utils/RouteGroup';
+import ToTopButton from './components/ToTopButton';
 
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={getTheme('light')}>
       <GlobalStyles />
+      <ToTopButton />
       <Router>
         <Header />
         <Routes>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Container,
   Content,
@@ -6,27 +6,29 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  EnterCode,
   BodyDialogWrap,
 } from './DialogStyles';
 import { MdOutlineClose } from 'react-icons/md';
 import { DialogCloseButton, SignUpButton } from '../Button';
 import useOnClickOutside from '../hooks/useOnClickOutside';
-import { DialogUtils } from '../../utils';
+import { DialogUtils, ValidUtils } from '../../utils';
+import { OriginInput } from '../Input';
+import useDebounce from '../hooks/useDebounce';
+import { QUIZ_APP_CONSTANTS } from '../../utils/constants';
 
-type ConfirmDialogProps = {
-  content: string;
+type JoinDialogProps = {
   title: string;
   cancelButtonContent: string;
   applyButtonContent: string;
   cancelButtonTypeColor: string;
   applyButtonTypeColor: string;
   handleCancelDialog?: () => void;
-  handleApplyDialog: () => void;
+  handleApplyDialog: (code: string) => void;
   handleCloseDialog: () => void;
 };
 
-const ConfirmDialog = ({
-  content,
+const JoinDialog = ({
   title,
   cancelButtonContent,
   applyButtonContent,
@@ -35,7 +37,9 @@ const ConfirmDialog = ({
   handleCancelDialog,
   handleApplyDialog,
   handleCloseDialog,
-}: ConfirmDialogProps) => {
+}: JoinDialogProps) => {
+  const [code, setCode] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const contentRef = useRef<HTMLDivElement>();
 
   const handleClose = () => {
@@ -44,6 +48,7 @@ const ConfirmDialog = ({
   };
 
   useOnClickOutside(contentRef, handleClose);
+  const debouncedValue = useDebounce<string>(code, QUIZ_APP_CONSTANTS.COMMON.debounceSeconds);
 
   const handleCancel = () => {
     handleCancelDialog && handleCancelDialog();
@@ -51,13 +56,17 @@ const ConfirmDialog = ({
   };
 
   const handleApply = () => {
-    handleApplyDialog();
+    handleApplyDialog(code);
     DialogUtils.resetScrollbar();
   };
 
   useEffect(() => {
     DialogUtils.disableScrollbar();
   }, []);
+
+  useEffect(() => {
+    setErrorMessage(ValidUtils.code(debouncedValue));
+  }, [debouncedValue]);
 
   return (
     <Container>
@@ -69,15 +78,23 @@ const ConfirmDialog = ({
           </DialogCloseButton>
         </DialogHeader>
         <BodyDialogWrap>
-          <DialogBody>{content}</DialogBody>
+          <DialogBody>
+            <EnterCode>
+              <h3>Exam Code</h3>
+              <OriginInput
+                value={code}
+                name="exam-code"
+                errorMessage={errorMessage}
+                setValue={(value) => setCode(value)}
+              />
+            </EnterCode>
+          </DialogBody>
         </BodyDialogWrap>
         <DialogFooter justifyContent="center">
-          {handleCancelDialog && cancelButtonContent && (
-            <SignUpButton typeColor={cancelButtonTypeColor} onClick={handleCancel}>
-              {cancelButtonContent}
-            </SignUpButton>
-          )}
-          <SignUpButton typeColor={applyButtonTypeColor} onClick={handleApply}>
+          <SignUpButton typeColor={cancelButtonTypeColor} onClick={handleCancel}>
+            {cancelButtonContent}
+          </SignUpButton>
+          <SignUpButton disabled={errorMessage !== ''} typeColor={applyButtonTypeColor} onClick={handleApply}>
             {applyButtonContent}
           </SignUpButton>
         </DialogFooter>
@@ -86,11 +103,11 @@ const ConfirmDialog = ({
   );
 };
 
-ConfirmDialog.defaultProps = {
+JoinDialog.defaultProps = {
   cancelButtonContent: 'cancel',
   applyButtonContent: 'apply',
   cancelButtonTypeColor: 'errorColor',
   applyButtonTypeColor: 'successColor',
 };
 
-export default ConfirmDialog;
+export default JoinDialog;

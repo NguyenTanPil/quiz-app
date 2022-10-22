@@ -1,6 +1,10 @@
 import styled from 'styled-components';
 import { breakpoints, devices } from '../../styles/breakpoints';
 
+type Props = {
+  [key: string]: any;
+};
+
 export const ResultTitle = styled.div`
   margin-bottom: 2.4rem;
   padding-bottom: 0.8rem;
@@ -13,10 +17,10 @@ export const ResultTitle = styled.div`
   }
 `;
 
-export const TryAgain = styled.div`
+export const TryAgain = styled.div<Props>`
   display: flex;
-  justify-content: flex-end;
-  padding-top: 3.2rem;
+  justify-content: ${(props) => (props.isEmpty ? 'center' : 'flex-end')};
+  padding-top: ${(props) => (props.isEmpty ? '0' : '3.2rem')};
 
   button {
     ${breakpoints({

@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components';
 import { breakpoints, devices } from '../../styles/breakpoints';
+import { QuizItemActions } from '../Styles';
 
 type Props = {
   [key: string]: any;
@@ -108,4 +109,8 @@ export const Container = styled.div<Props>`
       ${(props) => renderWidthTRowCell(props)};
     }
   }
+`;
+
+export const ActionCol = styled(QuizItemActions)`
+  padding-bottom: 0;
 `;

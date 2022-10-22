@@ -3,6 +3,7 @@ import { BiBarChart } from 'react-icons/bi';
 import { NavLink } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
 import { NoBorderButton, SignUpButton } from '../../common/Button';
+import { JoinDialog } from '../../common/Dialog';
 import { selectUser } from '../../features/user/userSlice';
 import { Wrapper } from '../../styles/Utils';
 import Sidebar from '../Sidebar';
@@ -10,11 +11,31 @@ import { Container, Content, HeaderAvatar, Logo, NavItem, NavList, ShowSidebarBo
 
 const Header = () => {
   const [isShowSidebar, setIsShowSidebar] = useState(false);
+  const [isShowJoinDialog, setIsShowJoinDialog] = useState(false);
   const user = useAppSelector(selectUser);
+
+  const handleJoinExam = (code: string) => {
+    setIsShowJoinDialog(false);
+  };
 
   return (
     <Container>
-      <Sidebar isLogin={user.id !== ''} isShowSidebar={isShowSidebar} setIsShowSidebar={setIsShowSidebar} />
+      {isShowJoinDialog && (
+        <JoinDialog
+          title="Join Exam"
+          applyButtonContent="Join"
+          handleCancelDialog={() => setIsShowJoinDialog(false)}
+          handleApplyDialog={handleJoinExam}
+          handleCloseDialog={() => setIsShowJoinDialog(false)}
+        />
+      )}
+
+      <Sidebar
+        isLogin={user.id !== ''}
+        isShowSidebar={isShowSidebar}
+        setIsShowSidebar={setIsShowSidebar}
+        setIsShowJoinDialog={setIsShowJoinDialog}
+      />
       <Wrapper>
         <Content>
           <Logo to="/">
@@ -28,9 +49,7 @@ const Header = () => {
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink to="/">
-                  <NoBorderButton>Join now</NoBorderButton>
-                </NavLink>
+                <NoBorderButton onClick={() => setIsShowJoinDialog(true)}>Join now</NoBorderButton>
               </NavItem>
               <NavItem>
                 <NavLink to="/">

@@ -28,6 +28,8 @@ export const QUIZ_APP_CONSTANTS = {
     getExamByIdUrl: 'creator/questionbank/',
     getExamByUserIdUrl: 'creator/questionbank',
     updateUserUrl: 'update',
+    submitExamUrl: 'examinees/submit',
+    getResultUrl: 'examinees/result',
   },
   SLIDER: {
     transitionSecondsDefault: 0.45,
@@ -125,5 +127,30 @@ export const QUIZ_APP_CONSTANTS = {
     roles: ['Teacher', 'Student'],
     teacherRoleNumber: '1',
     studentRoleNumber: '2',
+  },
+  PROFILE: {
+    reportTypes: ['Overview', 'Detail'],
+    tabs: ['All Exam', 'All Category', 'Report', 'Student'],
+    answerColors: [
+      {
+        name: 'clicked',
+        typeColor: 'mainColor',
+      },
+      {
+        name: 'correct',
+        typeColor: 'successColor',
+      },
+      {
+        name: 'wrong',
+        typeColor: 'errorColor',
+      },
+    ],
+    getTabs(currentTab: string) {
+      if (currentTab === 'Student') {
+        return this.tabs;
+      }
+
+      return this.tabs.filter((tab) => tab !== 'Student');
+    },
   },
 };

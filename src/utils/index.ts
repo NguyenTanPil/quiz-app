@@ -50,6 +50,10 @@ export const GameUtils = {
   },
 };
 
+function isNumeric(value: string) {
+  return /^-?\d+$/.test(value);
+}
+
 type ValidUtilsProps = {
   [key: string]: (...args: any[]) => any;
 };
@@ -105,6 +109,17 @@ export const ValidUtils: ValidUtilsProps = {
     }
 
     return error;
+  },
+  code(value: string) {
+    if (value === '') {
+      return 'Code is not empty!';
+    }
+
+    if (!isNumeric(value)) {
+      return 'Code must be a number!';
+    }
+
+    return '';
   },
 };
 
@@ -211,4 +226,11 @@ export const getLoginStatus = (): boolean => {
   }
 
   return false;
+};
+
+export const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth', // for smoothly scrolling
+  });
 };

@@ -22,7 +22,12 @@ const SuggestInput = ({ name, placeholder, suggestList, setValue }: SuggestInput
   const contentRef = useRef<HTMLDivElement>();
   const debouncedValue = useDebounce<string>(input, QUIZ_APP_CONSTANTS.COMMON.debounceSeconds);
 
-  useOnClickOutside(contentRef, () => setIsShowListSuggest(false));
+  useOnClickOutside(contentRef, () => {
+    setIsShowListSuggest(false);
+    // if (!suggestList.includes(debouncedValue)) {
+    //   setValue('');
+    // }
+  });
 
   const handleClick = (value: string) => {
     if (value === QUIZ_APP_CONSTANTS.COMMON.suggestNotFound) return;

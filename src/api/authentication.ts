@@ -49,7 +49,7 @@ export const updateUserDetail = async (formValues: any) => {
 
   try {
     const response = await axios({
-      method: 'post',
+      method: 'patch',
       url,
       data: formValues,
       headers: { Authorization: `Bearer ${token}` },

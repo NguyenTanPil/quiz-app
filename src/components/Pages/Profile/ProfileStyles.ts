@@ -150,6 +150,9 @@ export const ProfileQuizList = styled.ul`
   background-color: #f2f2f2;
   border-radius: 0.8rem;
   display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-top: 3.2rem;
 
   ${breakpoints({
     cssProp: 'flex-direction',
@@ -177,10 +180,6 @@ export const ProfileQuizItem = styled.li`
     cssPropUnits: '',
     values: [{ [devices.default]: '100%' }, { [devices.mediumDevices]: 'calc(50% - 0.8rem)' }],
   })};
-
-  &:last-child {
-    margin-bottom: 0;
-  }
 `;
 
 export const ProfileQuizAvatar = styled.div`
@@ -367,4 +366,126 @@ export const StudentResult = styled.div`
     cssPropUnits: 'rem',
     values: [{ [devices.default]: 1.2 }, { [devices.smallDevices]: 3.2 }],
   })};
+`;
+
+export const ReportList = styled.div`
+  margin-top: 0.8rem;
+`;
+
+export const ReportItem = styled.div`
+  border: 0.1rem solid ${(props) => props.theme.borderColor};
+  border-radius: 0.4rem;
+  box-sizing: border-box;
+  padding: 1.2rem;
+
+  & > ul {
+    border: none;
+    margin-bottom: 2.4rem;
+    padding: 0;
+  }
+
+  & > div {
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
+  }
+`;
+
+export const BlockReport = styled.div`
+  margin-top: 3.2rem;
+
+  ${breakpoints({
+    cssProp: ['margin-left', 'margin-right'],
+    cssPropUnits: 'rem',
+    values: [{ [devices.default]: 1.2 }, { [devices.smallDevices]: 3.2 }],
+  })};
+`;
+
+export const DetailInfo = styled.div`
+  ${breakpoints({
+    cssProp: ['padding-left', 'padding-right'],
+    cssPropUnits: 'rem',
+    values: [{ [devices.default]: 0 }, { [devices.smallDevices]: 1.6 }],
+  })};
+
+  & > ul > li {
+    padding: 1.6rem;
+  }
+`;
+
+export const QuizListWrap = styled.div`
+  ${breakpoints({
+    cssProp: ['padding-left', 'padding-right'],
+    cssPropUnits: 'rem',
+    values: [{ [devices.default]: 0.4 }, { [devices.smallDevices]: 0 }],
+  })};
+
+  & > ul {
+    margin-top: 2rem;
+  }
+`;
+
+export const InfoTitle = styled.h4`
+  color: ${(props) => props.theme.titleColor};
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+  margin-top: 0;
+  width: 100%;
+`;
+
+export const InfoContent = styled.ul`
+  width: 100%;
+
+  & > li {
+    color: ${(props) => props.theme.fontColor};
+    font-size: 1.4rem;
+    font-weight: 400;
+    padding-bottom: 0.8rem;
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+  }
+`;
+
+export const DetailColor = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-top: 1.6rem;
+
+  ${breakpoints({
+    cssProp: ['padding-left', 'padding-right'],
+    cssPropUnits: 'rem',
+    values: [{ [devices.default]: 1.6 }, { [devices.smallDevices]: 3.2 }],
+  })};
+
+  & > div:first-child {
+    ${breakpoints({
+      cssProp: 'margin-bottom',
+      cssPropUnits: 'rem',
+      values: [{ [devices.default]: 3.2 }, { [devices.mediumDevices]: 0 }],
+    })};
+  }
+`;
+
+export const DetailColorItem = styled.div`
+  flex-direction: column;
+  position: relative;
+
+  ${breakpoints({
+    cssProp: 'width',
+    cssPropUnits: '',
+    values: [{ [devices.default]: '100%' }, { [devices.mediumDevices]: 'calc(50% - 0.8rem)' }],
+  })};
+
+  h3 {
+    margin-bottom: 1.6rem;
+  }
+`;
+
+export const AnswerContent = styled.span<Props>`
+  color: ${(props) => (props.isAnswerClicked ? props.theme.mainColor : props.theme.fontColor)};
 `;

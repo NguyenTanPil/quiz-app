@@ -19,19 +19,13 @@ export const getExamsByUserId = async () => {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    const data = await Promise.all(
-      response.data.data.map(async (exam: any) => {
-        const category = await getCategoryById(exam.main[0].categoryId);
-
-        return {
-          id: exam.main[0].id,
-          name: exam.main[0].name,
-          category: { id: category.data.id, name: category.data.name },
-          totalQuestions: exam.sub.total,
-          createdAt: exam.main[0].created_at,
-        };
-      }),
-    );
+    const data = response.data.data.map((exam: any) => ({
+      id: exam.main[0].id,
+      name: exam.main[0].name,
+      category: { id: exam.main[0].categoryId, name: exam.optional.categoryName },
+      totalQuestions: exam.sub.total,
+      createdAt: exam.main[0].createdAt * QUIZ_APP_CONSTANTS.COMMON.oneSecond,
+    }));
 
     return { isSuccess: true, data };
   } catch (error: any) {
@@ -114,8 +108,7 @@ export const getExamById = async (examId: string) => {
     }
 
     const examRes = response.data.data;
-    const category = await getCategoryById(examRes.general.main[0].categoryId);
-    const structureExam = JSON.parse(examRes.general.main[0].structureExam);
+    const structureExam = JSON.parse(examRes.main[0].structureExam);
 
     const questions = examRes.question.map((q: any) => {
       const { id, content: question, level } = q.content[0];
@@ -130,13 +123,13 @@ export const getExamById = async (examId: string) => {
     });
 
     const data = {
-      id: examRes.general.main[0].id,
-      name: examRes.general.main[0].name,
-      timeStart: examRes.general.main[0].timeStart,
-      category: { id: category.data.id, name: category.data.name },
-      quizStructure: { easy: structureExam.esay, medium: structureExam.normal, hard: structureExam.difficult },
-      timeDuration: convertMinutesToDuration(examRes.general.main[0].timeDuration),
-      countLimit: examRes.general.main[0].countLimit,
+      id: examRes.main[0].id,
+      name: examRes.main[0].name,
+      timeStart: examRes.main[0].timeStart,
+      category: { id: examRes.main[0].categoryId, name: examRes.optional.categoryName },
+      quizStructure: { easy: structureExam.easy, medium: structureExam.normal, hard: structureExam.difficult },
+      timeDuration: convertMinutesToDuration(examRes.main[0].timeDuration),
+      countLimit: examRes.main[0].countLimit,
       quizList: questions,
     };
 
@@ -164,33 +157,75 @@ export const getGeneraExamById = async (examId: string) => {
     }
 
     const examRes = response.data.data;
+    const structureExam = JSON.parse(examRes.main[0].structureExam);
 
     const questions = examRes.question.map((q: any) => {
-      const { id, content: question } = q.content[0];
+      const { id, content: question, level } = q.content[0];
       const answers = q.answer.map((answer: any) => ({ ...answer[0], isCorrect: !!answer[0].isCorrect }));
-      const correctAnswerTemp = answers.filter((answer: any) => answer.isCorrect)[0];
-      const inCorrectAnswerTemp = answers.filter((answer: any) => !answer.isCorrect);
-      const correctAnswer = { id: correctAnswerTemp.id, content: correctAnswerTemp.content };
-      const inCorrectAnswers = inCorrectAnswerTemp.map((answer: any) => ({ id: answer.id, content: answer.content }));
 
       return {
         id,
         question,
-        answerClicked: undefined,
-        isCorrect: undefined,
-        answers: shuffleArray([...inCorrectAnswers, correctAnswer]),
-        correctAnswer,
-        inCorrectAnswers,
+        level: QUIZ_APP_CONSTANTS.CREATE_EXAM.getLevelStringByNumber(level - 1),
+        answers,
       };
     });
 
-    return {
-      isSuccess: true,
-      data: {
-        questions,
-        timeDuration: examRes.general.main[0].timeDuration * QUIZ_APP_CONSTANTS.COMMON.minutesPerHour,
-      },
+    const data = {
+      id: examRes.main[0].id,
+      name: examRes.main[0].name,
+      timeStart: examRes.main[0].timeStart,
+      category: { id: examRes.main[0].categoryId, name: examRes.optional.categoryName },
+      quizStructure: { easy: structureExam.easy, medium: structureExam.normal, hard: structureExam.difficult },
+      timeDuration: examRes.main[0].timeDuration * 60,
+      countLimit: examRes.main[0].countLimit,
+      quizList: questions,
     };
+
+    return { isSuccess: true, data };
+  } catch (error: any) {
+    return { isSuccess: false, message: error.message };
+  }
+};
+
+export const submitExam = async (examId: string, answerIds: string[]) => {
+  const token = getCookie('token');
+  const url = QUIZ_APP_CONSTANTS.API.baseUrl + QUIZ_APP_CONSTANTS.API.submitExamUrl;
+
+  try {
+    const response = await axios({
+      method: 'post',
+      url,
+      data: { questionBankId: examId, answerIds },
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return { isSuccess: true, data: response.data.data };
+  } catch (error: any) {
+    return { isSuccess: false, message: error.message };
+  }
+};
+
+export const getResult = async () => {
+  const token = getCookie('token');
+  const url = QUIZ_APP_CONSTANTS.API.baseUrl + QUIZ_APP_CONSTANTS.API.getResultUrl;
+
+  try {
+    const response = await axios({
+      method: 'get',
+      url,
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const data = response.data.data.map((result: any, idx: number) => ({
+      no: idx + 1,
+      id: result.id,
+      score: result.numCorrect,
+      restTime: result.restTime,
+      submitDate: result.dateSubmit,
+    }));
+
+    return { isSuccess: true, data };
   } catch (error: any) {
     return { isSuccess: false, message: error.message };
   }

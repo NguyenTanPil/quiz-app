@@ -3,12 +3,12 @@ import { Container, NavContainer, NavItem, TabContainer, TabItem } from './NavTa
 
 type NavTabProps = {
   tabList: string[];
+  activeTab: string;
   children: React.ReactElement[];
+  setActiveTab: (value: string) => void;
 };
 
-const NavTab = ({ tabList, children }: NavTabProps) => {
-  const [activeTab, setActiveTab] = useState(tabList[0]);
-
+const NavTab = ({ tabList, activeTab, children, setActiveTab }: NavTabProps) => {
   return (
     <Container>
       <TabContainer>

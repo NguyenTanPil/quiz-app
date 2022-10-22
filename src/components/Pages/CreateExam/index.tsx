@@ -8,9 +8,21 @@ import { useNavigate, useParams } from 'react-router-dom';
 import uuid from 'react-uuid';
 import { createExam, getExamById } from '../../../api/exam';
 import { ActionButton, SignUpButton } from '../../../common/Button';
-import { ConfirmDialog, CreateQuizDialog, CreateCategoryDialog } from '../../../common/Dialog';
+import { ConfirmDialog, CreateCategoryDialog, CreateQuizDialog } from '../../../common/Dialog';
 import Dropdown from '../../../common/Dropdown';
 import { DateTimePickerInput, OriginInput } from '../../../common/Input';
+import {
+  LabelGroup,
+  QuizItem,
+  QuizItemActions,
+  QuizItemAnswer,
+  QuizItemAnswers,
+  QuizItemAnswerStatus,
+  QuizItemContent,
+  QuizItemHeader,
+  QuizItemNumber,
+  QuizList,
+} from '../../../common/Styles';
 import ToolTip from '../../../common/ToolTip';
 import { EmptyListAction, WrapperSection } from '../../../styles/Utils';
 import {
@@ -22,6 +34,7 @@ import {
 } from '../../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
 import { AnswerProps, QuizProps } from '../../../utils/types';
+import { LoadingFullPage } from '../../Loading';
 import {
   CategoryQuiz,
   Container,
@@ -30,20 +43,10 @@ import {
   CreateQuizFooter,
   CreateQuizHeader,
   InputQuizStructure,
-  LabelGroup,
   LevelButton,
   LevelItem,
   LevelList,
   NoQuiz,
-  QuizItem,
-  QuizItemActions,
-  QuizItemAnswer,
-  QuizItemAnswers,
-  QuizItemAnswerStatus,
-  QuizItemContent,
-  QuizItemHeader,
-  QuizItemNumber,
-  QuizList,
   QuizName,
   QuizOptions,
   StructureItem,
@@ -105,16 +108,17 @@ const initialExam: ExamProps = {
 const CreateExam = () => {
   const navigate = useNavigate();
   const { examId } = useParams();
-  const [originExam, setOriginExam] = useState<ExamProps>(initialExam);
 
+  const [isLoading, setIsLoading] = useState(examId ? true : false);
+  const [originExam, setOriginExam] = useState<ExamProps>(initialExam);
   const [exam, setExam] = useState<ExamProps>(initialExam);
+
   const [isShowCreateQuestionDialog, setIsShowCreateQuestionDialog] = useState(false);
   const [isShowCreateCategoryDialog, setIsShowCreateCategoryDialog] = useState(false);
   const [editId, setEditId] = useState<string | undefined>(undefined);
   const [deleteId, setDeleteId] = useState<string | undefined>(undefined);
 
   const handleCreateNewQuiz = (values: QuizProps) => {
-    console.log({ values });
     setExam((prev) => ({ ...prev, quizList: [...prev.quizList, values] }));
   };
 
@@ -143,6 +147,7 @@ const CreateExam = () => {
   };
 
   const handleSaveExam = async () => {
+    setIsLoading(true);
     const newQuizList = exam.quizList.map((quiz) => {
       const { question, level, answers } = quiz;
 
@@ -154,8 +159,8 @@ const CreateExam = () => {
         level: QUIZ_APP_CONSTANTS.CREATE_EXAM.getLevelNumberByString(level),
         correctAnswer,
         inCorrectAnswer: inCorrectAnswers,
-        bottom_question_ids: [],
-        top_question_ids: [],
+        topQuestionsId: [],
+        bottomQuestionsId: [],
       };
     });
 
@@ -169,7 +174,7 @@ const CreateExam = () => {
       timeStart: exam.timeStart,
       isPublished: 1,
       structureExam: {
-        esay: exam.quizStructure.easy,
+        easy: exam.quizStructure.easy,
         normal: exam.quizStructure.medium,
         difficult: exam.quizStructure.hard,
       },
@@ -180,7 +185,8 @@ const CreateExam = () => {
     const response = await createExam(formValues);
 
     if (response.isSuccess) {
-      console.log({ exam: response.data });
+      setExam(initialExam);
+      setIsLoading(false);
     }
   };
 
@@ -234,24 +240,29 @@ const CreateExam = () => {
   };
 
   useEffect(() => {
-    if (!examId) return;
-
     let isSubscribed = true;
 
-    const fetchExistExam = async () => {
-      const response = await getExamById(examId);
+    if (examId) {
+      const fetchExistExam = async () => {
+        const response = await getExamById(examId);
 
-      if (response.isSuccess) {
-        if (isSubscribed) {
+        if (response.isSuccess && isSubscribed) {
           setOriginExam(response.data);
           setExam(response.data);
+          setIsLoading(false);
         }
-      } else {
-        navigate('/exams/create-exam');
-      }
-    };
 
-    fetchExistExam();
+        if (response.isSuccess === false) {
+          navigate('/exams/create-exam');
+        }
+      };
+
+      fetchExistExam();
+    } else {
+      if (isSubscribed) {
+        setExam(initialExam);
+      }
+    }
 
     return () => {
       isSubscribed = false;
@@ -311,6 +322,7 @@ const CreateExam = () => {
           handleCloseDialog={() => setDeleteId(undefined)}
         />
       )}
+      {isLoading && <LoadingFullPage />}
       {/* end dialogs */}
       <WrapperSection>
         <Content>

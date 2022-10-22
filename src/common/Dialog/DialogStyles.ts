@@ -194,3 +194,17 @@ export const PaginationWrap = styled.div`
   padding-left: 1.6rem;
   padding-right: 1.6rem;
 `;
+
+export const BodyDialogWrap = styled.div`
+  ${breakpoints({
+    cssProp: ['padding-left', 'padding-right'],
+    cssPropUnits: 'rem',
+    values: [{ [devices.default]: 1.6 }, { [devices.smallDevices]: 0 }],
+  })};
+`;
+
+export const EnterCode = styled(ElementGroup)`
+  && {
+    margin-top: 0;
+  }
+`;

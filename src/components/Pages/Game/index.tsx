@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { getGeneraExamById, submitExam } from '../../../api/exam';
 import { ConfirmDialog } from '../../../common/Dialog';
 import gameBannerImg from '../../../images/gameBanner.jpg';
-import { Wrapper } from '../../../styles/Utils';
+import { QuestionDashboard, QuestionDashboardItem, Wrapper } from '../../../styles/Utils';
 import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
 import Counter from '../../Counter';
 import GameResult from '../../GameResult';
 import QuestionCard from '../../QuestionCard';
-import { Container, Content, ExamResult, GameBanner, QuestionDashboard, QuestionDashboardItem } from './GameStyles';
+import { Container, Content, ExamResult, GameBanner } from './GameStyles';
 
 const isTestMode = true;
-let time = 0;
-
-const result = [{ id: '1', name: 'Nguyen Tan Pil', score: 0.7 * 10, time: 30 }];
 
 const Game = () => {
   const { examId } = useParams();
@@ -22,7 +20,7 @@ const Game = () => {
   const [isShowCompleteDialog, setIsShowCompleteDialog] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [isStart, setIsStart] = useState(false);
-  const [restTime, setResetTime] = useState(0);
+  const [spendTime, setSpendTime] = useState(0);
 
   const [questions, setQuestions] = useState<any[]>([]);
   const [number, setNumber] = useState(QUIZ_APP_CONSTANTS.GAME.initialNumberQuestion);
@@ -57,20 +55,23 @@ const Game = () => {
     setNumber((prev) => prev + 1);
   };
 
-  const handleTryAgainCompleteDialog = () => {
+  const handleApplyCompleteDialog = () => {
+    setIsShowCompleteDialog(false);
+  };
+
+  const handleTryAgain = () => {
     setIsShowCompleteDialog(false);
     setQuestions((prev) => prev.map((question) => ({ ...question, answerClicked: undefined, isCorrect: undefined })));
     setNumber(QUIZ_APP_CONSTANTS.GAME.initialNumberQuestion);
     setScore(QUIZ_APP_CONSTANTS.GAME.initialScore);
   };
 
-  const handleApplyCompleteDialog = () => {
-    setIsShowCompleteDialog(false);
-  };
-
   const handleCompletedTest = (seconds: number) => {
-    setResetTime(seconds);
-    setIsShowCompleteDialog(true);
+    if (!isSubmit) {
+      setIsShowCompleteDialog(true);
+    }
+
+    setSpendTime(timeDuration - seconds);
     setIsCompleted(true);
   };
 
@@ -87,93 +88,45 @@ const Game = () => {
   };
 
   const handleSubmitExam = () => {
+    setNumber(0);
     setIsSubmit(true);
     setIsShowCloseDialog(false);
-    setNumber(0);
+    setIsShowCompleteDialog(false);
   };
 
   const handleCloseExam = () => {
-    setIsShowCloseDialog(false);
-    setIsStart(false);
+    if (isTestMode) {
+      setIsShowCloseDialog(false);
+      setIsStart(false);
+    }
   };
 
   useEffect(() => {
     let isSubscribed = true;
-    if (!examId) return;
+    if (!examId && !isStart) return;
 
     const getQuestions = async () => {
-      // const response = await getGeneraExamById(examId);
-      const response = {
-        isSuccess: true,
-        data: {
-          timeDuration: 3600,
-          questions: [
-            {
-              id: '1',
-              answerClicked: undefined,
-              isFlag: false,
-              answers: [
-                { content: 'dsfsdfs', id: 'f730f62a-db54-4726-a198-d6a50c67cf5e' },
-                { content: 'ffdsf', id: 'a828d475-c6eb-4b45-8e55-9d83cf405585' },
-                { content: 'fdsffasd', id: '33db3ecf-d4fc-4a95-8b00-3f22d2776388' },
-                { content: 'fdsffdsa srwe', id: '0bf8beaf-56ab-4626-82c4-8e1d630f3652' },
-              ],
-              correctAnswer: { content: 'ffdsf', id: 'a828d475-c6eb-4b45-8e55-9d83cf405585' },
-              inCorrectAnswers: [
-                { content: 'dsfsdfs', id: 'f730f62a-db54-4726-a198-d6a50c67cf5e' },
-                { content: 'fdsffasd', id: '33db3ecf-d4fc-4a95-8b00-3f22d2776388' },
-                { content: 'fdsffdsa srwe', id: '0bf8beaf-56ab-4626-82c4-8e1d630f3652' },
-              ],
-              isCorrect: undefined,
-              question: 'This is question 1',
-            },
-            {
-              id: '2',
-              answerClicked: undefined,
-              isFlag: false,
-              answers: [
-                { content: 'dsfsdfs', id: 'f730f62a-db54-4726-a198-d6a50c67cf5e' },
-                { content: 'ffdsf', id: 'a828d475-c6eb-4b45-8e55-9d83cf405585' },
-                { content: 'fdsffasd', id: '33db3ecf-d4fc-4a95-8b00-3f22d2776388' },
-                { content: 'fdsffdsa srwe', id: '0bf8beaf-56ab-4626-82c4-8e1d630f3652' },
-              ],
-              correctAnswer: { content: 'ffdsf', id: 'a828d475-c6eb-4b45-8e55-9d83cf405585' },
-              inCorrectAnswers: [
-                { content: 'dsfsdfs', id: 'f730f62a-db54-4726-a198-d6a50c67cf5e' },
-                { content: 'fdsffasd', id: '33db3ecf-d4fc-4a95-8b00-3f22d2776388' },
-                { content: 'fdsffdsa srwe', id: '0bf8beaf-56ab-4626-82c4-8e1d630f3652' },
-              ],
-              isCorrect: undefined,
-              question: 'This is question 2',
-            },
-            {
-              id: '3',
-              answerClicked: undefined,
-              isFlag: false,
-              answers: [
-                { content: 'dsfsdfs', id: 'f730f62a-db54-4726-a198-d6a50c67cf5e' },
-                { content: 'ffdsf', id: 'a828d475-c6eb-4b45-8e55-9d83cf405585' },
-                { content: 'fdsffasd', id: '33db3ecf-d4fc-4a95-8b00-3f22d2776388' },
-                { content: 'fdsffdsa srwe', id: '0bf8beaf-56ab-4626-82c4-8e1d630f3652' },
-              ],
-              correctAnswer: { content: 'ffdsf', id: 'a828d475-c6eb-4b45-8e55-9d83cf405585' },
-              inCorrectAnswers: [
-                { content: 'dsfsdfs', id: 'f730f62a-db54-4726-a198-d6a50c67cf5e' },
-                { content: 'fdsffasd', id: '33db3ecf-d4fc-4a95-8b00-3f22d2776388' },
-                { content: 'fdsffdsa srwe', id: '0bf8beaf-56ab-4626-82c4-8e1d630f3652' },
-              ],
-              isCorrect: undefined,
-              question: 'This is question 3',
-            },
-          ],
-        },
-      };
+      const response = await getGeneraExamById(examId || '');
       console.log({ response });
+      const questionList = response.data.quizList.map((item: any) => {
+        return {
+          id: item.id,
+          question: item.question,
+          answers: item.answers,
+          correctAnswer: item.answers.filter((i: any) => i.isCorrect)[0],
+          inCorrectAnswers: item.answers.filter((i: any) => !i.isCorrect),
+          answerClicked: undefined,
+          isFlag: false,
+          isCorrect: undefined,
+        };
+      });
 
       if (isSubscribed && response.isSuccess) {
         setIsSubmit(false);
         setScore(0);
-        setQuestions(response.data.questions);
+        setSpendTime(0);
+        setQuestionsSelected(0);
+        setQuestions(questionList);
         setNumber(QUIZ_APP_CONSTANTS.GAME.initialNumberQuestion);
         setScore(QUIZ_APP_CONSTANTS.GAME.initialScore);
         setTimeDuration(response.data.timeDuration);
@@ -189,16 +142,26 @@ const Game = () => {
   }, [isStart]);
 
   useEffect(() => {
-    if (questions.length !== QUIZ_APP_CONSTANTS.GAME.initialScore && score === questions.length && !isTestMode) {
-      handleCompletedTest(0);
+    if (isSubmit && spendTime && isTestMode && examId) {
+      const handleSubmitExam = async () => {
+        const answerIds = questions.map((question) => question.answerClicked || ' ');
+
+        const response = await submitExam(examId, answerIds);
+
+        if (response.isSuccess) {
+          return response.data;
+        }
+      };
+
+      handleSubmitExam();
     }
-  }, [score]);
+  }, [isSubmit, spendTime, isTestMode]);
 
   useEffect(() => {
-    if (isSubmit && restTime) {
-      result.push({ id: '2', name: 'Nguyen Tan Pil', score: score, time: restTime });
+    if (!isTestMode && questions.length > 0 && score === questions.length) {
+      setIsShowCompleteDialog(true);
     }
-  }, [isSubmit, restTime]);
+  }, [score]);
 
   if (loading) {
     return <div></div>;
@@ -219,19 +182,24 @@ const Game = () => {
           />
         )}
 
-        {isShowCompleteDialog && !isTestMode && (
+        {isShowCompleteDialog && (
           <ConfirmDialog
             content="This exam has completed!"
             title="Confirm to try"
             applyButtonContent="Continue"
-            cancelButtonContent="Try Again"
-            handleCancelDialog={handleTryAgainCompleteDialog}
-            handleApplyDialog={handleApplyCompleteDialog}
+            cancelButtonContent={isTestMode ? '' : 'Try Again'}
+            handleCancelDialog={handleTryAgain}
+            handleApplyDialog={isTestMode && !isSubmit ? handleSubmitExam : handleApplyCompleteDialog}
             handleCloseDialog={() => setIsShowCompleteDialog(false)}
           />
         )}
+
         {/* end dialogs */}
-        {isStart ? (
+        {isTestMode && !isStart ? (
+          <ExamResult>
+            <GameResult setIsStart={setIsStart} />
+          </ExamResult>
+        ) : (
           <>
             <GameBanner>
               {isTestMode ? (
@@ -255,12 +223,14 @@ const Game = () => {
               )}
             </GameBanner>
             <Content>
-              <Counter
-                time={timeDuration}
-                isPause={isShowCloseDialog || isShowCompleteDialog}
-                isStop={isSubmit}
-                handleCompletedTest={handleCompletedTest}
-              />
+              {isTestMode && (
+                <Counter
+                  time={timeDuration}
+                  isPause={isShowCloseDialog || isShowCompleteDialog}
+                  isStop={isSubmit}
+                  handleCompletedTest={handleCompletedTest}
+                />
+              )}
               <QuestionCard
                 questionDetails={questions[number]}
                 questionNumber={number + 1}
@@ -277,10 +247,6 @@ const Game = () => {
               />
             </Content>
           </>
-        ) : (
-          <ExamResult>
-            <GameResult result={result} setIsStart={setIsStart} />
-          </ExamResult>
         )}
       </Wrapper>
     </Container>

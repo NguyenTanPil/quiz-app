@@ -1,9 +1,9 @@
 import { Form, Formik } from 'formik';
 import React from 'react';
-import { LabelGroup } from '../../components/Pages/CreateExam/CreateExamStyles';
 import { compareTwoObjects } from '../../utils';
 import { SignUpButton } from '../Button';
 import { OriginInput, Textarea } from '../Input';
+import { LabelGroup } from '../Styles';
 import { CreateCategoryActions, ElementGroup, FormBody, QuizOptions } from './DialogStyles';
 
 type CreateCategoryFormProps = {

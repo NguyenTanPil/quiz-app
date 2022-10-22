@@ -3,19 +3,12 @@ import React from 'react';
 import { RiFacebookFill, RiGoogleFill, RiTwitterFill } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 import { OtherAuthenButton, SignUpButton } from '../../common/Button';
-import { ValidUtils as validate } from '../../utils';
 import { RadioBox, ValidTextInput } from '../../common/Input';
-import {
-  AuthenFormBanner,
-  Content,
-  FormContainer,
-  FormTitle,
-  ListAuthen,
-  OtherAuthen,
-  Roles,
-} from './AuthenFormStyles';
+import { RadioBoxList } from '../../common/Styles';
 import ToolTip from '../../common/ToolTip';
+import { ValidUtils as validate } from '../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../utils/constants';
+import { AuthenFormBanner, Content, FormContainer, FormTitle, ListAuthen, OtherAuthen } from './AuthenFormStyles';
 
 export type formValueProps = {
   type: string;
@@ -82,7 +75,7 @@ const AuthenForm = ({
 
                 if (value.type === 'select') {
                   return (
-                    <Roles key={value.name}>
+                    <RadioBoxList key={value.name}>
                       {QUIZ_APP_CONSTANTS.AUTHEN_FORM.roles.map((role: string) => (
                         <SignUpButton
                           key={`role-${role}`}
@@ -96,7 +89,7 @@ const AuthenForm = ({
                           />
                         </SignUpButton>
                       ))}
-                    </Roles>
+                    </RadioBoxList>
                   );
                 } else {
                   return (
