@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Container, NavContainer, NavItem, TabContainer, TabItem } from './NavTabStyles';
 
 type NavTabProps = {

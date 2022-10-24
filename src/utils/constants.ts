@@ -61,6 +61,7 @@ export const QUIZ_APP_CONSTANTS = {
         typeColor: 'errorColor',
       },
     ],
+    examModes: ['Review Mode', 'Test Mode'],
     initNameTitle: 'Mr.',
     titles: ['Mr.', 'Ms.', 'Mrs.', 'Dr.'],
     countLimitList: ['1', '3', '5', 'Limited'],
@@ -122,14 +123,63 @@ export const QUIZ_APP_CONSTANTS = {
 
       return parseInt(this.countLimitList[countLimitIndex]);
     },
+    getModeStatus(mode: string) {
+      if (mode === 'Review Mode') {
+        return false;
+      }
+
+      return true;
+    },
+    getModeString(isTestMode: boolean) {
+      if (isTestMode) {
+        return 'Test Mode';
+      }
+
+      return 'Review Mode';
+    },
   },
   AUTHEN_FORM: {
     roles: ['Teacher', 'Student'],
     teacherRoleNumber: '1',
     studentRoleNumber: '2',
+    toolbarFull: [
+      ['bold', 'italic', 'underline', 'blockquote'],
+      [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
+      [
+        {
+          color: ['#f55d7a', '#536471', '#9852f9', '#0fb56d', '#0f1c2a', '#ed8a0a'],
+        },
+        { background: ['#f55d7a', '#536471', '#9852f9', '#0fb56d', '#0f1c2a', '#ed8a0a'] },
+      ],
+      ['clean'],
+    ],
+    answerLabels: ['A', 'B', 'C', 'D'],
+    toolbarShort: [
+      ['bold', 'italic', 'underline', 'blockquote'],
+      [
+        {
+          color: ['#f55d7a', '#536471', '#9852f9', '#0fb56d', '#0f1c2a', '#ed8a0a'],
+        },
+        { background: ['#f55d7a', '#536471', '#9852f9', '#0fb56d', '#0f1c2a', '#ed8a0a'] },
+      ],
+      ['clean'],
+    ],
+    formatsFull: [
+      'bold',
+      'italic',
+      'underline',
+      'blockquote',
+      'list',
+      'bullet',
+      'indent',
+      'image',
+      'color',
+      'background',
+    ],
+    formatsShort: ['bold', 'italic', 'underline', 'blockquote', 'image', 'color', 'background'],
   },
   PROFILE: {
-    reportTypes: ['Overview', 'Detail'],
+    reportTypes: ['Hide', 'Overview', 'Detail'],
     tabs: ['All Exam', 'All Category', 'Report', 'Student'],
     answerColors: [
       {

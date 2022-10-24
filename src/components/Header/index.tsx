@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BiBarChart } from 'react-icons/bi';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
 import { NoBorderButton, SignUpButton } from '../../common/Button';
 import { JoinDialog } from '../../common/Dialog';
@@ -8,14 +8,18 @@ import { selectUser } from '../../features/user/userSlice';
 import { Wrapper } from '../../styles/Utils';
 import Sidebar from '../Sidebar';
 import { Container, Content, HeaderAvatar, Logo, NavItem, NavList, ShowSidebarBox } from './HeaderStyles';
+import { data } from '../../images/history_data';
+import axios from 'axios';
 
 const Header = () => {
   const [isShowSidebar, setIsShowSidebar] = useState(false);
   const [isShowJoinDialog, setIsShowJoinDialog] = useState(false);
   const user = useAppSelector(selectUser);
+  const navigate = useNavigate();
 
   const handleJoinExam = (code: string) => {
     setIsShowJoinDialog(false);
+    navigate(`/game/5c4b715a-095f-47dc-b3d7-726aaa4d0054`);
   };
 
   return (

@@ -160,7 +160,7 @@ export const getGeneraExamById = async (examId: string) => {
     const structureExam = JSON.parse(examRes.main[0].structureExam);
 
     const questions = examRes.question.map((q: any) => {
-      const { id, content: question, level } = q.content[0];
+      const { id, content: question, level, topQuestionsId, bottomQuestionsId } = q.content[0];
       const answers = q.answer.map((answer: any) => ({ ...answer[0], isCorrect: !!answer[0].isCorrect }));
 
       return {
@@ -168,6 +168,10 @@ export const getGeneraExamById = async (examId: string) => {
         question,
         level: QUIZ_APP_CONSTANTS.CREATE_EXAM.getLevelStringByNumber(level - 1),
         answers,
+        topIds: JSON.parse(topQuestionsId),
+        bottomIds: JSON.parse(bottomQuestionsId),
+        topIndex: 0,
+        bottomIndex: 0,
       };
     });
 

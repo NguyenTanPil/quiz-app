@@ -4,13 +4,15 @@ import { getGeneraExamById, submitExam } from '../../../api/exam';
 import { ConfirmDialog } from '../../../common/Dialog';
 import gameBannerImg from '../../../images/gameBanner.jpg';
 import { QuestionDashboard, QuestionDashboardItem, Wrapper } from '../../../styles/Utils';
+import { shuffleArray } from '../../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
 import Counter from '../../Counter';
 import GameResult from '../../GameResult';
+import { LoadingFullPage } from '../../Loading';
 import QuestionCard from '../../QuestionCard';
 import { Container, Content, ExamResult, GameBanner } from './GameStyles';
 
-const isTestMode = true;
+const isTestMode = false;
 
 const Game = () => {
   const { examId } = useParams();
@@ -52,7 +54,58 @@ const Game = () => {
   };
 
   const nextQuestion = () => {
-    setNumber((prev) => prev + 1);
+    console.log({ number, question: questions[number] });
+
+    if (isTestMode) {
+      setNumber((prev) => prev + 1);
+    } else {
+      let targetNumber = number;
+
+      if (questions[number].isCorrect) {
+        const targetQuestionId = questions[number].bottomIds[questions[number].bottomIndex];
+        targetNumber = questions.findIndex((item) => item.id === targetQuestionId);
+
+        setQuestions((prev: any) =>
+          prev.map((question: any) => {
+            if (question.id === prev[number].id || question.id === prev[targetNumber].id) {
+              const bottomIndex =
+                question.bottomIndex === prev[number].bottomIds.length - 1 ? 0 : question.bottomIndex + 1;
+
+              return {
+                ...question,
+                bottomIndex,
+                answerClicked: undefined,
+                isCorrect: undefined,
+              };
+            }
+
+            return question;
+          }),
+        );
+      } else {
+        const targetQuestionId = questions[number].topIds[questions[number].topIndex];
+        targetNumber = questions.findIndex((item) => item.id === targetQuestionId);
+
+        setQuestions((prev: any) =>
+          prev.map((question: any) => {
+            if (question.id === prev[number].id || question.id === prev[targetNumber].id) {
+              const topIndex = question.topIndex === prev[number].topIds.length - 1 ? 0 : question.topIndex + 1;
+
+              return {
+                ...question,
+                topIndex,
+                answerClicked: undefined,
+                isCorrect: undefined,
+              };
+            }
+
+            return question;
+          }),
+        );
+      }
+
+      setNumber(targetNumber);
+    }
   };
 
   const handleApplyCompleteDialog = () => {
@@ -118,6 +171,10 @@ const Game = () => {
           answerClicked: undefined,
           isFlag: false,
           isCorrect: undefined,
+          topIds: item.topIds,
+          bottomIds: item.bottomIds,
+          topIndex: item.topIndex,
+          bottomIndex: item.bottomIndex,
         };
       });
 
@@ -126,11 +183,16 @@ const Game = () => {
         setScore(0);
         setSpendTime(0);
         setQuestionsSelected(0);
-        setQuestions(questionList);
         setNumber(QUIZ_APP_CONSTANTS.GAME.initialNumberQuestion);
         setScore(QUIZ_APP_CONSTANTS.GAME.initialScore);
         setTimeDuration(response.data.timeDuration);
         setLoading(false);
+
+        if (isTestMode) {
+          setQuestions(questionList.slice(0, 5));
+        } else {
+          setQuestions(shuffleArray(questionList));
+        }
       }
     };
 
@@ -158,98 +220,102 @@ const Game = () => {
   }, [isSubmit, spendTime, isTestMode]);
 
   useEffect(() => {
-    if (!isTestMode && questions.length > 0 && score === questions.length) {
+    if (!isTestMode && questions.length > 0 && score === 3) {
       setIsShowCompleteDialog(true);
     }
   }, [score]);
 
-  if (loading) {
-    return <div></div>;
-  }
-
   return (
-    <Container>
-      <Wrapper>
-        {/* start dialogs */}
-        {isShowCloseDialog && (
-          <ConfirmDialog
-            content={isTestMode && !isSubmit ? 'Do you want to complete this exam?' : 'Do you want to exit this exam?'}
-            title="Confirm to complete"
-            applyButtonContent="Okay"
-            handleCancelDialog={() => setIsShowCloseDialog(false)}
-            handleApplyDialog={isTestMode && !isSubmit ? handleSubmitExam : handleCloseExam}
-            handleCloseDialog={() => setIsShowCloseDialog(false)}
-          />
-        )}
-
-        {isShowCompleteDialog && (
-          <ConfirmDialog
-            content="This exam has completed!"
-            title="Confirm to try"
-            applyButtonContent="Continue"
-            cancelButtonContent={isTestMode ? '' : 'Try Again'}
-            handleCancelDialog={handleTryAgain}
-            handleApplyDialog={isTestMode && !isSubmit ? handleSubmitExam : handleApplyCompleteDialog}
-            handleCloseDialog={() => setIsShowCompleteDialog(false)}
-          />
-        )}
-
-        {/* end dialogs */}
-        {isTestMode && !isStart ? (
-          <ExamResult>
-            <GameResult setIsStart={setIsStart} />
-          </ExamResult>
-        ) : (
-          <>
-            <GameBanner>
-              {isTestMode ? (
-                <QuestionDashboard>
-                  {questions.map((question, idx) => (
-                    <QuestionDashboardItem
-                      isFlag={question.isFlag}
-                      isSubmit={isSubmit}
-                      isCorrect={!!question.isCorrect}
-                      active={idx === number}
-                      isSelected={question.answerClicked !== undefined}
-                      key={question.id}
-                      onClick={() => setNumber(idx)}
-                    >
-                      {idx + 1}
-                    </QuestionDashboardItem>
-                  ))}
-                </QuestionDashboard>
-              ) : (
-                <img src={gameBannerImg} alt="" />
-              )}
-            </GameBanner>
-            <Content>
-              {isTestMode && (
-                <Counter
-                  time={timeDuration}
-                  isPause={isShowCloseDialog || isShowCompleteDialog}
-                  isStop={isSubmit}
-                  handleCompletedTest={handleCompletedTest}
-                />
-              )}
-              <QuestionCard
-                questionDetails={questions[number]}
-                questionNumber={number + 1}
-                score={score}
-                questionsSelected={questionsSelected}
-                isTestMode={isTestMode}
-                isSubmit={isSubmit}
-                totalQuestions={questions.length}
-                isCompleted={isCompleted}
-                nextQuestion={nextQuestion}
-                checkAnswer={checkAnswer}
-                setIsShowDialog={setIsShowCloseDialog}
-                toggleFlag={toggleFlag}
+    <>
+      {loading ? (
+        <LoadingFullPage />
+      ) : (
+        <Container>
+          <Wrapper>
+            {/* start dialogs */}
+            {isShowCloseDialog && (
+              <ConfirmDialog
+                content={
+                  isTestMode && !isSubmit ? 'Do you want to complete this exam?' : 'Do you want to exit this exam?'
+                }
+                title="Confirm to complete"
+                applyButtonContent="Okay"
+                handleCancelDialog={() => setIsShowCloseDialog(false)}
+                handleApplyDialog={isTestMode && !isSubmit ? handleSubmitExam : handleCloseExam}
+                handleCloseDialog={() => setIsShowCloseDialog(false)}
               />
-            </Content>
-          </>
-        )}
-      </Wrapper>
-    </Container>
+            )}
+
+            {isShowCompleteDialog && (
+              <ConfirmDialog
+                content="This exam has completed!"
+                title="Confirm to try"
+                applyButtonContent="Continue"
+                cancelButtonContent={isTestMode ? '' : 'Try Again'}
+                handleCancelDialog={handleTryAgain}
+                handleApplyDialog={isTestMode && !isSubmit ? handleSubmitExam : handleApplyCompleteDialog}
+                handleCloseDialog={() => setIsShowCompleteDialog(false)}
+              />
+            )}
+
+            {/* end dialogs */}
+            {isTestMode && !isStart ? (
+              <ExamResult>
+                <GameResult setIsStart={setIsStart} />
+              </ExamResult>
+            ) : (
+              <>
+                <GameBanner>
+                  {isTestMode ? (
+                    <QuestionDashboard>
+                      {questions.map((question, idx) => (
+                        <QuestionDashboardItem
+                          isFlag={question.isFlag}
+                          isSubmit={isSubmit}
+                          isCorrect={!!question.isCorrect}
+                          active={idx === number}
+                          isSelected={question.answerClicked !== undefined}
+                          key={question.id}
+                          onClick={() => setNumber(idx)}
+                        >
+                          {idx + 1}
+                        </QuestionDashboardItem>
+                      ))}
+                    </QuestionDashboard>
+                  ) : (
+                    <img src={gameBannerImg} alt="" />
+                  )}
+                </GameBanner>
+                <Content>
+                  {isTestMode && (
+                    <Counter
+                      time={timeDuration}
+                      isPause={isShowCloseDialog || isShowCompleteDialog}
+                      isStop={isSubmit}
+                      handleCompletedTest={handleCompletedTest}
+                    />
+                  )}
+                  <QuestionCard
+                    questionDetails={questions[number]}
+                    questionNumber={number + 1}
+                    score={score}
+                    questionsSelected={questionsSelected}
+                    isTestMode={isTestMode}
+                    isSubmit={isSubmit}
+                    totalQuestions={questions.length}
+                    isCompleted={isCompleted}
+                    nextQuestion={nextQuestion}
+                    checkAnswer={checkAnswer}
+                    setIsShowDialog={setIsShowCloseDialog}
+                    toggleFlag={toggleFlag}
+                  />
+                </Content>
+              </>
+            )}
+          </Wrapper>
+        </Container>
+      )}
+    </>
   );
 };
 

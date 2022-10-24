@@ -234,3 +234,7 @@ export const scrollToTop = () => {
     behavior: 'smooth', // for smoothly scrolling
   });
 };
+
+export const getOriginTextInHtmlString = (htmlString: string) => {
+  return htmlString.replace(/(<([^>]+)>)/gi, '');
+};

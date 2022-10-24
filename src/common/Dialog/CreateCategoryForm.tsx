@@ -68,6 +68,7 @@ const CreateCategoryForm = ({
               <h3>Category note</h3>
               <Textarea
                 id="category-note"
+                placeholder="Enter category name..."
                 value={values.categoryNote}
                 setValue={(value) => {
                   setFieldValue('categoryNote', value);

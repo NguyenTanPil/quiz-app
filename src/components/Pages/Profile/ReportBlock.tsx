@@ -132,54 +132,60 @@ const ReportBlock = ({
                     <LineChart labels={overviewLabels} datasets={overviewDatasets} titleName="Report points of exam" />
                   </ReportItem>
                 ) : (
-                  <ReportItem>
-                    <QuestionDashboard>
-                      {questionsReport.map((question, idx) => (
-                        <QuestionDashboardItem
-                          isFlag={false}
-                          isSubmit={false}
-                          isCorrect={false}
-                          active={idx === number}
-                          isSelected={false}
-                          key={question.id}
-                          onClick={() => setNumber(idx)}
-                        >
-                          {idx + 1}
-                        </QuestionDashboardItem>
-                      ))}
-                    </QuestionDashboard>
-                    <BarChart
-                      labels={['A', 'B', 'C', 'D']}
-                      datasets={getDataset(questionsReport[number])}
-                      titleName="Report points of questions"
-                    />
-                    <QuizItem as="div">
-                      <QuizItemHeader>
-                        <QuizItemNumber>Question {convertNumberFormat(number + 1)}</QuizItemNumber>
-                        <QuizItemActions>
-                          <ToolTip content={`${questionsReport[number].level} Level`}>
-                            <LevelButton
-                              disable={true}
-                              typeColor={QUIZ_APP_CONSTANTS.CREATE_EXAM.getActiveLevelTypeColor(
-                                questionsReport[number].level,
-                              )}
+                  <>
+                    {reportType === 'Hide' ? (
+                      <></>
+                    ) : (
+                      <ReportItem>
+                        <QuestionDashboard>
+                          {questionsReport.map((question, idx) => (
+                            <QuestionDashboardItem
+                              isFlag={false}
+                              isSubmit={false}
+                              isCorrect={false}
+                              active={idx === number}
+                              isSelected={false}
+                              key={question.id}
+                              onClick={() => setNumber(idx)}
                             >
-                              <SiOpslevel />
-                            </LevelButton>
-                          </ToolTip>
-                        </QuizItemActions>
-                      </QuizItemHeader>
-                      <QuizItemContent>{questionsReport[number].question}</QuizItemContent>
-                      <QuizItemAnswers>
-                        {questionsReport[number].answers.map((answer: any) => (
-                          <QuizItemAnswer key={answer.id}>
-                            <QuizItemAnswerStatus isCorrect={answer.isCorrect} />
-                            <span>{answer.content}</span>
-                          </QuizItemAnswer>
-                        ))}
-                      </QuizItemAnswers>
-                    </QuizItem>
-                  </ReportItem>
+                              {idx + 1}
+                            </QuestionDashboardItem>
+                          ))}
+                        </QuestionDashboard>
+                        <BarChart
+                          labels={['A', 'B', 'C', 'D']}
+                          datasets={getDataset(questionsReport[number])}
+                          titleName="Report points of questions"
+                        />
+                        <QuizItem as="div">
+                          <QuizItemHeader>
+                            <QuizItemNumber>Question {convertNumberFormat(number + 1)}</QuizItemNumber>
+                            <QuizItemActions>
+                              <ToolTip content={`${questionsReport[number].level} Level`}>
+                                <LevelButton
+                                  disable={true}
+                                  typeColor={QUIZ_APP_CONSTANTS.CREATE_EXAM.getActiveLevelTypeColor(
+                                    questionsReport[number].level,
+                                  )}
+                                >
+                                  <SiOpslevel />
+                                </LevelButton>
+                              </ToolTip>
+                            </QuizItemActions>
+                          </QuizItemHeader>
+                          <QuizItemContent>{questionsReport[number].question}</QuizItemContent>
+                          <QuizItemAnswers>
+                            {questionsReport[number].answers.map((answer: any) => (
+                              <QuizItemAnswer key={answer.id}>
+                                <QuizItemAnswerStatus isCorrect={answer.isCorrect} />
+                                <span>{answer.content}</span>
+                              </QuizItemAnswer>
+                            ))}
+                          </QuizItemAnswers>
+                        </QuizItem>
+                      </ReportItem>
+                    )}
+                  </>
                 )}
               </ReportList>
             </BlockReport>

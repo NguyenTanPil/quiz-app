@@ -1,4 +1,4 @@
-import styled, { css, keyframes } from 'styled-components';
+import styled, { css } from 'styled-components';
 import { jelly } from './animations';
 
 type Props = {
@@ -199,8 +199,16 @@ export const QuizAnswerInputHeader = styled.div`
   margin-bottom: 1.2rem;
   position: absolute;
   top: 1.2rem;
-  left: 1.2rem;
+  right: 1.2rem;
   z-index: 10;
+`;
+
+export const QuizAnswerLabelHeader = styled(QuizAnswerInputHeader)`
+  color: ${(props) => props.theme.titleColor};
+  font-size: 1.6rem;
+  font-weight: 600;
+  right: auto;
+  left: 1.4rem;
 `;
 
 export const DateTimePickerContainer = styled.div`
@@ -254,5 +262,33 @@ export const SuggestInputContainer = styled.div<Props>`
 
   input {
     padding-right: 1.6rem;
+  }
+`;
+
+export const RichEditor = styled.div`
+  border: 0.1rem solid ${(props) => props.theme.borderColor};
+  border-radius: 0.4rem;
+
+  .ql-toolbar {
+    border: none;
+    border-bottom: 0.1rem solid ${(props) => props.theme.borderColor};
+    text-align: left;
+
+    button {
+      color: ${(props) => props.theme.fontColor};
+
+      &:hover {
+        color: ${(props) => props.theme.mainColor};
+      }
+    }
+  }
+
+  .ql-container {
+    border: none;
+  }
+
+  .ql-editor p {
+    font-size: 1.6rem;
+    min-height: 12rem;
   }
 `;

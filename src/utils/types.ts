@@ -42,6 +42,7 @@ export type QuizProps = {
   id: string;
   question: string;
   level: string;
+  mode: string;
   answers: AnswerProps[];
 };
 

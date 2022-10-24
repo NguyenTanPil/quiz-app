@@ -66,13 +66,15 @@ const QuestionCard = ({
             {isTestMode ? 'Selected' : 'Score'} {isTestMode ? questionsSelected : score}
           </span>
           <span>
-            Question {questionNumber} to {totalQuestions}
+            {/* Question {questionNumber} to {totalQuestions} */}
+            Question {isTestMode ? questionNumber : score} to {isTestMode ? totalQuestions : 3}
           </span>
         </TotalQuestionCount>
         <ProgressBarFill>
           <ProgressBarStatus
             status={
-              ((isTestMode ? questionsSelected : score) / totalQuestions) * QUIZ_APP_CONSTANTS.COMMON.oneHundredPercent
+              ((isTestMode ? questionsSelected : score) / (isTestMode ? totalQuestions : 3)) *
+              QUIZ_APP_CONSTANTS.COMMON.oneHundredPercent
             }
           />
         </ProgressBarFill>

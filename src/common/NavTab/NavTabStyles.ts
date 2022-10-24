@@ -11,25 +11,30 @@ export const Container = styled.div`
 
 export const TabContainer = styled.ul`
   background-color: #f2f2f2;
-  border-radius: 0.8rem;
+  border-radius: 0.4rem;
   color: ${(props) => props.theme.mainColor};
   display: flex;
-`;
-
-export const TabItem = styled.li<Props>`
-  border-bottom: 0.2rem solid ${(props) => (props.tabName === props.activeTab ? props.theme.mainColor : 'transparent')};
-  cursor: pointer;
-  font-size: 1.6rem;
-  font-weight: 600;
-
-  &:first-child {
-    border-bottom-left-radius: 0.8rem;
-  }
+  align-items: center;
+  flex-wrap: wrap;
 
   ${breakpoints({
     cssProp: 'padding',
     cssPropUnits: '',
-    values: [{ [devices.default]: '2rem 1.2rem' }, { [devices.smallDevices]: '2rem 3.2rem' }],
+    values: [{ [devices.default]: '1.2rem' }, { [devices.smallDevices]: '1.2rem 2.4rem' }],
+  })};
+`;
+
+export const TabItem = styled.li<Props>`
+  background: ${(props) => (props.tabName === props.activeTab ? props.theme.backgroundColor : 'transparent')};
+  border-radius: 0.4rem;
+  cursor: pointer;
+  font-size: 1.6rem;
+  font-weight: 600;
+
+  ${breakpoints({
+    cssProp: 'padding',
+    cssPropUnits: '',
+    values: [{ [devices.default]: '1.2rem 1.2rem' }, { [devices.smallDevices]: '1.2rem 2rem' }],
   })};
 `;
 

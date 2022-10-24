@@ -34,6 +34,25 @@ const GlobalStyles = createGlobalStyle`
       -moz-appearance:textfield;
   }
 
+   /* custom scrollbar */
+  ::-webkit-scrollbar {
+    border-left: 0.1rem solid #d3d9e0;
+    width: 1.25rem;
+  }
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #e3e8ec;
+  }
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #9852f9cc;
+    transition: background 0.2s ease-in-out;
+  }
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #9852f9;
+  }
+
   .MuiCalendarPicker-root button.Mui-selected {
     background-color: #9852f9 !important;
   }

@@ -95,12 +95,22 @@ const CreateQuizDialog = ({
                         handleSelected={(value) => setFieldValue('level', value)}
                       />
                     </ElementGroup>
+                    <ElementGroup>
+                      <h3>Exam Mode</h3>
+                      <Dropdown
+                        id="mode"
+                        activeValue={values.mode}
+                        values={QUIZ_APP_CONSTANTS.CREATE_EXAM.examModes}
+                        handleSelected={(value) => setFieldValue('mode', value)}
+                      />
+                    </ElementGroup>
                   </QuizOptions>
                   <ElementGroup>
                     <h3>Quiz Content</h3>
                     <Textarea
                       id="create-quiz"
                       value={values.question}
+                      placeholder="Enter question content..."
                       setValue={(value) => {
                         setFieldValue('question', value);
                       }}
@@ -109,10 +119,11 @@ const CreateQuizDialog = ({
                   <ElementGroup>
                     <h3>Quiz Answers</h3>
                     <QuizAnswers>
-                      {values.answers.map((answer) => (
+                      {values.answers.map((answer: any, idx: number) => (
                         <QuizAnswerInput
                           key={`answer-${answer.id}`}
                           id={answer.id}
+                          label={QUIZ_APP_CONSTANTS.AUTHEN_FORM.answerLabels[idx]}
                           isCorrect={answer.isCorrect}
                           value={answer.content}
                           handleChecked={(id) => {

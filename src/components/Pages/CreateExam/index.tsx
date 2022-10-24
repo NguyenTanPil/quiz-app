@@ -61,6 +61,7 @@ const initialQuiz: QuizProps = {
   id: uuid(),
   question: '',
   level: 'easy',
+  mode: 'Review Mode',
   answers: [
     { id: '1', content: '', isCorrect: undefined },
     { id: '2', content: '', isCorrect: undefined },
@@ -119,6 +120,7 @@ const CreateExam = () => {
   const [deleteId, setDeleteId] = useState<string | undefined>(undefined);
 
   const handleCreateNewQuiz = (values: QuizProps) => {
+    console.log({ values });
     setExam((prev) => ({ ...prev, quizList: [...prev.quizList, values] }));
   };
 
@@ -514,8 +516,8 @@ const CreateExam = () => {
                   : exam.name === QUIZ_APP_CONSTANTS.CREATE_EXAM.initialExamName ||
                     exam.timeStart === QUIZ_APP_CONSTANTS.CREATE_EXAM.initialTimeStart ||
                     exam.category === QUIZ_APP_CONSTANTS.CREATE_EXAM.initialCategory ||
-                    exam.timeDuration.hours === QUIZ_APP_CONSTANTS.CREATE_EXAM.initialHours ||
-                    exam.timeDuration.minutes === QUIZ_APP_CONSTANTS.CREATE_EXAM.initialMinutes ||
+                    (exam.timeDuration.hours === QUIZ_APP_CONSTANTS.CREATE_EXAM.initialHours &&
+                      exam.timeDuration.minutes === QUIZ_APP_CONSTANTS.CREATE_EXAM.initialMinutes) ||
                     compareTwoObjects(exam.quizStructure, QUIZ_APP_CONSTANTS.CREATE_EXAM.initialQuizStructure)
               }
               onClick={examId ? handleUpdateExam : handleSaveExam}
