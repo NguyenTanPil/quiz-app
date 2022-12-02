@@ -48,15 +48,15 @@ const Header = () => {
           <div>
             <NavList>
               <NavItem>
-                <NavLink to="/exams/create-exam">
-                  <NoBorderButton>Create Exam</NoBorderButton>
+                <NavLink to="/search">
+                  <NoBorderButton>Search Class</NoBorderButton>
                 </NavLink>
               </NavItem>
               <NavItem>
                 <NoBorderButton onClick={() => setIsShowJoinDialog(true)}>Join now</NoBorderButton>
               </NavItem>
               <NavItem>
-                <NavLink to="/">
+                <NavLink to="/class/create-class">
                   <NoBorderButton>Academy</NoBorderButton>
                 </NavLink>
               </NavItem>

@@ -70,7 +70,7 @@ const initialQuiz: QuizProps = {
   ],
 };
 
-interface QuizStructureTemplateState {
+export interface QuizStructureTemplateState {
   easy: number;
   medium: number;
   hard: number;

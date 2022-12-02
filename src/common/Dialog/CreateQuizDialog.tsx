@@ -1,5 +1,5 @@
 import { Form, Formik } from 'formik';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { MdOutlineClose } from 'react-icons/md';
 import { DialogUtils } from '../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../utils/constants';
@@ -20,6 +20,7 @@ import {
   QuizOptions,
   FormBody,
 } from './DialogStyles';
+import { TitleGroup } from '../Styles';
 
 type CreateQuizDialogProps = {
   title: string;
@@ -41,6 +42,7 @@ const CreateQuizDialog = ({
   handleCloseDialog,
 }: CreateQuizDialogProps) => {
   const contentRef = useRef<HTMLDivElement>();
+  const [isShuffle, setIsShuffle] = useState(false);
 
   const handleClose = () => {
     handleCloseDialog();
@@ -117,7 +119,12 @@ const CreateQuizDialog = ({
                     />
                   </ElementGroup>
                   <ElementGroup>
-                    <h3>Quiz Answers</h3>
+                    <TitleGroup>
+                      <h3>Quiz Answers</h3>
+                      <SignUpButton type="button" onClick={() => setIsShuffle(!isShuffle)}>
+                        {isShuffle ? 'Shuffle' : 'UnShuffle'}
+                      </SignUpButton>
+                    </TitleGroup>
                     <QuizAnswers>
                       {values.answers.map((answer: any, idx: number) => (
                         <QuizAnswerInput

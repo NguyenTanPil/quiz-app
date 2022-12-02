@@ -19,6 +19,7 @@ import { getCookie, setCookie } from '../../../utils/cookie';
 import { LoadingFullPage } from '../../Loading';
 import AllCategoryBlock from './AllCategoryBlock';
 import AllExamBlock from './AllExamBlock';
+import { classData } from './dummyData';
 import {
   Actions,
   ButtonActions,
@@ -46,12 +47,16 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isShowEditDialog, setIsShowEditDialog] = useState(false);
   const [isCreateCategory, setIsCreateCategory] = useState(false);
+  const [isCreateClass, setIsCreateClass] = useState(false);
   const [editCategoryId, setEditCategoryId] = useState<string | undefined>(undefined);
+  const [editClassId, setEditClassId] = useState<string | undefined>(undefined);
 
   const [examList, setExamList] = useState<any[]>([]);
   const [categoryList, setCategoryList] = useState<any[]>([]);
+  const [classList, setClassList] = useState<any[]>([]);
   const [originExamList, setOriginExamList] = useState<any[]>([]);
   const [originCategoryList, setOriginCategoryList] = useState<any[]>([]);
+  const [originClassList, setOriginClassList] = useState<any[]>(classData);
 
   const [examFilter, setExamFilter] = useState({
     search: '',
@@ -62,10 +67,15 @@ const Profile = () => {
     search: '',
     currentPage: QUIZ_APP_CONSTANTS.COMMON.initialCurrentPage,
   });
+  const [classFilter, setClassFilter] = useState({
+    search: '',
+    currentPage: QUIZ_APP_CONSTANTS.COMMON.initialCurrentPage,
+  });
   const [searchExamInStudent, setSearchExamInStudent] = useState('');
 
   const debouncedExamValue = useDebounce<string>(examFilter.search, QUIZ_APP_CONSTANTS.COMMON.debounceSeconds);
   const debouncedCategoryValue = useDebounce<string>(categoryFilter.search, QUIZ_APP_CONSTANTS.COMMON.debounceSeconds);
+  const debouncedClassValue = useDebounce<string>(classFilter.search, QUIZ_APP_CONSTANTS.COMMON.debounceSeconds);
   const initialValues = useMemo(() => {
     if (editCategoryId) {
       const editCategoryIndex = categoryList.findIndex((category) => category.id === editCategoryId);
@@ -80,6 +90,20 @@ const Profile = () => {
 
     return { categoryName: '', categoryBg: '#9852f9', categoryNote: '' };
   }, [editCategoryId]);
+  const initialValuesForClass = useMemo(() => {
+    if (editClassId) {
+      const editClassIndex = classList.findIndex((item) => item.id === editClassId);
+      const editClass = classList[editClassIndex];
+
+      return {
+        categoryName: editClass.name,
+        categoryNote: editClass.note,
+        categoryBg: editClass.color,
+      };
+    }
+
+    return { categoryName: '', categoryBg: '#9852f9', categoryNote: '' };
+  }, [editClassId]);
 
   const handleEditProfile = async (values: any) => {
     const editableInfo = { nameTitle: user.nameTitle, name: user.name };
@@ -97,8 +121,8 @@ const Profile = () => {
     }
   };
 
-  const handleCreateNewExam = () => {
-    navigate('/exams/create-exam');
+  const handleCreateNewClass = () => {
+    setActiveTab('All Class');
   };
 
   const handleCreateNewCategory = async (values: any) => {
@@ -214,11 +238,31 @@ const Profile = () => {
   }, [debouncedCategoryValue]);
 
   useEffect(() => {
+    setClassList(() => {
+      if (debouncedClassValue === '') {
+        return originClassList;
+      }
+
+      const regex = new RegExp(debouncedClassValue, 'gi');
+      return originClassList
+        .filter((item) => item.name.match(regex))
+        .slice(QUIZ_APP_CONSTANTS.COMMON.startIndex, QUIZ_APP_CONSTANTS.COMMON.itemsPerPage);
+    });
+  }, [debouncedClassValue]);
+
+  useEffect(() => {
     const startIndex = (categoryFilter.currentPage - 1) * QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize;
     const endIndex = startIndex + QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize;
 
     setCategoryList(() => originCategoryList.slice(startIndex, endIndex));
   }, [categoryFilter.currentPage]);
+
+  useEffect(() => {
+    const startIndex = (classFilter.currentPage - 1) * QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize;
+    const endIndex = startIndex + QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize;
+
+    setCategoryList(() => originClassList.slice(startIndex, endIndex));
+  }, [classFilter.currentPage]);
 
   return (
     <Container>
@@ -275,7 +319,11 @@ const Profile = () => {
           </ProfileHeader>
           <NavTab
             activeTab={activeTab}
-            setActiveTab={setActiveTab}
+            setActiveTab={(tab) => {
+              setEditCategoryId(undefined);
+              setEditClassId(undefined);
+              setActiveTab(tab);
+            }}
             tabList={QUIZ_APP_CONSTANTS.PROFILE.getTabs(activeTab)}
           >
             <AllExamBlock
@@ -284,9 +332,10 @@ const Profile = () => {
               setExamFilter={setExamFilter}
               categoryList={categoryList}
               examList={examList}
-              handleCreateNewExam={handleCreateNewExam}
+              handleCreateNewClass={handleCreateNewClass}
             />
             <AllCategoryBlock
+              createName="Category"
               isCreateCategory={isCreateCategory}
               editCategoryId={editCategoryId}
               originCategoryList={originCategoryList}
@@ -299,10 +348,24 @@ const Profile = () => {
               handleUpdateCategory={handleUpdateCategory}
               handleCreateNewCategory={handleCreateNewCategory}
             />
+            <AllCategoryBlock
+              createName="Class"
+              isCreateCategory={isCreateClass}
+              editCategoryId={editClassId}
+              originCategoryList={originClassList}
+              categoryFilter={classFilter}
+              initialValues={initialValuesForClass}
+              categoryList={classList}
+              setIsCreateCategory={setIsCreateClass}
+              setEditCategoryId={setEditClassId}
+              setCategoryFilter={setClassFilter}
+              handleUpdateCategory={() => {}}
+              handleCreateNewCategory={() => {}}
+            />
             <ReportBlock
               originExamList={originExamList}
               setSearchExamInStudent={setSearchExamInStudent}
-              handleCreateNewExam={handleCreateNewExam}
+              handleCreateNewClass={handleCreateNewClass}
               searchExamInStudent={searchExamInStudent}
               setActiveTab={setActiveTab}
             />

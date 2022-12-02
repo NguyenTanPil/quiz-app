@@ -7,6 +7,7 @@ import { LabelGroup } from '../Styles';
 import { CreateCategoryActions, ElementGroup, FormBody, QuizOptions } from './DialogStyles';
 
 type CreateCategoryFormProps = {
+  createName: string;
   initialValues: any;
   isCreate: boolean;
   editCategoryId: string | undefined;
@@ -17,6 +18,7 @@ type CreateCategoryFormProps = {
 };
 
 const CreateCategoryForm = ({
+  createName,
   initialValues,
   isCreate,
   editCategoryId,
@@ -42,20 +44,20 @@ const CreateCategoryForm = ({
       }}
     >
       {({ values, setFieldValue, handleSubmit }) => (
-        <Form id="create-category-form" onSubmit={handleSubmit}>
+        <Form id={`create-${createName.toLocaleLowerCase()}-form`} onSubmit={handleSubmit}>
           <FormBody>
             <QuizOptions>
               <ElementGroup>
-                <LabelGroup>Category Name</LabelGroup>
+                <LabelGroup>{createName} Name</LabelGroup>
                 <OriginInput
                   name="categoryName"
                   value={values.categoryName}
-                  errorMessage={values.categoryName === '' && 'Category name is not empty'}
+                  errorMessage={values.categoryName === '' && `${createName} name is not empty`}
                   setValue={(value) => setFieldValue('categoryName', value)}
                 />
               </ElementGroup>
               <ElementGroup>
-                <h3>Category Color</h3>
+                <h3>{createName} Color</h3>
                 <OriginInput
                   type="color"
                   name="categoryBg"
@@ -65,10 +67,10 @@ const CreateCategoryForm = ({
               </ElementGroup>
             </QuizOptions>
             <ElementGroup>
-              <h3>Category note</h3>
+              <h3>{createName} note</h3>
               <Textarea
-                id="category-note"
-                placeholder="Enter category name..."
+                id={`${createName.toLocaleLowerCase()}-note`}
+                placeholder={`Enter ${createName.toLocaleLowerCase()} name...`}
                 value={values.categoryNote}
                 setValue={(value) => {
                   setFieldValue('categoryNote', value);

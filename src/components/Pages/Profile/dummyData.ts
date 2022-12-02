@@ -252,3 +252,55 @@ export const getDataset = (question: any) => {
     },
   ];
 };
+
+export const classData = [
+  {
+    id: '856a9f08-a646-46e9-9a5b-1b16dc95fadc',
+    color: '#f9eb53',
+    createdAt: 1666286721,
+    isPublished: 1,
+    name: 'Class 1',
+    note: 'This is game',
+    updatedAt: 1666286721,
+  },
+  {
+    id: '856a9f08-a646-46e9-9a5b-1b16dc95fadf',
+    color: '#f9eb53',
+    createdAt: 1666286721,
+    isPublished: 1,
+    name: 'Class 2',
+    note: 'This is game',
+    updatedAt: 1666286721,
+  },
+];
+
+export const classDetail = [
+  {
+    id: '856a9f08-a646-46e9-9a5b-1b16dc95fadc',
+    color: '#f9eb53',
+    name: 'Class 1',
+    note: 'Lorem ipsum dolor sit amet, consectetur adip Lorem ipsum dolor sit amet, consectetur adip',
+    author: 'Luu Tien Dao',
+  },
+  {
+    id: '856a9f08-a646-46e9-9a5b-1b16dc95fad1',
+    color: '#f2eb54',
+    name: 'Class 4',
+    note: 'Lorem ipsum dolor sit amet, consectetur adip ',
+    author: 'Nguyen Tan Pil',
+  },
+  {
+    id: '856a9f08-a646-46e9-9a5b-1b16dc95fad2',
+    color: '#f5ec33',
+    name: 'Class 3',
+    note: 'Lorem ipsum dolor sit amet, consectetur adip Lorem ipsum dolor sit amet, consectetur adip',
+    author: 'Luu Tien Dao',
+  },
+  {
+    id: '856a9f08-a646-46e9-9a5b-1b16dc95fad3',
+    color: '#f8ef58',
+    name: 'Class 2',
+    note: 'Lorem ipsum dolor sit amet, consectetur adip ',
+    author: 'Tran Bao Duy',
+  },
+];

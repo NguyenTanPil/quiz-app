@@ -16,6 +16,7 @@ type AllExamBlockProps = {
 };
 
 const AllCategoryBlock = ({
+  createName,
   isCreateCategory,
   editCategoryId,
   originCategoryList,
@@ -33,6 +34,7 @@ const AllCategoryBlock = ({
       {(isCreateCategory || editCategoryId) && (
         <CreateCategoryBlock>
           <CreateCategoryForm
+            createName={createName}
             initialValues={initialValues}
             isCreate={isCreateCategory}
             editCategoryId={editCategoryId}
@@ -65,7 +67,7 @@ const AllCategoryBlock = ({
                 type="search"
                 name="searchCategory"
                 value={categoryFilter.search}
-                placeholder="Enter category name..."
+                placeholder={`Enter ${createName.toLocaleLowerCase()} name...`}
                 setValue={(value) => setCategoryFilter((prev: any) => ({ ...prev, search: value }))}
               />
               <div>

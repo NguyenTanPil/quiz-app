@@ -1,21 +1,10 @@
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { SignUpButton } from '../../common/Button';
+import { pulse } from '../../common/Styles';
 
 type Props = {
   [key: string]: any;
 };
-
-const pulse = keyframes`
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
-`;
 
 export const Container = styled.div`
   position: fixed;

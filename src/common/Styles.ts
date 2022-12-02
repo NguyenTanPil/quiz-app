@@ -1,9 +1,21 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { breakpoints, devices } from '../styles/breakpoints';
 
 type Props = {
   [key: string]: any;
 };
+
+export const pulse = keyframes`
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+`;
 
 export const ActionsCategory = styled.div`
   display: flex;
@@ -129,9 +141,25 @@ export const RadioBoxList = styled.div`
     margin-bottom: 0;
   }
 
-  & > button {
+  & > div {
+    button {
+      animation: ${pulse} 1s ease infinite 0s;
+      border-color: ${(props) => props.theme.mainColor};
+      margin-right: 0;
+      padding: 0;
+      width: 4.8rem;
+
+      svg {
+        font-size: 2.4rem;
+      }
+    }
+  }
+
+  button {
     background-color: transparent;
+    box-sizing: border-box;
     color: ${(props) => props.theme.mainColor};
+    height: 4.8rem;
     margin-bottom: 2.4rem;
     margin-right: 2.4rem;
     padding-left: 3.6rem;
@@ -260,4 +288,11 @@ export const LabelGroup = styled.h3`
   font-size: 1.6rem;
   font-weight: 600;
   margin-top: 0;
+`;
+
+export const TitleGroup = styled.div`
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
 `;

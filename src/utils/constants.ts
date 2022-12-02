@@ -142,6 +142,8 @@ export const QUIZ_APP_CONSTANTS = {
     roles: ['Teacher', 'Student'],
     teacherRoleNumber: '1',
     studentRoleNumber: '2',
+    widthPopup: 760,
+    heightPopup: 600,
     toolbarFull: [
       ['bold', 'italic', 'underline', 'blockquote'],
       [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
@@ -180,7 +182,7 @@ export const QUIZ_APP_CONSTANTS = {
   },
   PROFILE: {
     reportTypes: ['Hide', 'Overview', 'Detail'],
-    tabs: ['All Exam', 'All Category', 'Report', 'Student'],
+    tabs: ['All Exam', 'All Category', 'All Classes', 'Report', 'Student'],
     answerColors: [
       {
         name: 'clicked',
@@ -202,5 +204,8 @@ export const QUIZ_APP_CONSTANTS = {
 
       return this.tabs.filter((tab) => tab !== 'Student');
     },
+  },
+  CLASS: {
+    tabs: ['All Exam', 'All Student'],
   },
 };

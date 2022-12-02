@@ -13,6 +13,9 @@ import SignUp from './components/Pages/SignUp';
 import { getTheme } from './styles/theme';
 import RouteGroup from './utils/RouteGroup';
 import ToTopButton from './components/ToTopButton';
+import ClassDetail from './components/Pages/ClassDetail';
+import DetailExam from './components/Pages/DetailExam';
+import Search from './components/Pages/Search';
 
 const App: React.FC = () => {
   return (
@@ -28,9 +31,14 @@ const App: React.FC = () => {
           <Route path="sign-in" element={<SignIn />} />
           <Route path="exams" element={<RouteGroup />}>
             <Route path=":examId" element={<CreateExam />} />
-            <Route path="create-exam" element={<CreateExam />} />
+            <Route path=":examId/detail" element={<DetailExam />} />
+            <Route path="create-exam/:classId" element={<CreateExam />} />
+          </Route>
+          <Route path="class" element={<RouteGroup />}>
+            <Route path=":classId" element={<ClassDetail />} />
           </Route>
           <Route path="profile" element={<Profile />} />
+          <Route path="search" element={<Search />} />
           <Route path="*" element={<div>not found</div>} />
         </Routes>
         <Footer />

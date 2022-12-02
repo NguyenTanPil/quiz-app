@@ -98,9 +98,10 @@ export const IconStatus = styled.div<Props>`
 export const InputField = styled.input<Props>`
   ${InputPattern};
   border: 0.1rem solid ${(props) => props.theme.borderColor};
+  ${(props) => props.readOnly && 'cursor: default;'};
 
   &:focus {
-    border-color: ${(props) => props.theme.mainColor};
+    border-color: ${(props) => !props.readOnly && props.theme.mainColor};
   }
 `;
 

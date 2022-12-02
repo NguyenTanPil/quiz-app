@@ -123,6 +123,23 @@ export const ValidUtils: ValidUtilsProps = {
   },
 };
 
+export const AuthenFormUtils = {
+  openPopupResize(navigationUrl: string, popupName: string) {
+    const screenLeft = window.screenLeft || window.screenX; // IE8
+    const screenTop = window.screenTop || window.screenY;
+
+    const width = window.outerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    const height = window.outerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
+    const left = Math.max(0, width / 2 - QUIZ_APP_CONSTANTS.AUTHEN_FORM.widthPopup / 2 + screenLeft);
+    const top = Math.max(0, height / 2 - QUIZ_APP_CONSTANTS.AUTHEN_FORM.heightPopup / 2 + screenTop);
+
+    const config = `width=${QUIZ_APP_CONSTANTS.AUTHEN_FORM.widthPopup}, height=${QUIZ_APP_CONSTANTS.AUTHEN_FORM.heightPopup}, top=${top}, left=${left}, scrollbars=yes`;
+
+    return window.open(navigationUrl, popupName, config);
+  },
+};
+
 export const DialogUtils = {
   resetScrollbar() {
     document.body.style.height = '';

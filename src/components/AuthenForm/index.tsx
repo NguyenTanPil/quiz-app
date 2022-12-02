@@ -1,14 +1,16 @@
 import { Form, Formik, FormikErrors, FormikTouched } from 'formik';
-import React from 'react';
+import React, { useState } from 'react';
 import { RiFacebookFill, RiGoogleFill, RiTwitterFill } from 'react-icons/ri';
+import { TbFaceId } from 'react-icons/tb';
 import { Link } from 'react-router-dom';
-import { OtherAuthenButton, SignUpButton } from '../../common/Button';
+import { ActionButton, OtherAuthenButton, SignUpButton } from '../../common/Button';
 import { RadioBox, ValidTextInput } from '../../common/Input';
 import { RadioBoxList } from '../../common/Styles';
 import ToolTip from '../../common/ToolTip';
 import { ValidUtils as validate } from '../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../utils/constants';
 import { AuthenFormBanner, Content, FormContainer, FormTitle, ListAuthen, OtherAuthen } from './AuthenFormStyles';
+import FaceAuthen from './FaceAuthen';
 
 export type formValueProps = {
   type: string;
@@ -50,6 +52,33 @@ const AuthenForm = ({
   formValues,
   onSubmit,
 }: AuthenFormProps) => {
+  const [isFaceAuthen, setIsFaceAuthen] = useState(false);
+
+  const handleRegister = async () => {
+    const host = 'https://tmcat3.vercel.app/register';
+    try {
+      const res: any = await FaceAuthen.AuthPopup(host, 'http://192.168.1.6:3000', 'Register');
+      console.log('register success:', res);
+      const search = new URL(res?.href).searchParams;
+
+      if (search.get('error')) {
+        console.log(search.get('error'));
+        return;
+      }
+
+      const emailReturn = search.get('email');
+      // Login
+      if (emailReturn) {
+        setIsFaceAuthen(true);
+      }
+      console.log({ emailReturn });
+    } catch (error) {
+      console.log('register fails:', error);
+    }
+  };
+
+  console.log({ isFaceAuthen });
+
   return (
     <Content isReverse={isVerticalReverse}>
       <FormContainer isReverse={isVerticalReverse}>
@@ -89,6 +118,11 @@ const AuthenForm = ({
                           />
                         </SignUpButton>
                       ))}
+                      <ToolTip content="Face Authentication">
+                        <ActionButton onClick={handleRegister} type="button">
+                          <TbFaceId />
+                        </ActionButton>
+                      </ToolTip>
                     </RadioBoxList>
                   );
                 } else {
