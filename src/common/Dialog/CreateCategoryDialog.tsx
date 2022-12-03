@@ -207,6 +207,7 @@ const CreateCategoryDialog = ({
         <DialogBody>
           {isCreate || editCategoryId ? (
             <CreateCategoryForm
+              createName="Category"
               initialValues={initialValues}
               isCreate={isCreate}
               editCategoryId={editCategoryId}
@@ -247,7 +248,7 @@ const CreateCategoryDialog = ({
                     <CategoryColor color={item.color} />
                     <CategoryContent>
                       <h4>{item.name}</h4>
-                      <p>{item.note}</p>
+                      <div dangerouslySetInnerHTML={{ __html: item.note }} />
                     </CategoryContent>
                     <ActionsCategory>
                       <SelectedCategory>

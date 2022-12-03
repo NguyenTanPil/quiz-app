@@ -26,10 +26,16 @@ export const QUIZ_APP_CONSTANTS = {
     getCategoryByIdUrl: 'creator/category/',
     createExamUrl: 'creator/questionbank/create',
     getExamByIdUrl: 'creator/questionbank/',
+    updateExamByIdUrl: 'creator/questionbank/update/',
     getExamByUserIdUrl: 'creator/questionbank',
     updateUserUrl: 'update',
     submitExamUrl: 'examinees/submit',
     getResultUrl: 'examinees/result',
+    getClassesByIdUrl: 'creator/class',
+    createClassUrl: 'creator/class/create',
+    updateClassUrl: 'creator/class/update/',
+    updateQuestionsUrl: 'creator/questionbank/update/question',
+    addQuestionsUrl: 'creator/questionbank/add/',
   },
   SLIDER: {
     transitionSecondsDefault: 0.45,
@@ -100,11 +106,11 @@ export const QUIZ_APP_CONSTANTS = {
     },
     getLevelNumberByString(level: string) {
       if (level === 'easy') {
-        return 0;
-      } else if (level === 'medium') {
         return 1;
+      } else if (level === 'medium') {
+        return 2;
       }
-      return 2;
+      return 3;
     },
     getLevelStringByNumber(num: number) {
       if (num === 0) {
@@ -182,7 +188,7 @@ export const QUIZ_APP_CONSTANTS = {
   },
   PROFILE: {
     reportTypes: ['Hide', 'Overview', 'Detail'],
-    tabs: ['All Exam', 'All Category', 'All Classes', 'Report', 'Student'],
+    tabs: ['All Classes', 'All Category', 'Report', 'Student'],
     answerColors: [
       {
         name: 'clicked',

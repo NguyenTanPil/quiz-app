@@ -255,3 +255,11 @@ export const scrollToTop = () => {
 export const getOriginTextInHtmlString = (htmlString: string) => {
   return htmlString.replace(/(<([^>]+)>)/gi, '');
 };
+
+export const convertExam = (exam: any) => {
+  const { main, sub } = exam;
+
+  const result = { ...main[0], ...sub };
+  result.arrayQuestion = JSON.parse(exam.main[0].arrayQuestion);
+  return result;
+};

@@ -1,5 +1,6 @@
 import React from 'react';
 import { BiEditAlt } from 'react-icons/bi';
+import { Link } from 'react-router-dom';
 import { ActionButton, SignUpButton } from '../../../common/Button';
 import { CreateCategoryForm } from '../../../common/Dialog';
 import { OriginInput } from '../../../common/Input';
@@ -54,7 +55,7 @@ const AllCategoryBlock = ({
                 setEditCategoryId(undefined);
               }}
             >
-              Create An Category
+              Create An {createName}
             </SignUpButton>
             <span>Don't have any categories!</span>
           </EmptyListAction>
@@ -92,8 +93,13 @@ const AllCategoryBlock = ({
                   <CategoryItem key={item.id}>
                     <CategoryColor color={item.color} />
                     <CategoryContent>
-                      <h4>{item.name}</h4>
-                      <p>{item.note}</p>
+                      {createName === 'Class' ? (
+                        <Link to={`/class/${item.id}`}>{item.name}</Link>
+                      ) : (
+                        <h4>{item.name}</h4>
+                      )}
+
+                      <div dangerouslySetInnerHTML={{ __html: item.note }} />
                     </CategoryContent>
                     <ActionsCategory>
                       <ToolTip content="Edit Category">

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { BiBarChart } from 'react-icons/bi';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useAppSelector } from '../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { NoBorderButton, SignUpButton } from '../../common/Button';
 import { JoinDialog } from '../../common/Dialog';
-import { selectUser } from '../../features/user/userSlice';
+import { resetUser, selectUser } from '../../features/user/userSlice';
 import { Wrapper } from '../../styles/Utils';
 import Sidebar from '../Sidebar';
 import { Container, Content, HeaderAvatar, Logo, NavItem, NavList, ShowSidebarBox } from './HeaderStyles';
@@ -16,10 +16,16 @@ const Header = () => {
   const [isShowJoinDialog, setIsShowJoinDialog] = useState(false);
   const user = useAppSelector(selectUser);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const handleJoinExam = (code: string) => {
     setIsShowJoinDialog(false);
     navigate(`/game/5c4b715a-095f-47dc-b3d7-726aaa4d0054`);
+  };
+
+  const handleSignOut = () => {
+    dispatch(resetUser());
+    navigate('/sign-in');
   };
 
   return (
@@ -61,10 +67,16 @@ const Header = () => {
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink to="/game">
+                <NavLink to="/sign-in">
                   <NoBorderButton>Start</NoBorderButton>
                 </NavLink>
               </NavItem>
+              {user.id !== '' && (
+                <NavItem>
+                  <SignUpButton onClick={handleSignOut}>Sign Out</SignUpButton>
+                </NavItem>
+              )}
+
               <NavItem>
                 <NavLink to={user.id !== '' ? '/profile' : '/sign-in'}>
                   {user.id !== '' ? (

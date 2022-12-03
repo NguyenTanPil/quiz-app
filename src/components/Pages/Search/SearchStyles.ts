@@ -14,54 +14,79 @@ export const ClassList = styled.div`
   display: flex;
   flex-wrap: wrap;
   margin-top: -2.4rem;
-  width: 100%;
-`;
-
-export const ClassItem = styled.div`
-  box-sizing: border-box;
-  border: 0.1rem solid ${(props) => props.theme.borderColor};
-  border-radius: 0.4rem;
-  display: flex;
-  flex-direction: column;
-  margin-top: 2.4rem;
-  padding: 2rem;
 
   ${breakpoints({
     cssProp: 'width',
     cssPropUnits: '',
     values: [
       { [devices.default]: '100%' },
-      { [devices.smallDevices]: 'calc(50% - 1.2rem)' },
-      { [devices.mediumDevices]: 'calc((100% / 3) - 1.2rem)' },
-      { [devices.largeDevices]: 'calc(25% - 1.2rem)' },
+      { [devices.smallDevices]: 'calc(100% + 2.4rem)' },
+      { [devices.mediumDevices]: 'calc(100% + 1.6rem)' },
+      { [devices.largeDevices]: 'calc(100% + 0.8rem)' },
     ],
   })};
 
   ${breakpoints({
-    cssProp: ['margin-right'],
+    cssProp: ['margin-left', 'margin-right'],
     cssPropUnits: '',
     values: [
       { [devices.default]: '0' },
-      { [devices.smallDevices]: '2.4rem' },
-      { [devices.mediumDevices]: '1.2rem' },
-      { [devices.largeDevices]: '0.6rem' },
+      { [devices.smallDevices]: '-1.2rem' },
+      { [devices.mediumDevices]: '-0.8rem' },
+      { [devices.largeDevices]: '-0.4rem' },
+    ],
+  })};
+`;
+
+export const ClassItem = styled.div`
+  box-sizing: border-box;
+  display: flex;
+
+  ${breakpoints({
+    cssProp: 'width',
+    cssPropUnits: '',
+    values: [
+      { [devices.default]: '100%' },
+      { [devices.smallDevices]: 'calc(50%)' },
+      { [devices.mediumDevices]: 'calc((100% / 3))' },
+      { [devices.largeDevices]: 'calc(25%)' },
     ],
   })};
 
-  &:nth-child(2n) {
-    ${breakpoints({
-      cssProp: ['margin-right'],
-      cssPropUnits: '',
-      values: [{ [devices.smallDevices]: '0' }, { [devices.mediumDevices]: '1.2rem' }],
-    })};
+  ${breakpoints({
+    cssProp: ['padding-left', 'padding-right'],
+    cssPropUnits: '',
+    values: [
+      { [devices.default]: '0' },
+      { [devices.smallDevices]: '1.2rem' },
+      { [devices.mediumDevices]: '0.8rem' },
+      { [devices.largeDevices]: '0.4rem' },
+    ],
+  })};
+
+  & > div {
+    border: 0.1rem solid ${(props) => props.theme.borderColor};
+    border-radius: 0.4rem;
+    display: flex;
+    flex-direction: column;
+    margin-top: 2.4rem;
+    padding: 2rem;
   }
 `;
 
 export const ClassHeader = styled.div<Props>`
   background-color: ${(props) => props.color};
   border-radius: 0.4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 20rem;
   width: 100%;
+
+  svg {
+    font-size: 6rem;
+    color: ${(props) => props.theme.backgroundColor};
+  }
 `;
 
 export const ClassBody = styled.div`

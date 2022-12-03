@@ -16,6 +16,7 @@ import ToTopButton from './components/ToTopButton';
 import ClassDetail from './components/Pages/ClassDetail';
 import DetailExam from './components/Pages/DetailExam';
 import Search from './components/Pages/Search';
+import NotFound from './components/Pages/NotFound';
 
 const App: React.FC = () => {
   return (
@@ -39,7 +40,7 @@ const App: React.FC = () => {
           </Route>
           <Route path="profile" element={<Profile />} />
           <Route path="search" element={<Search />} />
-          <Route path="*" element={<div>not found</div>} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
       </Router>

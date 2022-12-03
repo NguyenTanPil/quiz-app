@@ -26,6 +26,10 @@ const Textarea = ({ id, isFull, placeholder, value, setValue }: TextareaProps) =
   const formats = isFull ? QUIZ_APP_CONSTANTS.AUTHEN_FORM.formatsFull : QUIZ_APP_CONSTANTS.AUTHEN_FORM.formatsShort;
 
   useEffect(() => {
+    setText(value);
+  }, [value]);
+
+  useEffect(() => {
     setValue(debouncedValue);
   }, [debouncedValue]);
 

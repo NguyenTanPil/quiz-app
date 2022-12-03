@@ -70,7 +70,7 @@ const CreateCategoryForm = ({
               <h3>{createName} note</h3>
               <Textarea
                 id={`${createName.toLocaleLowerCase()}-note`}
-                placeholder={`Enter ${createName.toLocaleLowerCase()} name...`}
+                placeholder={`Enter ${createName.toLocaleLowerCase()} note...`}
                 value={values.categoryNote}
                 setValue={(value) => {
                   setFieldValue('categoryNote', value);

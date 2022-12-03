@@ -6,7 +6,7 @@ import { MdOutlineMenuOpen } from 'react-icons/md';
 import { SiOpslevel } from 'react-icons/si';
 import { useNavigate, useParams } from 'react-router-dom';
 import uuid from 'react-uuid';
-import { createExam, getExamById } from '../../../api/exam';
+import { addQuestion, createExam, getExamById, updateExam, updateQuestions } from '../../../api/exam';
 import { ActionButton, SignUpButton } from '../../../common/Button';
 import { ConfirmDialog, CreateCategoryDialog, CreateQuizDialog } from '../../../common/Dialog';
 import Dropdown from '../../../common/Dropdown';
@@ -79,36 +79,24 @@ export interface QuizStructureTemplateState {
 type ExamProps = {
   id: string;
   name: string;
-  timeStart: number;
   quizList: QuizProps[];
   category: { id: string; name: string };
-  quizStructure: QuizStructureTemplateState;
   countLimit: string;
   totalQuestions: number;
-  timeDuration: {
-    hours: string;
-    minutes: string;
-  };
 };
 
 const initialExam: ExamProps = {
   id: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialId,
   name: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialExamName,
-  timeStart: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialTimeStart,
   quizList: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialQuizList,
   category: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialCategory,
   countLimit: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialCountLimit,
   totalQuestions: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialTotalQuestions,
-  quizStructure: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialQuizStructure,
-  timeDuration: {
-    hours: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialHours,
-    minutes: QUIZ_APP_CONSTANTS.CREATE_EXAM.initialMinutes,
-  },
 };
 
 const CreateExam = () => {
   const navigate = useNavigate();
-  const { examId } = useParams();
+  const { classId, examId } = useParams();
 
   const [isLoading, setIsLoading] = useState(examId ? true : false);
   const [originExam, setOriginExam] = useState<ExamProps>(initialExam);
@@ -118,15 +106,58 @@ const CreateExam = () => {
   const [isShowCreateCategoryDialog, setIsShowCreateCategoryDialog] = useState(false);
   const [editId, setEditId] = useState<string | undefined>(undefined);
   const [deleteId, setDeleteId] = useState<string | undefined>(undefined);
+  const [updateToAddQuestions, setUpdateToAddQuestions] = useState<any[]>([]);
 
-  const handleCreateNewQuiz = (values: QuizProps) => {
-    console.log({ values });
-    setExam((prev) => ({ ...prev, quizList: [...prev.quizList, values] }));
+  const getFormatQuestion = (quiz: any) => {
+    const { question, level, answers } = quiz;
+
+    const correctAnswer = answers.find((answer: any) => answer.isCorrect)?.content;
+    const inCorrectAnswers = answers.filter((answer: any) => !answer.isCorrect).map((answer: any) => answer.content);
+
+    return {
+      content: question,
+      level: QUIZ_APP_CONSTANTS.CREATE_EXAM.getLevelNumberByString(level),
+      correctAnswer,
+      inCorrectAnswer: inCorrectAnswers,
+      topQuestionsId: [],
+      bottomQuestionsId: [],
+    };
   };
 
-  const handleUpdateQuiz = (values: QuizProps) => {
+  const handleCreateNewQuiz = (values: QuizProps) => {
+    setExam((prev) => ({ ...prev, quizList: [...prev.quizList, values] }));
+
+    if (examId) {
+      updateToAddQuestions.push(getFormatQuestion(values));
+    }
+  };
+
+  const handleUpdateQuiz = async (values: QuizProps) => {
     const newQuizList = exam.quizList.map((quiz) => (quiz.id === editId ? values : quiz));
     setExam((prev) => ({ ...prev, quizList: newQuizList }));
+
+    if (!examId) return;
+
+    const questionUpdated: any = {
+      questionList: [
+        {
+          question: [
+            {
+              id: values.id,
+              content: values.question,
+              level: QUIZ_APP_CONSTANTS.CREATE_EXAM.getLevelNumberByString(values.level),
+            },
+          ],
+          answer: values.answers,
+        },
+      ],
+    };
+
+    try {
+      await updateQuestions(questionUpdated);
+    } catch (error) {
+      console.log({ error });
+    }
   };
 
   const handleDeleteQuiz = (id: string) => {
@@ -150,38 +181,16 @@ const CreateExam = () => {
 
   const handleSaveExam = async () => {
     setIsLoading(true);
-    const newQuizList = exam.quizList.map((quiz) => {
-      const { question, level, answers } = quiz;
-
-      const correctAnswer = answers.find((answer) => answer.isCorrect)?.content;
-      const inCorrectAnswers = answers.filter((answer) => !answer.isCorrect).map((answer) => answer.content);
-
-      return {
-        content: question,
-        level: QUIZ_APP_CONSTANTS.CREATE_EXAM.getLevelNumberByString(level),
-        correctAnswer,
-        inCorrectAnswer: inCorrectAnswers,
-        topQuestionsId: [],
-        bottomQuestionsId: [],
-      };
-    });
-
-    const timeDurationFormat = convertTimeDurationToMinutes(exam.timeDuration);
+    const newQuizList = exam.quizList.map(getFormatQuestion);
 
     const formValues = {
       categoryId: exam.category.id,
       name: exam.name,
       countLimit: parseInt(exam.countLimit),
-      timeDuration: timeDurationFormat,
-      timeStart: exam.timeStart,
       isPublished: 1,
-      structureExam: {
-        easy: exam.quizStructure.easy,
-        normal: exam.quizStructure.medium,
-        difficult: exam.quizStructure.hard,
-      },
       note: '',
       questionList: newQuizList,
+      classId,
     };
 
     const response = await createExam(formValues);
@@ -193,52 +202,25 @@ const CreateExam = () => {
   };
 
   const handleUpdateExam = async () => {
-    const examDiffs = getObjectKeysChanged(originExam, exam);
-    let quizListDiffs: any[] = [];
+    const examBefore = { name: originExam.name, categoryId: originExam.category.id, countLimit: originExam.countLimit };
+    const examUpdate = { name: exam.name, categoryId: exam.category.id, countLimit: exam.countLimit };
+    const examDiffs = getObjectKeysChanged(examBefore, examUpdate);
 
-    if (examDiffs?.data) {
-      if (examDiffs.data.hasOwnProperty('quizList')) {
-        examDiffs.data.quizList.forEach((quiz: QuizProps, idx: number) => {
-          if (originExam.quizList[idx]) {
-            const quizDiffs = getObjectKeysChanged(originExam.quizList[idx], quiz);
-            quizDiffs?.data && quizListDiffs.push({ ...quizDiffs.data, id: quiz.id });
-          } else {
-            quizListDiffs.push(quiz);
-          }
-        });
+    try {
+      if (examDiffs?.data) {
+        await updateExam(examDiffs.data, examId);
+      }
+      if (updateToAddQuestions.length > 0) {
+        const quizList = { questionList: updateToAddQuestions };
+        await addQuestion(quizList, examId);
       }
 
-      if (examDiffs.data.hasOwnProperty('category')) {
-        examDiffs.data.categoryId = examDiffs.data.category.id;
-        delete examDiffs.data.category;
-      }
-
-      console.log({ quizListDiffs });
-      quizListDiffs = quizListDiffs.map((quiz) => {
-        if (quiz.hasOwnProperty('answers')) {
-          const answers = quiz.answers;
-          const correctAnswer = answers.find((answer: AnswerProps) => answer.isCorrect)?.content;
-          const inCorrectAnswers = answers
-            .filter((answer: AnswerProps) => !answer.isCorrect)
-            .map((answer: AnswerProps) => answer.content);
-
-          // delete quiz.answers;
-          return { ...quiz, correctAnswer, inCorrectAnswers };
-        }
-      });
-
-      try {
-        // await updateExam({ ...examDiffs.data, id: exam.id }, quizListDiffs, exam.id);
-        console.log({ examDiffs, quizListDiffs });
+      if (examDiffs?.data || updateToAddQuestions.length > 0) {
         setOriginExam(exam);
-      } catch (error) {
-        console.log({ error });
       }
+    } catch (error) {
+      console.log({ error });
     }
-  };
-
-  const getTotalQuestionByLevel = (levelName: string) => {
-    return exam.quizList.filter((question) => question.level === levelName).length;
   };
 
   useEffect(() => {
@@ -248,6 +230,7 @@ const CreateExam = () => {
       const fetchExistExam = async () => {
         const response = await getExamById(examId);
 
+        console.log({ response });
         if (response.isSuccess && isSubscribed) {
           setOriginExam(response.data);
           setExam(response.data);
@@ -255,7 +238,7 @@ const CreateExam = () => {
         }
 
         if (response.isSuccess === false) {
-          navigate('/exams/create-exam');
+          // navigate('/exams/create-exam');
         }
       };
 
@@ -366,83 +349,6 @@ const CreateExam = () => {
               />
             </CategoryQuiz>
           </QuizOptions>
-          <QuizOptions>
-            <TimeDuration>
-              <LabelGroup>Time Duration</LabelGroup>
-              <TimeDurationGroup>
-                <TimeDurationItem>
-                  <Dropdown
-                    id="hours"
-                    activeValue={exam.timeDuration.hours}
-                    values={QUIZ_APP_CONSTANTS.CREATE_EXAM.getHourList()}
-                    handleSelected={(value) =>
-                      setExam((prev) => ({ ...prev, timeDuration: { ...prev.timeDuration, hours: value } }))
-                    }
-                  />
-                  <span>h</span>
-                </TimeDurationItem>
-                <TimeDurationItem>
-                  <Dropdown
-                    id="minutes"
-                    activeValue={exam.timeDuration.minutes}
-                    values={QUIZ_APP_CONSTANTS.CREATE_EXAM.getMinuteList()}
-                    handleSelected={(value) =>
-                      setExam((prev) => ({ ...prev, timeDuration: { ...prev.timeDuration, minutes: value } }))
-                    }
-                  />
-                  <span>m</span>
-                </TimeDurationItem>
-              </TimeDurationGroup>
-            </TimeDuration>
-            <TimeStart>
-              <LabelGroup>Time Start</LabelGroup>
-              <DateTimePickerInput
-                id="start-time"
-                initialTime={exam.timeStart}
-                setDateTime={(value) => setExam((prev) => ({ ...prev, timeStart: value }))}
-              />
-            </TimeStart>
-          </QuizOptions>
-          <QuizOptions>
-            <LabelGroup>Structure of Quiz</LabelGroup>
-            <InputQuizStructure>
-              {QUIZ_APP_CONSTANTS.CREATE_EXAM.levels.map((level) => {
-                const { name, typeColor } = level;
-                const inputValue = exam.quizStructure[name as keyof QuizStructureTemplateState];
-
-                return (
-                  <StructureItem key={`quiz-structure-${name}`} borderColorHover={typeColor}>
-                    <ToolTip content={`${name} Level`}>
-                      <LevelItem typeColor={typeColor} as="div">
-                        {name[0]}
-                      </LevelItem>
-                    </ToolTip>
-                    <OriginInput
-                      name={name}
-                      type="number"
-                      min={0}
-                      max={getTotalQuestionByLevel(name)}
-                      value={isNaN(inputValue) ? 0 : inputValue}
-                      errorMessage={
-                        inputValue > getTotalQuestionByLevel(name)
-                          ? `Value must be less than or equal to ${getTotalQuestionByLevel(name)}`
-                          : ''
-                      }
-                      setValue={(value) =>
-                        setExam((prev) => ({
-                          ...prev,
-                          quizStructure: {
-                            ...prev.quizStructure,
-                            [name]: parseInt(value),
-                          },
-                        }))
-                      }
-                    />
-                  </StructureItem>
-                );
-              })}
-            </InputQuizStructure>
-          </QuizOptions>
           {exam.quizList.length > 0 ? (
             <TotalQuiz>
               <h3>
@@ -496,12 +402,12 @@ const CreateExam = () => {
                     </ToolTip>
                   </QuizItemActions>
                 </QuizItemHeader>
-                <QuizItemContent>{quiz.question}</QuizItemContent>
+                <QuizItemContent dangerouslySetInnerHTML={{ __html: quiz.question }} />
                 <QuizItemAnswers>
                   {quiz.answers.map((answer: AnswerProps) => (
                     <QuizItemAnswer key={answer.id}>
                       <QuizItemAnswerStatus isCorrect={answer.isCorrect} />
-                      <span>{answer.content}</span>
+                      <div dangerouslySetInnerHTML={{ __html: answer.content }} />
                     </QuizItemAnswer>
                   ))}
                 </QuizItemAnswers>
@@ -514,11 +420,7 @@ const CreateExam = () => {
                 examId
                   ? compareTwoObjects(originExam, exam)
                   : exam.name === QUIZ_APP_CONSTANTS.CREATE_EXAM.initialExamName ||
-                    exam.timeStart === QUIZ_APP_CONSTANTS.CREATE_EXAM.initialTimeStart ||
-                    exam.category === QUIZ_APP_CONSTANTS.CREATE_EXAM.initialCategory ||
-                    (exam.timeDuration.hours === QUIZ_APP_CONSTANTS.CREATE_EXAM.initialHours &&
-                      exam.timeDuration.minutes === QUIZ_APP_CONSTANTS.CREATE_EXAM.initialMinutes) ||
-                    compareTwoObjects(exam.quizStructure, QUIZ_APP_CONSTANTS.CREATE_EXAM.initialQuizStructure)
+                    exam.category === QUIZ_APP_CONSTANTS.CREATE_EXAM.initialCategory
               }
               onClick={examId ? handleUpdateExam : handleSaveExam}
             >

@@ -3,7 +3,7 @@ import { BiEditAlt } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import { updateUserDetail } from '../../../api/authentication';
 import { createCategory, getCategoryOfUser, updateCategory } from '../../../api/category';
-import { getExamsByUserId } from '../../../api/exam';
+import { createClass, getClassesByUserId, updateClass } from '../../../api/class';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { SignUpButton } from '../../../common/Button';
 import { ProfileDialog } from '../../../common/Dialog';
@@ -43,7 +43,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const [activeTab, setActiveTab] = useState('All Exam');
+  const [activeTab, setActiveTab] = useState(QUIZ_APP_CONSTANTS.PROFILE.tabs[0]);
   const [isLoading, setIsLoading] = useState(true);
   const [isShowEditDialog, setIsShowEditDialog] = useState(false);
   const [isCreateCategory, setIsCreateCategory] = useState(false);
@@ -51,18 +51,12 @@ const Profile = () => {
   const [editCategoryId, setEditCategoryId] = useState<string | undefined>(undefined);
   const [editClassId, setEditClassId] = useState<string | undefined>(undefined);
 
-  const [examList, setExamList] = useState<any[]>([]);
   const [categoryList, setCategoryList] = useState<any[]>([]);
   const [classList, setClassList] = useState<any[]>([]);
   const [originExamList, setOriginExamList] = useState<any[]>([]);
   const [originCategoryList, setOriginCategoryList] = useState<any[]>([]);
-  const [originClassList, setOriginClassList] = useState<any[]>(classData);
+  const [originClassList, setOriginClassList] = useState<any[]>([]);
 
-  const [examFilter, setExamFilter] = useState({
-    search: '',
-    categoryName: '',
-    currentPage: QUIZ_APP_CONSTANTS.COMMON.initialCurrentPage,
-  });
   const [categoryFilter, setCategoryFilter] = useState({
     search: '',
     currentPage: QUIZ_APP_CONSTANTS.COMMON.initialCurrentPage,
@@ -73,7 +67,6 @@ const Profile = () => {
   });
   const [searchExamInStudent, setSearchExamInStudent] = useState('');
 
-  const debouncedExamValue = useDebounce<string>(examFilter.search, QUIZ_APP_CONSTANTS.COMMON.debounceSeconds);
   const debouncedCategoryValue = useDebounce<string>(categoryFilter.search, QUIZ_APP_CONSTANTS.COMMON.debounceSeconds);
   const debouncedClassValue = useDebounce<string>(classFilter.search, QUIZ_APP_CONSTANTS.COMMON.debounceSeconds);
   const initialValues = useMemo(() => {
@@ -121,7 +114,7 @@ const Profile = () => {
     }
   };
 
-  const handleCreateNewClass = () => {
+  const tempCreate = () => {
     setActiveTab('All Class');
   };
 
@@ -142,6 +135,22 @@ const Profile = () => {
     }
   };
 
+  const handleCreateNewClass = async (values: any) => {
+    const response = await createClass({
+      name: values.name,
+      note: values.note,
+      color: values.color,
+    });
+
+    if (response.isSuccess) {
+      const { id, name, note, color } = response.data;
+      const newClass = { id, name, note, color };
+
+      setClassList((prev) => [...prev, newClass]);
+      setOriginClassList((prev) => [...prev, newClass]);
+    }
+  };
+
   const handleUpdateCategory = async (values: any) => {
     const editCategoryIndex = categoryList.findIndex((category) => category.id === editCategoryId) || 0;
     const updatedCategory = { ...categoryList[editCategoryIndex] };
@@ -156,6 +165,25 @@ const Profile = () => {
     dispatch(updateCategoryListById({ ...updatedCategory, ...changedKeys.data }));
   };
 
+  const handleUpdateClass = async (values: any) => {
+    const editClassIndex = classList.findIndex((item) => item.id === editClassId) || 0;
+    const updatedClass = { ...classList[editClassIndex] };
+    const changedKeys = getObjectKeysChanged(updatedClass, { ...values, id: editClassId });
+
+    if (changedKeys.isUpdated === false || editClassId === undefined) return;
+
+    const response = await updateClass(changedKeys.data, editClassId);
+    if (response.isSuccess) {
+      setClassList((prev) =>
+        prev.map((item) => (item.id === editClassId ? { ...updatedClass, ...changedKeys.data } : item)),
+      );
+      setOriginClassList((prev) =>
+        prev.map((item) => (item.id === editClassId ? { ...updatedClass, ...changedKeys.data } : item)),
+      );
+    }
+    // dispatch(updateCategoryListById({ ...updatedCategory, ...changedKeys.data }));
+  };
+
   useEffect(() => {
     setOriginCategoryList(categories);
   }, [categories]);
@@ -163,12 +191,12 @@ const Profile = () => {
   useEffect(() => {
     let isSubscribed = true;
 
-    const fetchExams = async () => {
-      const response = await getExamsByUserId();
+    const fetchClasses = async () => {
+      const response = await getClassesByUserId();
 
       if (response?.data && isSubscribed) {
-        setExamList(response.data);
-        setOriginExamList(response.data);
+        setClassList(response.data);
+        setOriginClassList(response.data);
         setIsLoading(false);
       }
     };
@@ -187,13 +215,12 @@ const Profile = () => {
         if (isSubscribed) {
           setCategoryList(responseList);
           setOriginCategoryList(responseList);
-          setExamFilter((prev) => ({ ...prev, categoryName: responseList.length > 0 ? responseList[0].name : '' }));
         }
       }
     };
 
     if (user.id) {
-      fetchExams();
+      fetchClasses();
       fetchCategoryList();
     }
 
@@ -201,28 +228,6 @@ const Profile = () => {
       isSubscribed = false;
     };
   }, [user.id]);
-
-  useEffect(() => {
-    setExamList(() => {
-      let newExamList = originExamList.filter(
-        (exam) => exam.category.name.toLowerCase() === examFilter.categoryName.toLowerCase(),
-      );
-
-      if (debouncedExamValue) {
-        const regex = new RegExp(debouncedExamValue, 'gi');
-        newExamList = newExamList.filter((exam) => exam.name.match(regex));
-      }
-
-      return newExamList.slice(QUIZ_APP_CONSTANTS.COMMON.startIndex, QUIZ_APP_CONSTANTS.COMMON.itemsPerPage);
-    });
-  }, [debouncedExamValue, examFilter.categoryName]);
-
-  useEffect(() => {
-    const startIndex = (examFilter.currentPage - 1) * QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize;
-    const endIndex = startIndex + QUIZ_APP_CONSTANTS.CREATE_EXAM.categoryPageSize;
-
-    setExamList(() => originExamList.slice(startIndex, endIndex));
-  }, [examFilter.currentPage]);
 
   useEffect(() => {
     setCategoryList(() => {
@@ -307,8 +312,8 @@ const Profile = () => {
               </ButtonActions>
               <MoreInfo>
                 <MoreInfoItem>
-                  <h5>{originExamList.length}</h5>
-                  <span>EXAMS</span>
+                  <h5>{originClassList.length}</h5>
+                  <span>CLASSES</span>
                 </MoreInfoItem>
                 <MoreInfoItem>
                   <h5>{originCategoryList.length}</h5>
@@ -326,13 +331,19 @@ const Profile = () => {
             }}
             tabList={QUIZ_APP_CONSTANTS.PROFILE.getTabs(activeTab)}
           >
-            <AllExamBlock
-              originExamList={originExamList}
-              examFilter={examFilter}
-              setExamFilter={setExamFilter}
-              categoryList={categoryList}
-              examList={examList}
-              handleCreateNewClass={handleCreateNewClass}
+            <AllCategoryBlock
+              createName="Class"
+              isCreateCategory={isCreateClass}
+              editCategoryId={editClassId}
+              originCategoryList={originClassList}
+              categoryFilter={classFilter}
+              initialValues={initialValuesForClass}
+              categoryList={classList}
+              setIsCreateCategory={setIsCreateClass}
+              setEditCategoryId={setEditClassId}
+              setCategoryFilter={setClassFilter}
+              handleUpdateCategory={handleUpdateClass}
+              handleCreateNewCategory={handleCreateNewClass}
             />
             <AllCategoryBlock
               createName="Category"
@@ -348,24 +359,11 @@ const Profile = () => {
               handleUpdateCategory={handleUpdateCategory}
               handleCreateNewCategory={handleCreateNewCategory}
             />
-            <AllCategoryBlock
-              createName="Class"
-              isCreateCategory={isCreateClass}
-              editCategoryId={editClassId}
-              originCategoryList={originClassList}
-              categoryFilter={classFilter}
-              initialValues={initialValuesForClass}
-              categoryList={classList}
-              setIsCreateCategory={setIsCreateClass}
-              setEditCategoryId={setEditClassId}
-              setCategoryFilter={setClassFilter}
-              handleUpdateCategory={() => {}}
-              handleCreateNewCategory={() => {}}
-            />
+
             <ReportBlock
               originExamList={originExamList}
               setSearchExamInStudent={setSearchExamInStudent}
-              handleCreateNewClass={handleCreateNewClass}
+              handleCreateNewClass={tempCreate}
               searchExamInStudent={searchExamInStudent}
               setActiveTab={setActiveTab}
             />

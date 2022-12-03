@@ -39,14 +39,21 @@ export const CategoryContent = styled.div`
   margin-left: 1.2rem;
   text-align: left;
 
-  h4 {
+  h4,
+  a {
     color: ${(props) => props.theme.titleColor};
     display: -webkit-box;
     font-size: 1.6rem;
     margin: 0;
+    margin-bottom: 0.2rem;
     overflow: hidden;
+    transition: all 0.2s ease-out;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
+  }
+
+  a:hover {
+    color: ${(props) => props.theme.mainColor};
   }
 
   p {
@@ -57,6 +64,10 @@ export const CategoryContent = styled.div`
     overflow: hidden;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+
+    strong {
+      color: ${(props) => props.theme.mainColor};
+    }
   }
 `;
 
@@ -66,7 +77,6 @@ export const CategoryItem = styled.li`
   box-sizing: border-box;
   display: flex;
   align-items: flex-start;
-  flex-wrap: wrap;
   margin-top: 2.4rem;
   min-height: 9.8rem;
   padding: 1.2rem;
@@ -231,7 +241,7 @@ export const QuizItemActions = styled.div`
   }
 `;
 
-export const QuizItemContent = styled.p`
+export const QuizItemContent = styled.div`
   border-bottom: 0.1rem solid ${(props) => props.theme.borderColor};
   color: ${(props) => props.theme.fontColor};
   font-size: 1.6rem;
@@ -241,6 +251,10 @@ export const QuizItemContent = styled.p`
   margin: 0;
   padding-bottom: 2.4rem;
   padding-top: 2.4rem;
+
+  p {
+    margin: 0;
+  }
 `;
 
 export const QuizItemAnswers = styled.ul`
@@ -265,11 +279,12 @@ export const QuizItemAnswer = styled.li`
     values: [{ [devices.default]: 100 }, { [devices.mediumDevices]: 50 }],
   })};
 
-  span {
+  p {
     font-size: 1.6rem;
     font-weight: 400;
     line-height: 2.4rem;
     letter-spacing: 0.1rem;
+    margin: 0;
   }
 `;
 

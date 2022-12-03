@@ -51,42 +51,21 @@ export const createExam = async (formValues: any) => {
   }
 };
 
-export const updateExam = async (formValues: any, questionList: any[], examId: string) => {
-  // exam
-  if (Object.keys(formValues).length > 1) {
-    let examId = '';
+export const updateExam = async (formValues: any, examId: any) => {
+  const token = getCookie('token');
+  const url = QUIZ_APP_CONSTANTS.API.baseUrl + QUIZ_APP_CONSTANTS.API.updateExamByIdUrl + examId;
 
-    const q = query(collection(db, 'exams'), where('id', '==', formValues.id));
-    const response = await getDocs(q);
-
-    response.forEach((doc) => {
-      examId = doc.id;
+  try {
+    const response = await axios({
+      method: 'patch',
+      url,
+      data: formValues,
+      headers: { Authorization: `Bearer ${token}` },
     });
 
-    const examRef = doc(db, 'exams', examId);
-    const res = await updateDoc(examRef, formValues);
-  }
-
-  // questions
-  if (questionList.length > 0) {
-    const questions: { questionId: string; id: string }[] = [];
-
-    const q = query(collection(db, 'questions'), where('examId', '==', examId));
-    const response = await getDocs(q);
-
-    response.forEach((doc) => {
-      questions.push({ questionId: doc.id, id: doc.data().id });
-    });
-
-    await Promise.all(
-      questions.map(async (question) => {
-        const currentQuestion = questionList.filter((q) => q.id === question.id)[0];
-
-        delete currentQuestion.id;
-
-        await updateQuiz(question.questionId, currentQuestion);
-      }),
-    );
+    return { isSuccess: true, data: response.data.data };
+  } catch (error: any) {
+    return { isSuccess: false, message: error.message };
   }
 };
 
@@ -108,7 +87,6 @@ export const getExamById = async (examId: string) => {
     }
 
     const examRes = response.data.data;
-    const structureExam = JSON.parse(examRes.main[0].structureExam);
 
     const questions = examRes.question.map((q: any) => {
       const { id, content: question, level } = q.content[0];
@@ -125,11 +103,8 @@ export const getExamById = async (examId: string) => {
     const data = {
       id: examRes.main[0].id,
       name: examRes.main[0].name,
-      timeStart: examRes.main[0].timeStart,
       category: { id: examRes.main[0].categoryId, name: examRes.optional.categoryName },
-      quizStructure: { easy: structureExam.easy, medium: structureExam.normal, hard: structureExam.difficult },
-      timeDuration: convertMinutesToDuration(examRes.main[0].timeDuration),
-      countLimit: examRes.main[0].countLimit,
+      countLimit: examRes.main[0].countLimit || 1,
       quizList: questions,
     };
 
@@ -230,6 +205,42 @@ export const getResult = async () => {
     }));
 
     return { isSuccess: true, data };
+  } catch (error: any) {
+    return { isSuccess: false, message: error.message };
+  }
+};
+
+export const updateQuestions = async (formValues: any) => {
+  const token = getCookie('token');
+  const url = QUIZ_APP_CONSTANTS.API.baseUrl + QUIZ_APP_CONSTANTS.API.updateQuestionsUrl;
+
+  try {
+    const response = await axios({
+      method: 'patch',
+      url,
+      data: formValues,
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return { isSuccess: true, data: response.data.data };
+  } catch (error: any) {
+    return { isSuccess: false, message: error.message };
+  }
+};
+
+export const addQuestion = async (formValues: any, examId: any) => {
+  const token = getCookie('token');
+  const url = QUIZ_APP_CONSTANTS.API.baseUrl + QUIZ_APP_CONSTANTS.API.addQuestionsUrl + examId;
+
+  try {
+    const response = await axios({
+      method: 'post',
+      url,
+      data: formValues,
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return { isSuccess: true, data: response.data.data };
   } catch (error: any) {
     return { isSuccess: false, message: error.message };
   }
