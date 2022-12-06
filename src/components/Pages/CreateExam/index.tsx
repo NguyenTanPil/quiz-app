@@ -230,7 +230,6 @@ const CreateExam = () => {
       const fetchExistExam = async () => {
         const response = await getExamById(examId);
 
-        console.log({ response });
         if (response.isSuccess && isSubscribed) {
           setOriginExam(response.data);
           setExam(response.data);
@@ -253,12 +252,6 @@ const CreateExam = () => {
       isSubscribed = false;
     };
   }, [examId]);
-
-  // useEffect(() => {
-  //   if (!isLogin) {
-  //     navigate('/sign-in');
-  //   }
-  // }, []);
 
   return (
     <Container>

@@ -248,7 +248,6 @@ export const ProfileQuizTime = styled.div`
   color: ${(props) => props.theme.fontColor};
   display: flex;
   align-items: center;
-  margin-top: 0.8rem;
 
   svg {
     font-size: 1.6rem;

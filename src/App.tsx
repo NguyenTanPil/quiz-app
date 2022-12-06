@@ -27,7 +27,7 @@ const App: React.FC = () => {
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="game/:examId" element={<Game />} />
+          <Route path="game" element={<Game />} />
           <Route path="sign-up" element={<SignUp />} />
           <Route path="sign-in" element={<SignIn />} />
           <Route path="exams" element={<RouteGroup />}>

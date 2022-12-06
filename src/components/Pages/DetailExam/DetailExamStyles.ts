@@ -8,3 +8,8 @@ export const QuestionDashboardWrap = styled.div`
     margin-left: -0.8rem;
   }
 `;
+
+export const NumberOfSubWrap = styled.div`
+  margin-top: 1.6rem;
+  width: 100%;
+`;

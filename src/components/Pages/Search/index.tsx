@@ -8,13 +8,23 @@ import { ClassBody, ClassFooter, ClassHeader, ClassItem, ClassList, Container } 
 import { classDetail } from '../Profile/dummyData';
 import { SiGoogleclassroom } from 'react-icons/si';
 import { ConfirmDialog } from '../../../common/Dialog';
+import { getAllClass, joinClass } from '../../../api/class';
+import { getOriginTextInHtmlString } from '../../../utils';
+import { useAppSelector } from '../../../app/hooks';
+import { selectUser } from '../../../features/user/userSlice';
+import { LoadingFullPage } from '../../Loading';
+import { useNavigate } from 'react-router-dom';
 
 const Search = () => {
+  const user = useAppSelector(selectUser);
+  const navigate = useNavigate();
   const [searchContent, setSearchContent] = useState('');
   const [originClassList, setOriginClassList] = useState<any[]>([]);
   const [classList, setClassList] = useState<any[]>([]);
   const [isShowDialog, setIsShowDialog] = useState(false);
   const [className, setClassName] = useState('');
+  const [classId, setClassId] = useState<any>(undefined);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (searchContent === '') {
@@ -31,14 +41,41 @@ const Search = () => {
     }
   }, [searchContent]);
 
-  const handleOpenDialog = (name: string) => {
+  const handleOpenDialog = (name: string, id: string) => {
     setClassName(name);
+    setClassId(id);
     setIsShowDialog(true);
   };
 
+  const handleJoinClass = async () => {
+    setIsLoading(true);
+    const res = await joinClass(classId);
+
+    if (res.isSuccess) {
+      setIsShowDialog(false);
+      setIsLoading(false);
+      navigate(`/class/${classId}`);
+    }
+  };
+
   useEffect(() => {
-    setOriginClassList(classDetail);
-    setClassList(classDetail);
+    let isSubscribed = true;
+    setIsLoading(true);
+
+    const getAllClassToSearch = async () => {
+      const res = await getAllClass();
+      if (res.isSuccess && isSubscribed) {
+        setClassList(res.data);
+        setOriginClassList(res.data);
+        setIsLoading(false);
+      }
+    };
+
+    getAllClassToSearch();
+
+    return () => {
+      isSubscribed = false;
+    };
   }, []);
 
   return (
@@ -49,7 +86,7 @@ const Search = () => {
           title="Confirm to join"
           applyButtonContent="Okay"
           handleCancelDialog={() => setIsShowDialog(false)}
-          handleApplyDialog={() => {}}
+          handleApplyDialog={handleJoinClass}
           handleCloseDialog={() => setIsShowDialog(false)}
         />
       )}
@@ -72,27 +109,39 @@ const Search = () => {
             </SignUpButton>
           </CreateNewQuiz>
         </CreateQuizHeader>
-        <QuizOptions>
-          <ClassList>
-            {classList.map((item) => (
-              <ClassItem key={item.id}>
-                <div>
-                  <ClassHeader color={item.color}>
-                    <SiGoogleclassroom />
-                  </ClassHeader>
-                  <ClassBody>
-                    <h3>{item.name}</h3>
-                    <span>{item.author}</span>
-                    <p>{item.note}</p>
-                  </ClassBody>
-                  <ClassFooter>
-                    <SignUpButton onClick={() => handleOpenDialog(item.name)}>Join now</SignUpButton>
-                  </ClassFooter>
-                </div>
-              </ClassItem>
-            ))}
-          </ClassList>
-        </QuizOptions>
+        {isLoading ? (
+          <LoadingFullPage />
+        ) : (
+          <QuizOptions>
+            <ClassList>
+              {classList.map((item) => (
+                <ClassItem key={item.id}>
+                  <div>
+                    <ClassHeader color={item.color}>
+                      <SiGoogleclassroom />
+                    </ClassHeader>
+                    <ClassBody>
+                      <h3>{item.name}</h3>
+                      <span>{item.authorName}</span>
+                      <p>{getOriginTextInHtmlString(item.note)}</p>
+                    </ClassBody>
+                    <ClassFooter>
+                      <SignUpButton
+                        onClick={() =>
+                          item.studentIds.includes(user.id)
+                            ? navigate(`/class/${item.id}`)
+                            : handleOpenDialog(item.name, item.id)
+                        }
+                      >
+                        {item.studentIds.includes(user.id) ? 'Detail' : 'Join now'}
+                      </SignUpButton>
+                    </ClassFooter>
+                  </div>
+                </ClassItem>
+              ))}
+            </ClassList>
+          </QuizOptions>
+        )}
       </Wrapper>
     </Container>
   );

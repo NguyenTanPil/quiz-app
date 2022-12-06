@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { BiEditAlt } from 'react-icons/bi';
+import { SiGoogleclassroom } from 'react-icons/si';
 import { useNavigate } from 'react-router-dom';
 import { updateUserDetail } from '../../../api/authentication';
 import { createCategory, getCategoryOfUser, updateCategory } from '../../../api/category';
@@ -12,21 +13,25 @@ import NavTab from '../../../common/NavTab';
 import ToolTip from '../../../common/ToolTip';
 import { addNewCategory, selectCategoryList, updateCategoryListById } from '../../../features/category/categorySlice';
 import { selectUser, updateUser } from '../../../features/user/userSlice';
-import { Wrapper } from '../../../styles/Utils';
+import { EmptyListAction, Wrapper } from '../../../styles/Utils';
 import { getObjectKeysChanged } from '../../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
 import { getCookie, setCookie } from '../../../utils/cookie';
 import { LoadingFullPage } from '../../Loading';
+import { QuizOptions } from '../CreateExam/CreateExamStyles';
+import { ClassBody, ClassFooter, ClassHeader, ClassItem, ClassList } from '../Search/SearchStyles';
 import AllCategoryBlock from './AllCategoryBlock';
 import AllExamBlock from './AllExamBlock';
-import { classData } from './dummyData';
+import { classData, classDetail } from './dummyData';
 import {
   Actions,
   ButtonActions,
   Container,
   Content,
+  ExamBlock,
   MoreInfo,
   MoreInfoItem,
+  NoExam,
   ProfileHeader,
   UserAvatar,
   UserDetail,
@@ -197,7 +202,6 @@ const Profile = () => {
       if (response?.data && isSubscribed) {
         setClassList(response.data);
         setOriginClassList(response.data);
-        setIsLoading(false);
       }
     };
 
@@ -219,10 +223,15 @@ const Profile = () => {
       }
     };
 
-    if (user.id) {
-      fetchClasses();
-      fetchCategoryList();
-    }
+    const fetchData = async () => {
+      if (user.id && user.role === 1) {
+        await fetchClasses();
+        await fetchCategoryList();
+      }
+      setIsLoading(false);
+    };
+
+    fetchData();
 
     return () => {
       isSubscribed = false;
@@ -311,64 +320,110 @@ const Profile = () => {
                 </ToolTip>
               </ButtonActions>
               <MoreInfo>
-                <MoreInfoItem>
-                  <h5>{originClassList.length}</h5>
-                  <span>CLASSES</span>
-                </MoreInfoItem>
-                <MoreInfoItem>
-                  <h5>{originCategoryList.length}</h5>
-                  <span>CATEGORIES</span>
-                </MoreInfoItem>
+                {user.role === 1 ? (
+                  <>
+                    <MoreInfoItem>
+                      <h5>{originClassList.length}</h5>
+                      <span>CLASSES</span>
+                    </MoreInfoItem>
+                    <MoreInfoItem>
+                      <h5>{originCategoryList.length}</h5>
+                      <span>CATEGORIES</span>
+                    </MoreInfoItem>
+                  </>
+                ) : (
+                  <MoreInfoItem>
+                    <h5>{classDetail.length}</h5>
+                    <span>CLASSES</span>
+                  </MoreInfoItem>
+                )}
               </MoreInfo>
             </Actions>
           </ProfileHeader>
-          <NavTab
-            activeTab={activeTab}
-            setActiveTab={(tab) => {
-              setEditCategoryId(undefined);
-              setEditClassId(undefined);
-              setActiveTab(tab);
-            }}
-            tabList={QUIZ_APP_CONSTANTS.PROFILE.getTabs(activeTab)}
-          >
-            <AllCategoryBlock
-              createName="Class"
-              isCreateCategory={isCreateClass}
-              editCategoryId={editClassId}
-              originCategoryList={originClassList}
-              categoryFilter={classFilter}
-              initialValues={initialValuesForClass}
-              categoryList={classList}
-              setIsCreateCategory={setIsCreateClass}
-              setEditCategoryId={setEditClassId}
-              setCategoryFilter={setClassFilter}
-              handleUpdateCategory={handleUpdateClass}
-              handleCreateNewCategory={handleCreateNewClass}
-            />
-            <AllCategoryBlock
-              createName="Category"
-              isCreateCategory={isCreateCategory}
-              editCategoryId={editCategoryId}
-              originCategoryList={originCategoryList}
-              categoryFilter={categoryFilter}
-              initialValues={initialValues}
-              categoryList={categoryList}
-              setIsCreateCategory={setIsCreateCategory}
-              setEditCategoryId={setEditCategoryId}
-              setCategoryFilter={setCategoryFilter}
-              handleUpdateCategory={handleUpdateCategory}
-              handleCreateNewCategory={handleCreateNewCategory}
-            />
+          {user.role === 1 ? (
+            <>
+              <NavTab
+                activeTab={activeTab}
+                setActiveTab={(tab) => {
+                  setEditCategoryId(undefined);
+                  setEditClassId(undefined);
+                  setActiveTab(tab);
+                }}
+                tabList={QUIZ_APP_CONSTANTS.PROFILE.getTabs(activeTab)}
+              >
+                <AllCategoryBlock
+                  createName="Class"
+                  isCreateCategory={isCreateClass}
+                  editCategoryId={editClassId}
+                  originCategoryList={originClassList}
+                  categoryFilter={classFilter}
+                  initialValues={initialValuesForClass}
+                  categoryList={classList}
+                  setIsCreateCategory={setIsCreateClass}
+                  setEditCategoryId={setEditClassId}
+                  setCategoryFilter={setClassFilter}
+                  handleUpdateCategory={handleUpdateClass}
+                  handleCreateNewCategory={handleCreateNewClass}
+                />
+                <AllCategoryBlock
+                  createName="Category"
+                  isCreateCategory={isCreateCategory}
+                  editCategoryId={editCategoryId}
+                  originCategoryList={originCategoryList}
+                  categoryFilter={categoryFilter}
+                  initialValues={initialValues}
+                  categoryList={categoryList}
+                  setIsCreateCategory={setIsCreateCategory}
+                  setEditCategoryId={setEditCategoryId}
+                  setCategoryFilter={setCategoryFilter}
+                  handleUpdateCategory={handleUpdateCategory}
+                  handleCreateNewCategory={handleCreateNewCategory}
+                />
 
-            <ReportBlock
-              originExamList={originExamList}
-              setSearchExamInStudent={setSearchExamInStudent}
-              handleCreateNewClass={tempCreate}
-              searchExamInStudent={searchExamInStudent}
-              setActiveTab={setActiveTab}
-            />
-            <StudentBlock />
-          </NavTab>
+                <ReportBlock
+                  originExamList={originExamList}
+                  setSearchExamInStudent={setSearchExamInStudent}
+                  handleCreateNewClass={tempCreate}
+                  searchExamInStudent={searchExamInStudent}
+                  setActiveTab={setActiveTab}
+                />
+                <StudentBlock />
+              </NavTab>
+            </>
+          ) : (
+            <ExamBlock>
+              {classDetail.length === 0 ? (
+                <NoExam>
+                  <EmptyListAction>
+                    <SignUpButton onClick={() => navigate('/search')}>Join A Class</SignUpButton>
+                    <span>Don't have any classes!</span>
+                  </EmptyListAction>
+                </NoExam>
+              ) : (
+                <QuizOptions style={{ marginTop: 0 }}>
+                  <ClassList>
+                    {classDetail.map((item) => (
+                      <ClassItem key={item.id}>
+                        <div>
+                          <ClassHeader color={item.color}>
+                            <SiGoogleclassroom />
+                          </ClassHeader>
+                          <ClassBody>
+                            <h3>{item.name}</h3>
+                            <span>{item.author}</span>
+                            <p>{item.note}</p>
+                          </ClassBody>
+                          <ClassFooter>
+                            <SignUpButton>Detail</SignUpButton>
+                          </ClassFooter>
+                        </div>
+                      </ClassItem>
+                    ))}
+                  </ClassList>
+                </QuizOptions>
+              )}
+            </ExamBlock>
+          )}
         </Content>
       </Wrapper>
     </Container>

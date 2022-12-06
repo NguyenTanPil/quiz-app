@@ -49,6 +49,8 @@ export const userSlice = createSlice({
       state.user = { id: '', name: '', email: '', role: 2, avatar: '', nameTitle: 'Mr.', createdAt: 0 };
       state.token = '';
       deleteCookie('user');
+      deleteCookie('token');
+      deleteCookie('moreInfo');
     },
   },
 });

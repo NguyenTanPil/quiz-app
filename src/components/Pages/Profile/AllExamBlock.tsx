@@ -31,10 +31,10 @@ type AllExamBlockProps = {
 };
 
 const AllExamBlock = ({
+  buttonContent,
   originExamList,
   examFilter,
   setExamFilter,
-  categoryList,
   examList,
   handleCreateNewExam,
 }: AllExamBlockProps) => {
@@ -43,7 +43,9 @@ const AllExamBlock = ({
       {originExamList.length === QUIZ_APP_CONSTANTS.COMMON.emptyArrayLength ? (
         <NoExam>
           <EmptyListAction>
-            <SignUpButton onClick={handleCreateNewExam}>Create An Exam</SignUpButton>
+            <SignUpButton onClick={handleCreateNewExam}>
+              {buttonContent ? buttonContent : 'Create An Exam'}
+            </SignUpButton>
             <span>Don't have any exams!</span>
           </EmptyListAction>
         </NoExam>
@@ -57,12 +59,6 @@ const AllExamBlock = ({
               placeholder="Enter exam name..."
               setValue={(value) => setExamFilter((prev: any) => ({ ...prev, search: value }))}
             />
-            <Dropdown
-              id="category"
-              activeValue={examFilter.categoryName}
-              values={categoryList.map((item: any) => item.name)}
-              handleSelected={(value) => setExamFilter((prev: any) => ({ ...prev, categoryName: value }))}
-            />
           </BlockFilter>
           {examList.length === QUIZ_APP_CONSTANTS.COMMON.emptyArrayLength ? (
             <NoDataToShow message="No exams to show!" />
@@ -74,22 +70,16 @@ const AllExamBlock = ({
                     <img src="https://cf.quizizz.com/img/logos/new/logo_placeholder_sm.png?w=600&h=600" alt="" />
                   </ProfileQuizAvatar>
                   <ProfileQuizContent>
-                    <ProfileQuizName>
-                      <Link to={`/exams/${exam.id}`}>{exam.name}</Link>
-                    </ProfileQuizName>
+                    <ProfileQuizName>{exam.name}</ProfileQuizName>
                     <ProfileQuizDetails>
                       <div>
                         <MdOutlineMenuOpen />
                         <span>{convertNumberFormat(exam.totalQuestions)} Questions</span>
                       </div>
-                      <div>
-                        <BiCategory />
-                        <span>{exam.category.name}</span>
-                      </div>
                     </ProfileQuizDetails>
                     <ProfileQuizTime>
                       <AiOutlineClockCircle />
-                      <span>{formatCreatedAt(exam.createdAt / 1000)}</span>
+                      <span>{formatCreatedAt(exam.createdAt)}</span>
                     </ProfileQuizTime>
                   </ProfileQuizContent>
                 </ProfileQuizItem>

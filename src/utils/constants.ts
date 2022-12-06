@@ -36,6 +36,10 @@ export const QUIZ_APP_CONSTANTS = {
     updateClassUrl: 'creator/class/update/',
     updateQuestionsUrl: 'creator/questionbank/update/question',
     addQuestionsUrl: 'creator/questionbank/add/',
+    createSubExamUrl: 'creator/exam/create',
+    getSubExamDetailUrl: 'creator/exam/',
+    joinClassUrl: 'examinees/register/',
+    getAllClass: 'class',
   },
   SLIDER: {
     transitionSecondsDefault: 0.45,
@@ -113,9 +117,9 @@ export const QUIZ_APP_CONSTANTS = {
       return 3;
     },
     getLevelStringByNumber(num: number) {
-      if (num === 0) {
+      if (num === 1) {
         return 'easy';
-      } else if (num === 1) {
+      } else if (num === 2) {
         return 'medium';
       }
       return 'hard';
@@ -212,6 +216,6 @@ export const QUIZ_APP_CONSTANTS = {
     },
   },
   CLASS: {
-    tabs: ['All Exam', 'All Student'],
+    tabs: ['Exam', 'All Sub Exam', 'All Student'],
   },
 };

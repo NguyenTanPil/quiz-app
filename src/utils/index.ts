@@ -171,18 +171,16 @@ export const convertTimeDurationToMinutes = (timeDuration: { hours: string; minu
   return hours * 60 + minutes;
 };
 
-export const convertMinutesToDuration = (time: number) => {
-  const oneMinute = QUIZ_APP_CONSTANTS.COMMON.oneSecond * QUIZ_APP_CONSTANTS.COMMON.secondsPerMinute;
-  const oneHour = oneMinute * QUIZ_APP_CONSTANTS.COMMON.minutesPerHour;
-
-  const minutes = Math.ceil(time / oneMinute);
-
+export const convertMinutesToDuration = (minutes: number) => {
   if (minutes < QUIZ_APP_CONSTANTS.COMMON.minutesPerHour) {
     return { hours: '00', minutes: convertNumberFormat(minutes) };
   }
 
-  const hours = Math.ceil(time / oneHour);
-  return { hours: convertNumberFormat(hours), minutes: convertNumberFormat(minutes) };
+  const hours = Math.ceil(minutes / QUIZ_APP_CONSTANTS.COMMON.minutesPerHour);
+  return {
+    hours: convertNumberFormat(hours),
+    minutes: convertNumberFormat(minutes % QUIZ_APP_CONSTANTS.COMMON.minutesPerHour),
+  };
 };
 
 export const getObjectKeysChanged = (currentObj: any, changedObj: any) => {
