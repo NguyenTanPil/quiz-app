@@ -55,9 +55,10 @@ export const updateClass = async (formValues: any, categoryId: string) => {
   }
 };
 
-export const getClassDetail = async (classId: any) => {
+export const getClassDetail = async (classId: any, isStudent: any) => {
   const token = getCookie('token');
-  const url = QUIZ_APP_CONSTANTS.API.baseUrl + QUIZ_APP_CONSTANTS.API.getClassesByIdUrl + `/${classId}`;
+  let subUrl = isStudent ? QUIZ_APP_CONSTANTS.API.getClassDetailByStudent : QUIZ_APP_CONSTANTS.API.getClassesByIdUrl;
+  const url = QUIZ_APP_CONSTANTS.API.baseUrl + subUrl + `/${classId}`;
 
   try {
     const response = await axios({

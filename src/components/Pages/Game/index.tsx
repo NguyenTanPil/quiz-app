@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { getGeneraExamById, submitExam } from '../../../api/exam';
-import { ConfirmDialog } from '../../../common/Dialog';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getClassDetail } from '../../../api/class';
+import { getGeneraExamById, getQuestionForReview, getQuestionForTest, submitExam } from '../../../api/exam';
+import { ConfirmDialog, JoinDialog } from '../../../common/Dialog';
 import gameBannerImg from '../../../images/gameBanner.jpg';
 import { QuestionDashboard, QuestionDashboardItem, Wrapper } from '../../../styles/Utils';
 import { shuffleArray } from '../../../utils';
@@ -12,16 +13,15 @@ import { LoadingFullPage } from '../../Loading';
 import QuestionCard from '../../QuestionCard';
 import { Container, Content, ExamResult, GameBanner } from './GameStyles';
 
-const isTestMode = false;
-
 const Game = () => {
-  const { examId } = useParams();
+  const { examId, mode } = useParams();
+  const isTestMode = mode === 'test' ? true : false;
+  const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isShowCloseDialog, setIsShowCloseDialog] = useState(false);
   const [isShowCompleteDialog, setIsShowCompleteDialog] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [isStart, setIsStart] = useState(false);
   const [spendTime, setSpendTime] = useState(0);
 
   const [questions, setQuestions] = useState<any[]>([]);
@@ -30,6 +30,10 @@ const Game = () => {
   const [timeDuration, setTimeDuration] = useState(0);
   const [isSubmit, setIsSubmit] = useState(false);
   const [questionsSelected, setQuestionsSelected] = useState(0);
+  const [classId, setClassId] = useState('');
+  const [isShowJoinDialog, setIsShowJoinDialog] = useState(false);
+  const [examineeId, setExamineeId] = useState('');
+  const [testId, setTestId] = useState('');
 
   const checkAnswer = (answerId: string, questionId: string) => {
     const isCorrect = questions[number].correctAnswer.id === answerId;
@@ -109,7 +113,7 @@ const Game = () => {
   };
 
   const handleApplyCompleteDialog = () => {
-    setIsShowCompleteDialog(false);
+    navigate(`/class/${classId}`);
   };
 
   const handleTryAgain = () => {
@@ -140,27 +144,50 @@ const Game = () => {
     );
   };
 
-  const handleSubmitExam = () => {
+  const handleSubmitExam = async () => {
     setNumber(0);
     setIsSubmit(true);
     setIsShowCloseDialog(false);
     setIsShowCompleteDialog(false);
+    const restTime = timeDuration - spendTime;
+    const answerIds = questions.map((item: any) => item.answerClicked);
+    await submitExam(testId, answerIds, restTime);
   };
 
   const handleCloseExam = () => {
     if (isTestMode) {
       setIsShowCloseDialog(false);
-      setIsStart(false);
+      setExamineeId('');
+      setTestId('');
     }
+  };
+  const handleJoinExam = (code: string) => {
+    setIsShowJoinDialog(false);
+    setExamineeId(code);
+    setLoading(true);
   };
 
   useEffect(() => {
     let isSubscribed = true;
-    if (!examId && !isStart) return;
+    setLoading(true);
+    if (!examId && examineeId === '') return;
 
     const getQuestions = async () => {
-      const response = await getGeneraExamById(examId || '');
-      console.log({ response });
+      let response;
+
+      if (isTestMode) {
+        if (examineeId === '') {
+          setLoading(false);
+          return;
+        }
+        response = await getQuestionForTest(examineeId);
+        console.log({ test: response.data.testId });
+        setTestId(response.data.testId);
+      } else {
+        response = await getQuestionForReview(examId || '');
+        setClassId(response.data.classId);
+      }
+
       const questionList = response.data.quizList.map((item: any) => {
         return {
           id: item.id,
@@ -201,7 +228,7 @@ const Game = () => {
     return () => {
       isSubscribed = false;
     };
-  }, [isStart]);
+  }, [examineeId]);
 
   useEffect(() => {
     if (isSubmit && spendTime && isTestMode && examId) {
@@ -220,10 +247,12 @@ const Game = () => {
   }, [isSubmit, spendTime, isTestMode]);
 
   useEffect(() => {
-    if (!isTestMode && questions.length > 0 && score === 3) {
+    if (!isTestMode && questions.length > 0 && score === 2) {
       setIsShowCompleteDialog(true);
     }
   }, [score]);
+
+  console.log({ loading, questions });
 
   return (
     <>
@@ -246,6 +275,16 @@ const Game = () => {
               />
             )}
 
+            {isShowJoinDialog && (
+              <JoinDialog
+                title="Join Exam"
+                applyButtonContent="Join"
+                handleCancelDialog={() => setIsShowJoinDialog(false)}
+                handleApplyDialog={handleJoinExam}
+                handleCloseDialog={() => setIsShowJoinDialog(false)}
+              />
+            )}
+
             {isShowCompleteDialog && (
               <ConfirmDialog
                 content="This exam has completed!"
@@ -259,9 +298,9 @@ const Game = () => {
             )}
 
             {/* end dialogs */}
-            {isTestMode && !isStart ? (
+            {isTestMode && examineeId === '' ? (
               <ExamResult>
-                <GameResult setIsStart={setIsStart} />
+                <GameResult setIsShowJoinDialog={setIsShowJoinDialog} />
               </ExamResult>
             ) : (
               <>
@@ -299,6 +338,7 @@ const Game = () => {
                     questionDetails={questions[number]}
                     questionNumber={number + 1}
                     score={score}
+                    goldNumber={2}
                     questionsSelected={questionsSelected}
                     isTestMode={isTestMode}
                     isSubmit={isSubmit}

@@ -8,10 +8,10 @@ import { Container } from '../QuestionCard/QuestionCardStyles';
 import { ResultTitle, TryAgain } from './GameResultStyles';
 
 type GameResultProps = {
-  setIsStart: (value: boolean) => void;
+  setIsShowJoinDialog: (value: boolean) => void;
 };
 
-const GameResult = ({ setIsStart }: GameResultProps) => {
+const GameResult = ({ setIsShowJoinDialog }: GameResultProps) => {
   const [resultList, setResultList] = useState([]);
 
   useEffect(() => {
@@ -49,7 +49,9 @@ const GameResult = ({ setIsStart }: GameResultProps) => {
         />
       )}
       <TryAgain isEmpty={resultList.length === 0}>
-        <SignUpButton onClick={() => setIsStart(true)}>Start</SignUpButton>
+        <SignUpButton disabled={resultList.length >= 1} onClick={() => setIsShowJoinDialog(true)}>
+          Start
+        </SignUpButton>
       </TryAgain>
     </Container>
   );

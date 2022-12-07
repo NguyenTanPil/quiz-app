@@ -33,6 +33,7 @@ const ClassDetail = () => {
   const [classDetail, setClassDetail] = useState<any>();
   const [isExistExam, setIsExistExam] = useState(false);
   const [questionBank, setQuestionBank] = useState<any>({});
+  const [exam, setExam] = useState({});
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState(QUIZ_APP_CONSTANTS.CLASS.tabs[0]);
   const [examList, setExamList] = useState<any[]>([]);
@@ -87,7 +88,8 @@ const ClassDetail = () => {
     let isSubscribed = true;
 
     const fetchClassDetail = async () => {
-      const classRes = await getClassDetail(classId);
+      const isStudent = user.role === 2 ? true : false;
+      const classRes = await getClassDetail(classId, isStudent);
 
       if (classRes.isSuccess) {
         setClassDetail(classRes.data.class);
@@ -108,7 +110,7 @@ const ClassDetail = () => {
           setExamList(fetchedExams);
         }
 
-        if (classRes.data.questionbank?.length > 0 && user.role === 1) {
+        if (classRes.data.questionbank?.length > 0) {
           setQuestionBank({
             id: classRes.data.questionbank[0].main[0].id,
             name: classRes.data.questionbank[0].main[0].name,
@@ -117,7 +119,7 @@ const ClassDetail = () => {
           });
         }
 
-        if (classRes.data.exam?.length > 0 && user.role === 1) {
+        if (classRes.data.exam?.length > 0) {
           const config = {
             listExamId: classRes.data.exam.map((item: any) => item.main[0].id),
             numberOfSub: classRes.data.exam.length,
@@ -132,6 +134,13 @@ const ClassDetail = () => {
 
           setCookie({ data: config, cookieName: 'moreInfo', time: 60 * 60 * 2 });
           setIsExistExam(true);
+          setExam({
+            id: classRes.data.exam[0].main[0].id,
+            name: classRes.data.exam[0].main[0].name,
+            totalQuestion: JSON.parse(classRes.data.exam[0].main[0].arrayQuestion).length,
+            numExamination: classRes.data.exam[0].main[0].numExamination,
+            timeDuration: classRes.data.exam[0].main[0].timeDuration,
+          });
         } else {
           deleteCookie('moreInfo');
         }
@@ -147,8 +156,6 @@ const ClassDetail = () => {
       isSubscribed = false;
     };
   }, []);
-
-  console.log({ isLoading, classDetail });
 
   return (
     <Container>
@@ -173,52 +180,73 @@ const ClassDetail = () => {
                 </CreateNewQuiz>
               )}
             </CreateQuizHeader>
-            <NavTab activeTab={activeTab} setActiveTab={setActiveTab} tabList={QUIZ_APP_CONSTANTS.CLASS.tabs}>
-              <QuestionBankBlock>
-                {questionBank?.id ? (
-                  <>
-                    <QuestionBankImg>
-                      <BsQuestionSquareFill />
-                    </QuestionBankImg>
-                    <QuestionBankBody>
-                      <Link to={`/exams/${questionBank.id}`}>{questionBank.name}</Link>
-                      <h5>{questionBank.categoryName}</h5>
-                      <span>{questionBank.totalQuestion} Questions</span>
-                    </QuestionBankBody>
-                    <QuestionBankBlockBtn>
-                      <SignUpButton onClick={createNewSubExam}>
-                        {isExistExam ? 'Update' : 'Create'} sub exam
-                      </SignUpButton>
-                    </QuestionBankBlockBtn>
-                  </>
-                ) : (
-                  <NoExam>
-                    <EmptyListAction>
-                      <SignUpButton onClick={createNewExam}>Create An Exam</SignUpButton>
-                      <span>Don't have any exams!</span>
-                    </EmptyListAction>
-                  </NoExam>
-                )}
-              </QuestionBankBlock>
-              <AllExamBlock
-                buttonContent={questionBank?.id ? 'Create Sub Exam' : 'Create An Exam'}
-                originExamList={originExamList}
-                examFilter={examFilter}
-                setExamFilter={setExamFilter}
-                examList={examList}
-                handleCreateNewExam={questionBank?.id ? createNewSubExam : createNewExam}
-              />
-              <ExamBlock>
-                <StudentResult>
-                  <Table
-                    rowData={studentResult}
-                    columnDefs={[{ field: 'id' }, { field: 'name' }, { field: 'score' }, { field: 'time' }]}
-                    widthArr={[10, 30, 20, 20, 20]}
-                    actions={actions}
-                  />
-                </StudentResult>
-              </ExamBlock>
-            </NavTab>
+            {user.role === 1 && (
+              <NavTab activeTab={activeTab} setActiveTab={setActiveTab} tabList={QUIZ_APP_CONSTANTS.CLASS.tabs}>
+                <QuestionBankBlock>
+                  {questionBank?.id ? (
+                    <>
+                      <QuestionBankImg>
+                        <BsQuestionSquareFill />
+                      </QuestionBankImg>
+                      <QuestionBankBody>
+                        <Link to={`/exams/${questionBank.id}`}>{questionBank.name}</Link>
+                        <h5>{questionBank.categoryName}</h5>
+                        <span>{questionBank.totalQuestion} Questions</span>
+                      </QuestionBankBody>
+                      <QuestionBankBlockBtn>
+                        <SignUpButton onClick={createNewSubExam}>
+                          {isExistExam ? 'Update' : 'Create'} sub exam
+                        </SignUpButton>
+                      </QuestionBankBlockBtn>
+                    </>
+                  ) : (
+                    <NoExam>
+                      <EmptyListAction>
+                        <SignUpButton onClick={createNewExam}>Create An Exam</SignUpButton>
+                        <span>Don't have any exams!</span>
+                      </EmptyListAction>
+                    </NoExam>
+                  )}
+                </QuestionBankBlock>
+                <AllExamBlock
+                  buttonContent={questionBank?.id ? 'Create Sub Exam' : 'Create An Exam'}
+                  originExamList={originExamList}
+                  examFilter={examFilter}
+                  setExamFilter={setExamFilter}
+                  examList={examList}
+                  handleCreateNewExam={questionBank?.id ? createNewSubExam : createNewExam}
+                />
+                <ExamBlock>
+                  <StudentResult>
+                    <Table
+                      rowData={studentResult}
+                      columnDefs={[{ field: 'id' }, { field: 'name' }, { field: 'score' }, { field: 'time' }]}
+                      widthArr={[10, 30, 20, 20, 20]}
+                      actions={actions}
+                    />
+                  </StudentResult>
+                </ExamBlock>
+              </NavTab>
+            )}
+
+            {user.role === 2 && (
+              <>
+                <QuestionBankBlock>
+                  <QuestionBankImg>
+                    <BsQuestionSquareFill />
+                  </QuestionBankImg>
+                  <QuestionBankBody>
+                    <p>{questionBank.name}</p>
+                    <h5>{questionBank.categoryName}</h5>
+                    <span>{questionBank.totalQuestion} Questions</span>
+                  </QuestionBankBody>
+                  <QuestionBankBlockBtn>
+                    <SignUpButton onClick={() => navigate(`/game/${questionBank.id}/review`)}>Make Review</SignUpButton>
+                    <SignUpButton onClick={() => navigate(`/game/${questionBank.id}/test`)}>Make Exam</SignUpButton>
+                  </QuestionBankBlockBtn>
+                </QuestionBankBlock>
+              </>
+            )}
           </Content>
         )}
       </WrapperSection>

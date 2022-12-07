@@ -17,12 +17,14 @@ import {
 } from './QuestionCardStyles';
 import { RiFlag2Fill } from 'react-icons/ri';
 import ToolTip from '../../common/ToolTip';
+import { getOriginTextInHtmlString } from '../../utils';
 
 type Props = {
   totalQuestions: number;
   questionNumber: number;
   score: number;
   questionsSelected: number;
+  goldNumber: number;
   questionDetails: any;
   isCompleted: boolean;
   isTestMode: boolean;
@@ -46,6 +48,7 @@ const QuestionCard = ({
   setIsShowDialog,
   toggleFlag,
   isTestMode,
+  goldNumber,
 }: Props) => {
   const { id, isFlag, question, correctAnswer, answerClicked, isCorrect, answers } = questionDetails;
 
@@ -67,7 +70,7 @@ const QuestionCard = ({
           </span>
           <span>
             {/* Question {questionNumber} to {totalQuestions} */}
-            Question {isTestMode ? questionNumber : score} to {isTestMode ? totalQuestions : 3}
+            Question {isTestMode ? questionNumber : score} to {isTestMode ? totalQuestions : goldNumber}
           </span>
         </TotalQuestionCount>
         <ProgressBarFill>
@@ -80,7 +83,7 @@ const QuestionCard = ({
         </ProgressBarFill>
       </ProgressBar>
       <QuestionContent>
-        <h3>{question}</h3>
+        <h3>{getOriginTextInHtmlString(question)}</h3>
       </QuestionContent>
       <AnswerList>
         {answers.map((answer: any) => (
@@ -111,11 +114,7 @@ const QuestionCard = ({
           <span>{isTestMode && !isSubmit ? 'Submit' : 'Close'}</span>
         </SignUpButton>
         <SignUpButton
-          disabled={
-            isTestMode
-              ? questionNumber === totalQuestions
-              : questionNumber === totalQuestions || isCorrect === undefined
-          }
+          disabled={isTestMode ? questionNumber === totalQuestions : score === goldNumber || isCorrect === undefined}
           onClick={nextQuestion}
         >
           <span>Next Question</span>

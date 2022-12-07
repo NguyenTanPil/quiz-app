@@ -40,6 +40,9 @@ export const QUIZ_APP_CONSTANTS = {
     getSubExamDetailUrl: 'creator/exam/',
     joinClassUrl: 'examinees/register/',
     getAllClass: 'class',
+    getClassDetailByStudent: 'examinees/detail-class',
+    getQuestionsForReviewUrl: 'examinees/detail-questionbank/',
+    getQuestionsForTestUrl: 'examinees/',
   },
   SLIDER: {
     transitionSecondsDefault: 0.45,

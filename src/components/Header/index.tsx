@@ -8,8 +8,6 @@ import { resetUser, selectUser } from '../../features/user/userSlice';
 import { Wrapper } from '../../styles/Utils';
 import Sidebar from '../Sidebar';
 import { Container, Content, HeaderAvatar, Logo, NavItem, NavList, ShowSidebarBox } from './HeaderStyles';
-import { data } from '../../images/history_data';
-import axios from 'axios';
 
 const Header = () => {
   const [isShowSidebar, setIsShowSidebar] = useState(false);

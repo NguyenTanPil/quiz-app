@@ -33,11 +33,13 @@ export const QuestionBankImg = styled.div`
 export const QuestionBankBody = styled.div`
   margin-right: 2rem;
 
-  a {
+  a,
+  p {
     color: ${(props) => props.theme.titleColor};
     display: inline-block;
     font-size: 1.6rem;
     font-weight: 600;
+    margin: 0;
     margin-bottom: 0.8rem;
     transition: all 0.2s ease;
 
@@ -60,6 +62,11 @@ export const QuestionBankBody = styled.div`
 `;
 
 export const QuestionBankBlockBtn = styled.div`
+  display: flex;
   margin-top: 2rem;
   width: 100%;
+
+  button:first-child {
+    margin-right: 1.2rem;
+  }
 `;

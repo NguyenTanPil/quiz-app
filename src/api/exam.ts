@@ -167,7 +167,7 @@ export const getGeneraExamById = async (examId: string) => {
   }
 };
 
-export const submitExam = async (examId: string, answerIds: string[]) => {
+export const submitExam = async (examId: string, answerIds: string[], restTime: number) => {
   const token = getCookie('token');
   const url = QUIZ_APP_CONSTANTS.API.baseUrl + QUIZ_APP_CONSTANTS.API.submitExamUrl;
 
@@ -175,7 +175,7 @@ export const submitExam = async (examId: string, answerIds: string[]) => {
     const response = await axios({
       method: 'post',
       url,
-      data: { questionBankId: examId, answerIds },
+      data: { examId, answerIds, restTime },
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -287,6 +287,76 @@ export const getDetailSubExamQuestions = async (examId: string) => {
     }));
 
     return { isSuccess: true, data };
+  } catch (error: any) {
+    return { isSuccess: false, message: error.message };
+  }
+};
+
+export const getQuestionForReview = async (questionBankId: any) => {
+  const token = getCookie('token');
+  const url = QUIZ_APP_CONSTANTS.API.baseUrl + QUIZ_APP_CONSTANTS.API.getQuestionsForReviewUrl + questionBankId;
+
+  try {
+    const response = await axios({
+      method: 'get',
+      url,
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const data = response.data.data.question.map((item: any) => ({
+      id: item.content[0].id,
+      question: item.content[0].content,
+      level: QUIZ_APP_CONSTANTS.CREATE_EXAM.getLevelStringByNumber(item.content[0].level),
+      answers: item.answer.map((anw: any) => ({
+        id: anw[0].id,
+        content: anw[0].content,
+        isCorrect: !!anw[0].isCorrect,
+      })),
+      topIds: item.content[0].topQuestionsId ? JSON.parse(item.content[0].topQuestionsId.replace(/'/g, '"')) : [],
+      bottomIds: item.content[0].bottomQuestionsId
+        ? JSON.parse(item.content[0].bottomQuestionsId.replace(/'/g, '"'))
+        : [],
+      topIndex: 0,
+      bottomIndex: 0,
+    }));
+
+    return { isSuccess: true, data: { quizList: data, classId: response.data.data.main[0].classId } };
+  } catch (error: any) {
+    return { isSuccess: false, message: error.message };
+  }
+};
+
+export const getQuestionForTest = async (examineeId: any) => {
+  const token = getCookie('token');
+  const url = QUIZ_APP_CONSTANTS.API.baseUrl + QUIZ_APP_CONSTANTS.API.getQuestionsForTestUrl + examineeId;
+
+  try {
+    const response = await axios({
+      method: 'get',
+      url,
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const data = response.data.data.question.map((item: any) => ({
+      id: item.content[0].id,
+      question: item.content[0].content,
+      level: QUIZ_APP_CONSTANTS.CREATE_EXAM.getLevelStringByNumber(item.content[0].level),
+      answers: item.answer.map((anw: any) => ({
+        id: anw[0].id,
+        content: anw[0].content,
+        isCorrect: !!anw[0].isCorrect,
+      })),
+    }));
+
+    return {
+      isSuccess: true,
+      data: {
+        quizList: data,
+        timeDuration: response.data.data.general.main[0].timeDuration,
+        testId: response.data.data.general.main[0].id,
+        countLimit: response.data.data.general.main[0].countLimit,
+      },
+    };
   } catch (error: any) {
     return { isSuccess: false, message: error.message };
   }

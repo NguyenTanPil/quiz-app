@@ -42,6 +42,10 @@ const Search = () => {
   }, [searchContent]);
 
   const handleOpenDialog = (name: string, id: string) => {
+    if (!user.id) {
+      navigate('/sign-in');
+      return;
+    }
     setClassName(name);
     setClassId(id);
     setIsShowDialog(true);
