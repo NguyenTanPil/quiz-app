@@ -243,6 +243,23 @@ export const getLoginStatus = (): boolean => {
   return false;
 };
 
+export const convertSecondsToMinutes = (time: number): number => {
+  return Math.floor(time / 60);
+};
+
+export const convertTimeStampToDate = (time: number): string => {
+  const d = new Date(time),
+    dformat =
+      [d.getMonth() + 1, d.getDate(), d.getFullYear()].join('/') +
+      ' ' +
+      [d.getHours(), d.getMinutes(), d.getSeconds()].join(':');
+  return dformat;
+};
+
+export const convertLocalTime = (time: number): number => {
+  return time * 1000;
+};
+
 export const scrollToTop = () => {
   window.scrollTo({
     top: 0,

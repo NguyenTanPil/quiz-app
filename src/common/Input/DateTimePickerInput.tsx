@@ -19,16 +19,25 @@ const DateTimePickerInput = ({ id, initialTime, setDateTime }: DateTimePickerInp
   const [value, setValue] = useState<Moment | null>(moment());
   const dateTimePickerRef = useRef<HTMLDivElement>(null);
   const customDateTimeIconRef = useRef<HTMLDivElement>(null);
+  const [isFirstRender, setIsFirstRender] = useState(true);
+  const [minTime, setMinTime] = useState<Moment | null>(moment());
 
   const handleChange = (newValue: Moment | null) => {
     setValue(newValue);
-    setDateTime(moment(value).valueOf());
+    setDateTime(moment(newValue).valueOf());
   };
 
   useEffect(() => {
-    if (initialTime) {
-      setValue(moment(initialTime));
+    if (isFirstRender) {
+      if (initialTime) {
+        setValue(moment(initialTime));
+        setMinTime(moment(initialTime));
+      } else {
+        setMinTime(moment());
+      }
     }
+
+    setIsFirstRender(false);
   }, [initialTime]);
 
   useEffect(() => {
@@ -78,7 +87,7 @@ const DateTimePickerInput = ({ id, initialTime, setDateTime }: DateTimePickerInp
         <LocalizationProvider dateAdapter={AdapterMoment}>
           <DateTimePicker
             value={value}
-            minDateTime={initialTime ? moment(initialTime) : moment()}
+            minDateTime={minTime}
             renderInput={(params) => <TextField {...params} />}
             onChange={handleChange}
           />

@@ -19,7 +19,9 @@ const Table = ({ rowData, columnDefs, widthArr, actions }: Props) => {
     <Container widthArr={widthArr}>
       <THead>
         {columnDefs.map((column) => (
-          <TCell key={column.field}>{column.field}</TCell>
+          <TCell key={column.field} style={{ textTransform: 'capitalize' }}>
+            {column.field}
+          </TCell>
         ))}
         {actions && <TCell>Actions</TCell>}
       </THead>

@@ -42,21 +42,11 @@ const ClassDetail = () => {
     search: '',
     currentPage: QUIZ_APP_CONSTANTS.COMMON.initialCurrentPage,
   });
+  const [students, setStudents] = useState([]);
   const debouncedExamValue = useDebounce<string>(examFilter.search, QUIZ_APP_CONSTANTS.COMMON.debounceSeconds);
 
-  const actions = useMemo(
-    () => [
-      {
-        id: 'edit-col',
-        tooltip: 'View Detail',
-        icon: <BiMessageSquareDetail />,
-        onClick(row: any) {},
-      },
-    ],
-    [],
-  );
-
   const createNewExam = () => {
+    setCookie({ data: questionBank.id, cookieName: 'examId', time: 60 * 60 * 2 });
     navigate(`/exams/create-exam/${classId}`);
   };
 
@@ -93,6 +83,7 @@ const ClassDetail = () => {
 
       if (classRes.isSuccess) {
         setClassDetail(classRes.data.class);
+        console.log({ classRes });
 
         if (user.role === 1) {
           const fetchedExams = classRes.data.exam.map((exam: any, idx: number) => {
@@ -117,6 +108,17 @@ const ClassDetail = () => {
             categoryName: classRes.data.questionbank[0].optional.categoryName,
             totalQuestion: classRes.data.questionbank[0].sub.total,
           });
+        }
+
+        if (classRes.data.student?.length > 0) {
+          const temp = classRes.data.student[0].map((item: any, idx: number) => ({
+            index: idx + 1,
+            id: item.id,
+            name: item.name,
+            email: item.email,
+          }));
+
+          setStudents(temp);
         }
 
         if (classRes.data.exam?.length > 0) {
@@ -149,6 +151,7 @@ const ClassDetail = () => {
     };
 
     if (isSubscribed) {
+      deleteCookie('examId');
       fetchClassDetail();
     }
 
@@ -217,14 +220,21 @@ const ClassDetail = () => {
                   handleCreateNewExam={questionBank?.id ? createNewSubExam : createNewExam}
                 />
                 <ExamBlock>
-                  <StudentResult>
-                    <Table
-                      rowData={studentResult}
-                      columnDefs={[{ field: 'id' }, { field: 'name' }, { field: 'score' }, { field: 'time' }]}
-                      widthArr={[10, 30, 20, 20, 20]}
-                      actions={actions}
-                    />
-                  </StudentResult>
+                  {students.length === 0 ? (
+                    <NoExam>
+                      <EmptyListAction>
+                        <span>Don't have any student!</span>
+                      </EmptyListAction>
+                    </NoExam>
+                  ) : (
+                    <StudentResult>
+                      <Table
+                        rowData={students}
+                        columnDefs={[{ field: 'index' }, { field: 'name' }, { field: 'email' }]}
+                        widthArr={[10, 40, 50]}
+                      />
+                    </StudentResult>
+                  )}
                 </ExamBlock>
               </NavTab>
             )}

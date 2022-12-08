@@ -56,7 +56,6 @@ export const TCell = styled.div`
   font-size: 1.4rem;
   font-weight: 400;
   text-align: center;
-  text-transform: capitalize;
   padding: 2rem 3.2rem;
   position: relative;
   width: 100%;

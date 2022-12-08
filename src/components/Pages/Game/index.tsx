@@ -18,7 +18,7 @@ const Game = () => {
   const isTestMode = mode === 'test' ? true : false;
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isShowCloseDialog, setIsShowCloseDialog] = useState(false);
   const [isShowCompleteDialog, setIsShowCompleteDialog] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -123,12 +123,11 @@ const Game = () => {
     setScore(QUIZ_APP_CONSTANTS.GAME.initialScore);
   };
 
-  const handleCompletedTest = (seconds: number) => {
+  const handleCompletedTest = () => {
     if (!isSubmit) {
       setIsShowCompleteDialog(true);
     }
 
-    setSpendTime(timeDuration - seconds);
     setIsCompleted(true);
   };
 
@@ -145,13 +144,13 @@ const Game = () => {
   };
 
   const handleSubmitExam = async () => {
+    const restTime = spendTime;
+    const answerIds = questions.map((item: any) => item.answerClicked).filter((item: any) => item);
+    await submitExam(testId, answerIds, restTime);
     setNumber(0);
     setIsSubmit(true);
     setIsShowCloseDialog(false);
     setIsShowCompleteDialog(false);
-    const restTime = timeDuration - spendTime;
-    const answerIds = questions.map((item: any) => item.answerClicked);
-    await submitExam(testId, answerIds, restTime);
   };
 
   const handleCloseExam = () => {
@@ -181,12 +180,13 @@ const Game = () => {
           return;
         }
         response = await getQuestionForTest(examineeId);
-        console.log({ test: response.data.testId });
         setTestId(response.data.testId);
       } else {
         response = await getQuestionForReview(examId || '');
         setClassId(response.data.classId);
       }
+
+      console.log({ data: response.data });
 
       const questionList = response.data.quizList.map((item: any) => {
         return {
@@ -212,7 +212,7 @@ const Game = () => {
         setQuestionsSelected(0);
         setNumber(QUIZ_APP_CONSTANTS.GAME.initialNumberQuestion);
         setScore(QUIZ_APP_CONSTANTS.GAME.initialScore);
-        setTimeDuration(response.data.timeDuration);
+        setTimeDuration(response.data.timeDuration * 60);
         setLoading(false);
 
         if (isTestMode) {
@@ -230,21 +230,21 @@ const Game = () => {
     };
   }, [examineeId]);
 
-  useEffect(() => {
-    if (isSubmit && spendTime && isTestMode && examId) {
-      const handleSubmitExam = async () => {
-        const answerIds = questions.map((question) => question.answerClicked || ' ');
+  // useEffect(() => {
+  //   if (isSubmit && spendTime && isTestMode && examId) {
+  //     const handleSubmitExam = async () => {
+  //       const answerIds = questions.map((question) => question.answerClicked || ' ');
 
-        const response = await submitExam(examId, answerIds);
+  //       const response = await submitExam(examId, answerIds);
 
-        if (response.isSuccess) {
-          return response.data;
-        }
-      };
+  //       if (response.isSuccess) {
+  //         return response.data;
+  //       }
+  //     };
 
-      handleSubmitExam();
-    }
-  }, [isSubmit, spendTime, isTestMode]);
+  //     handleSubmitExam();
+  //   }
+  // }, [isSubmit, spendTime, isTestMode]);
 
   useEffect(() => {
     if (!isTestMode && questions.length > 0 && score === 2) {
@@ -332,6 +332,7 @@ const Game = () => {
                       isPause={isShowCloseDialog || isShowCompleteDialog}
                       isStop={isSubmit}
                       handleCompletedTest={handleCompletedTest}
+                      setSpendTime={setSpendTime}
                     />
                   )}
                   <QuestionCard

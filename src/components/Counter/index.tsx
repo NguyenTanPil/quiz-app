@@ -7,21 +7,26 @@ type Props = {
   isPause: boolean;
   isStop: boolean;
   time: number;
-  handleCompletedTest: (seconds: number) => void;
+  handleCompletedTest: () => void;
+  setSpendTime: (seconds: number) => void;
 };
 
-const Counter = ({ isPause, isStop, time, handleCompletedTest }: Props) => {
+const Counter = ({ isPause, isStop, time, handleCompletedTest, setSpendTime }: Props) => {
   const [seconds, setSeconds] = useState(time);
 
   useEffect(() => {
     if (isStop) {
-      handleCompletedTest(seconds);
+      handleCompletedTest();
       return;
     }
 
     if (seconds === QUIZ_APP_CONSTANTS.GAME.endTime) {
-      handleCompletedTest(0);
+      handleCompletedTest();
       return;
+    }
+
+    if (isPause) {
+      setSpendTime(seconds);
     }
 
     const timer = setInterval(() => {

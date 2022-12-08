@@ -33,6 +33,7 @@ import {
   getObjectKeysChanged,
 } from '../../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
+import { getCookie } from '../../../utils/cookie';
 import { AnswerProps, QuizProps } from '../../../utils/types';
 import { LoadingFullPage } from '../../Loading';
 import {
@@ -96,7 +97,8 @@ const initialExam: ExamProps = {
 
 const CreateExam = () => {
   const navigate = useNavigate();
-  const { classId, examId } = useParams();
+  const { classId } = useParams();
+  const examId = getCookie('examId');
 
   const [isLoading, setIsLoading] = useState(examId ? true : false);
   const [originExam, setOriginExam] = useState<ExamProps>(initialExam);
@@ -198,6 +200,7 @@ const CreateExam = () => {
     if (response.isSuccess) {
       setExam(initialExam);
       setIsLoading(false);
+      navigate(`/class/${classId}`);
     }
   };
 
@@ -234,10 +237,6 @@ const CreateExam = () => {
           setOriginExam(response.data);
           setExam(response.data);
           setIsLoading(false);
-        }
-
-        if (response.isSuccess === false) {
-          // navigate('/exams/create-exam');
         }
       };
 
@@ -417,7 +416,7 @@ const CreateExam = () => {
               }
               onClick={examId ? handleUpdateExam : handleSaveExam}
             >
-              Save
+              {examId ? 'Update' : 'Create'}
             </SignUpButton>
           </CreateQuizFooter>
         </Content>

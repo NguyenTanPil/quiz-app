@@ -84,7 +84,7 @@ const DetailExam = () => {
         difficult: structure.hard,
       },
       timeDuration: timeDurationFormat,
-      timeStart: timeStart,
+      timeStart: timeStart / 1000,
       countLimit: 1,
       isPublished: 1,
       numExams: numberOfSub,
@@ -94,12 +94,11 @@ const DetailExam = () => {
     const res = await createSubExam(formValues);
     if (res.isSuccess) {
       setIsNew(true);
-      console.log({ res });
       const config = {
         listExamId: res.data.map((item: any) => item.id),
         numberOfSub: formValues.numExams,
         timeDuration: formValues.timeDuration,
-        timeStart: formValues.timeStart,
+        timeStart: formValues.timeStart * 1000,
         structure: {
           easy: formValues.structureExam.easy,
           medium: formValues.structureExam.normal,
