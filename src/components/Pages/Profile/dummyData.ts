@@ -231,16 +231,16 @@ export const overviewDatasets = [
   },
 ];
 
-export const getDataset = (question: any) => {
+export const getDataset = (question: any, totalStudent: number) => {
   const { aAnswerCount, bAnswerCount, cAnswerCount, dAnswerCount, correctAnswer } = question;
 
   return [
     {
       data: [
-        `${(aAnswerCount / 10) * 100}`,
-        `${(bAnswerCount / 10) * 100}`,
-        `${(cAnswerCount / 10) * 100}`,
-        `${(dAnswerCount / 10) * 100}`,
+        `${(aAnswerCount / totalStudent) * 100}`,
+        `${(bAnswerCount / totalStudent) * 100}`,
+        `${(cAnswerCount / totalStudent) * 100}`,
+        `${(dAnswerCount / totalStudent) * 100}`,
       ],
       borderColor: '#9852f9',
       backgroundColor: [

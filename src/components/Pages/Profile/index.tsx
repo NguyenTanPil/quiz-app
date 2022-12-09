@@ -4,7 +4,7 @@ import { SiGoogleclassroom } from 'react-icons/si';
 import { useNavigate } from 'react-router-dom';
 import { updateUserDetail } from '../../../api/authentication';
 import { createCategory, getCategoryOfUser, updateCategory } from '../../../api/category';
-import { createClass, getClassesByUserId, updateClass } from '../../../api/class';
+import { createClass, getAllClassByJoined, getClassesByUserId, updateClass } from '../../../api/class';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { SignUpButton } from '../../../common/Button';
 import { ProfileDialog } from '../../../common/Dialog';
@@ -14,7 +14,7 @@ import ToolTip from '../../../common/ToolTip';
 import { addNewCategory, selectCategoryList, updateCategoryListById } from '../../../features/category/categorySlice';
 import { selectUser, updateUser } from '../../../features/user/userSlice';
 import { EmptyListAction, Wrapper } from '../../../styles/Utils';
-import { getObjectKeysChanged } from '../../../utils';
+import { getObjectKeysChanged, getOriginTextInHtmlString } from '../../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
 import { getCookie, setCookie } from '../../../utils/cookie';
 import { LoadingFullPage } from '../../Loading';
@@ -58,9 +58,10 @@ const Profile = () => {
 
   const [categoryList, setCategoryList] = useState<any[]>([]);
   const [classList, setClassList] = useState<any[]>([]);
-  const [originExamList, setOriginExamList] = useState<any[]>([]);
   const [originCategoryList, setOriginCategoryList] = useState<any[]>([]);
   const [originClassList, setOriginClassList] = useState<any[]>([]);
+  const [classJoined, setClassJoined] = useState<any[]>([]);
+  const [currentClassId, setCurrentClassId] = useState();
 
   const [categoryFilter, setCategoryFilter] = useState({
     search: '',
@@ -71,6 +72,7 @@ const Profile = () => {
     currentPage: QUIZ_APP_CONSTANTS.COMMON.initialCurrentPage,
   });
   const [searchExamInStudent, setSearchExamInStudent] = useState('');
+  const [studentDetail, setStudentDetail] = useState({});
 
   const debouncedCategoryValue = useDebounce<string>(categoryFilter.search, QUIZ_APP_CONSTANTS.COMMON.debounceSeconds);
   const debouncedClassValue = useDebounce<string>(classFilter.search, QUIZ_APP_CONSTANTS.COMMON.debounceSeconds);
@@ -223,10 +225,22 @@ const Profile = () => {
       }
     };
 
+    const fetchClassesByJoined = async () => {
+      const res = await getAllClassByJoined();
+
+      if (res.isSuccess) {
+        setClassJoined(res.data);
+      }
+    };
+
     const fetchData = async () => {
       if (user.id && user.role === 1) {
         await fetchClasses();
         await fetchCategoryList();
+      }
+
+      if (user.id && user.role === 2) {
+        await fetchClassesByJoined();
       }
       setIsLoading(false);
     };
@@ -333,7 +347,7 @@ const Profile = () => {
                   </>
                 ) : (
                   <MoreInfoItem>
-                    <h5>{classDetail.length}</h5>
+                    <h5>{classJoined.length}</h5>
                     <span>CLASSES</span>
                   </MoreInfoItem>
                 )}
@@ -381,18 +395,24 @@ const Profile = () => {
                 />
 
                 <ReportBlock
-                  originExamList={originExamList}
-                  setSearchExamInStudent={setSearchExamInStudent}
+                  originExamList={originClassList}
+                  setSearchExamInStudent={(value: any) => {
+                    setCurrentClassId(originClassList.filter((item: any) => item.name === value)[0].id);
+                    setSearchExamInStudent(value);
+                  }}
                   handleCreateNewClass={tempCreate}
                   searchExamInStudent={searchExamInStudent}
-                  setActiveTab={setActiveTab}
+                  setActiveTab={(value: any) => {
+                    setStudentDetail(value);
+                    setActiveTab('Student');
+                  }}
                 />
-                <StudentBlock />
+                <StudentBlock currentClassId={currentClassId} studentDetail={studentDetail} />
               </NavTab>
             </>
           ) : (
             <ExamBlock>
-              {classDetail.length === 0 ? (
+              {classJoined.length === 0 ? (
                 <NoExam>
                   <EmptyListAction>
                     <SignUpButton onClick={() => navigate('/search')}>Join A Class</SignUpButton>
@@ -402,7 +422,7 @@ const Profile = () => {
               ) : (
                 <QuizOptions style={{ marginTop: 0 }}>
                   <ClassList>
-                    {classDetail.map((item) => (
+                    {classJoined.map((item) => (
                       <ClassItem key={item.id}>
                         <div>
                           <ClassHeader color={item.color}>
@@ -410,11 +430,11 @@ const Profile = () => {
                           </ClassHeader>
                           <ClassBody>
                             <h3>{item.name}</h3>
-                            <span>{item.author}</span>
-                            <p>{item.note}</p>
+                            <span>{item.authorName}</span>
+                            <p>{getOriginTextInHtmlString(item.note)}</p>
                           </ClassBody>
                           <ClassFooter>
-                            <SignUpButton>Detail</SignUpButton>
+                            <SignUpButton onClick={() => navigate(`/class/${item.id}`)}>Detail</SignUpButton>
                           </ClassFooter>
                         </div>
                       </ClassItem>

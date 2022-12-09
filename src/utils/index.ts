@@ -278,3 +278,39 @@ export const convertExam = (exam: any) => {
   result.arrayQuestion = JSON.parse(exam.main[0].arrayQuestion);
   return result;
 };
+
+export const getOverviewReport = (students: any): any => {
+  const overviewCorrect: any[] = [];
+  const overviewWrong: any[] = [];
+
+  students.forEach((item: any) => {
+    const temp = item.numCorrect.split('/');
+    overviewCorrect.push(temp[0]);
+    overviewWrong.push(temp[1] - temp[0]);
+  });
+
+  const overviewDatasets = [
+    {
+      label: 'Correct',
+      data: overviewCorrect,
+      borderColor: '#0fb56d',
+      backgroundColor: '#0fb56d',
+      datalabels: {
+        align: 'end',
+        anchor: 'end',
+      },
+    },
+    {
+      label: 'Wrong',
+      data: overviewWrong,
+      borderColor: '#f55d7a',
+      backgroundColor: '#f55d7a',
+      datalabels: {
+        align: 'end',
+        anchor: 'end',
+      },
+    },
+  ];
+
+  return overviewDatasets;
+};

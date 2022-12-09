@@ -19,7 +19,7 @@ import {
 import Table from '../../../common/Table';
 import ToolTip from '../../../common/ToolTip';
 import { EmptyListAction, QuestionDashboard, QuestionDashboardItem } from '../../../styles/Utils';
-import { convertNumberFormat } from '../../../utils';
+import { convertNumberFormat, getOverviewReport } from '../../../utils';
 import { QUIZ_APP_CONSTANTS } from '../../../utils/constants';
 import { LoadingInline } from '../../Loading';
 import NoDataToShow from '../../NoDataToShow';
@@ -27,6 +27,7 @@ import { LevelButton } from '../CreateExam/CreateExamStyles';
 import { getDataset, overviewDatasets, overviewLabels, questionsReport, studentResult } from './dummyData';
 import { BlockFilter, BlockReport, ExamBlock, NoExam, ReportItem, ReportList, StudentResult } from './ProfileStyles';
 import { BiMessageSquareDetail } from 'react-icons/bi';
+import { getClassDetail, getResultStudent } from '../../../api/class';
 
 type ReportProps = {
   [key: string]: any;
@@ -43,6 +44,7 @@ const ReportBlock = ({
   const [number, setNumber] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [students, setStudents] = useState<any[]>([]);
+  const [questionsReport, setQuestionsReport] = useState<any[]>([]);
 
   const actions = useMemo(
     () => [
@@ -51,11 +53,12 @@ const ReportBlock = ({
         tooltip: 'View Detail',
         icon: <BiMessageSquareDetail />,
         onClick(row: any) {
-          setActiveTab('Student');
+          console.log({ students, questionsReport });
+          setActiveTab(row);
         },
       },
     ],
-    [],
+    [students, questionsReport],
   );
 
   useEffect(() => {
@@ -63,9 +66,13 @@ const ReportBlock = ({
 
     if (searchExamInStudent === '') return;
 
-    const timer = setTimeout(() => {
+    const timer = setTimeout(async () => {
       if (isSubscribed) {
-        setStudents(studentResult);
+        const currentClass = originExamList.filter((item: any) => item.name === searchExamInStudent);
+        // const classRes = await getClassDetail(currentClass[0].id, false);
+        const sumReport = await getResultStudent(currentClass[0].id);
+        setQuestionsReport(sumReport.data.overview);
+        setStudents(sumReport.data.students);
         setIsLoading(false);
       }
     }, 2000);
@@ -75,6 +82,8 @@ const ReportBlock = ({
       clearTimeout(timer);
     };
   }, [searchExamInStudent]);
+
+  console.log({ students });
 
   return (
     <ExamBlock>
@@ -129,7 +138,11 @@ const ReportBlock = ({
               <ReportList>
                 {reportType === 'Overview' ? (
                   <ReportItem>
-                    <LineChart labels={overviewLabels} datasets={overviewDatasets} titleName="Report points of exam" />
+                    <LineChart
+                      labels={students.map((item: any) => item.index)}
+                      datasets={getOverviewReport(students)}
+                      titleName="Report points of exam"
+                    />
                   </ReportItem>
                 ) : (
                   <>
@@ -154,7 +167,7 @@ const ReportBlock = ({
                         </QuestionDashboard>
                         <BarChart
                           labels={['A', 'B', 'C', 'D']}
-                          datasets={getDataset(questionsReport[number])}
+                          datasets={getDataset(questionsReport[number], students.length)}
                           titleName="Report points of questions"
                         />
                         <QuizItem as="div">
@@ -173,12 +186,12 @@ const ReportBlock = ({
                               </ToolTip>
                             </QuizItemActions>
                           </QuizItemHeader>
-                          <QuizItemContent>{questionsReport[number].question}</QuizItemContent>
+                          <QuizItemContent dangerouslySetInnerHTML={{ __html: questionsReport[number].question }} />
                           <QuizItemAnswers>
                             {questionsReport[number].answers.map((answer: any) => (
                               <QuizItemAnswer key={answer.id}>
                                 <QuizItemAnswerStatus isCorrect={answer.isCorrect} />
-                                <span>{answer.content}</span>
+                                <div dangerouslySetInnerHTML={{ __html: answer.content }} />
                               </QuizItemAnswer>
                             ))}
                           </QuizItemAnswers>
@@ -200,7 +213,12 @@ const ReportBlock = ({
                 ) : (
                   <Table
                     rowData={students}
-                    columnDefs={[{ field: 'id' }, { field: 'name' }, { field: 'score' }, { field: 'time' }]}
+                    columnDefs={[
+                      { field: 'index' },
+                      { field: 'name' },
+                      { field: 'numCorrect', label: 'Number Correct' },
+                      { field: 'restTime', label: 'Rest Time' },
+                    ]}
                     widthArr={[10, 30, 20, 20, 20]}
                     actions={actions}
                   />

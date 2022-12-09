@@ -20,7 +20,7 @@ type LineChartProps = {
 
 export default function LineChart({ labels, datasets, titleName }: LineChartProps) {
   ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ChartDataLabels);
-
+  console.log({ datasets });
   const data = {
     labels,
     datasets: datasets,

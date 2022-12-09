@@ -20,7 +20,7 @@ const Table = ({ rowData, columnDefs, widthArr, actions }: Props) => {
       <THead>
         {columnDefs.map((column) => (
           <TCell key={column.field} style={{ textTransform: 'capitalize' }}>
-            {column.field}
+            {column.label ? column.label : column.field}
           </TCell>
         ))}
         {actions && <TCell>Actions</TCell>}
