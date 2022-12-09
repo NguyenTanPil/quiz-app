@@ -4,12 +4,14 @@ import banner from '../../images/banner.jpeg';
 import { WrapperSection } from '../../styles/Utils';
 import { SignUpButton } from '../../common/Button';
 import { history } from '../../images/history_train';
+import { useNavigate } from 'react-router-dom';
 // import axios from 'axios';
 // import { getGeneraExamById } from '../../api/exam';
 // import { QUIZ_APP_CONSTANTS } from '../../utils/constants';
 // import { CSVLink } from 'react-csv';
 
 const Banner = () => {
+  const navigate = useNavigate();
   // const handleImport = async () => {
   //   const questions = data.questions.map((item) => {
   //     const topQuestionsId: any[] = [];
@@ -78,7 +80,7 @@ const Banner = () => {
           <p>
             Education and strategy for internet marketers to launch and scale marking and business campaigns online.
           </p>
-          <SignUpButton>Take A Quiz</SignUpButton>
+          <SignUpButton onClick={() => navigate('/search')}>Take A Quiz</SignUpButton>
         </LeftSide>
         <RightSide>
           <img src={banner} alt="" />

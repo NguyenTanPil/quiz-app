@@ -7,7 +7,6 @@ const FaceAuthen = (() => {
         const url = host + `?redirect_url=${redirectUrl}`;
 
         const registerWindowPopup = AuthenFormUtils.openPopupResize(url, popupName);
-        console.log({ registerWindowPopup });
         if (!registerWindowPopup) {
           reject({ error: true, msg: 'Popup Blocked' });
         }

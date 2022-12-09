@@ -4,15 +4,17 @@ import { CgPushChevronRight } from 'react-icons/cg';
 import { NoBorderButton } from '../../common/Button';
 import { NavLink } from 'react-router-dom';
 import useOnClickOutside from '../../common/hooks/useOnClickOutside';
+import { useAppSelector } from '../../app/hooks';
+import { selectUser } from '../../features/user/userSlice';
 
 type SideBarProps = {
   isLogin: boolean;
   isShowSidebar: boolean;
   setIsShowSidebar: (value: boolean) => void;
-  setIsShowJoinDialog: (value: boolean) => void;
+  handleSignOut: () => void;
 };
 
-const Sidebar = ({ isLogin, isShowSidebar, setIsShowSidebar, setIsShowJoinDialog }: SideBarProps) => {
+const Sidebar = ({ isLogin, isShowSidebar, setIsShowSidebar, handleSignOut }: SideBarProps) => {
   const contentRef = useRef<HTMLDivElement>();
   useOnClickOutside(contentRef, () => setIsShowSidebar(false));
 
@@ -26,28 +28,29 @@ const Sidebar = ({ isLogin, isShowSidebar, setIsShowSidebar, setIsShowJoinDialog
         </Header>
         <ListLink>
           <li onClick={() => setIsShowSidebar(false)}>
-            <NavLink to="/exams/create-exam">
-              <span>Create Exam</span>
+            <NavLink to="/search">
+              <span>Search Class</span>
             </NavLink>
           </li>
           <li
             onClick={() => {
               setIsShowSidebar(false);
-              setIsShowJoinDialog(true);
             }}
           >
-            <span>Join now</span>
-          </li>
-          <li onClick={() => setIsShowSidebar(false)}>
-            <NavLink to="/">
-              <span>Academy</span>
+            <NavLink to="/profile/create-class">
+              <span>Create Class</span>
             </NavLink>
           </li>
           <li onClick={() => setIsShowSidebar(false)}>
-            <NavLink to="/game">
-              <span>Start</span>
+            <NavLink to="/profile/create-category">
+              <span>Create Category</span>
             </NavLink>
           </li>
+          {isLogin && (
+            <li onClick={() => setIsShowSidebar(false)}>
+              <span onClick={handleSignOut}>Sign Out</span>
+            </li>
+          )}
           <li onClick={() => setIsShowSidebar(false)}>
             <NavLink to={isLogin ? '/profile' : '/sign-in'}>
               <span>{isLogin ? 'Profile' : 'Sign in'}</span>

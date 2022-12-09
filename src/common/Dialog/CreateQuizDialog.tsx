@@ -121,9 +121,9 @@ const CreateQuizDialog = ({
                   <ElementGroup>
                     <TitleGroup>
                       <h3>Quiz Answers</h3>
-                      <SignUpButton type="button" onClick={() => setIsShuffle(!isShuffle)}>
+                      {/* <SignUpButton type="button" onClick={() => setIsShuffle(!isShuffle)}>
                         {isShuffle ? 'Shuffle' : 'UnShuffle'}
-                      </SignUpButton>
+                      </SignUpButton> */}
                     </TitleGroup>
                     <QuizAnswers>
                       {values.answers.map((answer: any, idx: number) => (

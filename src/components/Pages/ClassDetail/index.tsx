@@ -83,7 +83,6 @@ const ClassDetail = () => {
 
       if (classRes.isSuccess) {
         setClassDetail(classRes.data.class);
-        console.log({ classRes });
 
         if (user.role === 1) {
           const fetchedExams = classRes.data.exam.map((exam: any, idx: number) => {
@@ -132,6 +131,7 @@ const ClassDetail = () => {
               medium: classRes.data.exam[0].sub.normal,
               hard: classRes.data.exam[0].sub.difficult,
             },
+            code: classRes.data.exam[0].main[0].numExamination,
           };
 
           setCookie({ data: config, cookieName: 'moreInfo', time: 60 * 60 * 2 });
@@ -198,7 +198,7 @@ const ClassDetail = () => {
                       </QuestionBankBody>
                       <QuestionBankBlockBtn>
                         <SignUpButton onClick={createNewSubExam}>
-                          {isExistExam ? 'Update' : 'Create'} sub exam
+                          {isExistExam ? 'View' : 'Create'} sub exam
                         </SignUpButton>
                       </QuestionBankBlockBtn>
                     </>

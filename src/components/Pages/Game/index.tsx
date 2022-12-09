@@ -58,8 +58,6 @@ const Game = () => {
   };
 
   const nextQuestion = () => {
-    console.log({ number, question: questions[number] });
-
     if (isTestMode) {
       setNumber((prev) => prev + 1);
     } else {
@@ -186,8 +184,6 @@ const Game = () => {
         setClassId(response.data.classId);
       }
 
-      console.log({ data: response.data });
-
       const questionList = response.data.quizList.map((item: any) => {
         return {
           id: item.id,
@@ -251,8 +247,6 @@ const Game = () => {
       setIsShowCompleteDialog(true);
     }
   }, [score]);
-
-  console.log({ loading, questions });
 
   return (
     <>

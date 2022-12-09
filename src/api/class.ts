@@ -307,8 +307,6 @@ export const getResultStudent = async (classId: string) => {
       });
     });
 
-    console.log({ resultRes });
-
     return { isSuccess: true, data: { students, overview: resultRes } };
   } catch (error: any) {
     return { isSuccess: false, message: error.message };

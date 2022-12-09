@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { BiEditAlt } from 'react-icons/bi';
 import { SiGoogleclassroom } from 'react-icons/si';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { updateUserDetail } from '../../../api/authentication';
 import { createCategory, getCategoryOfUser, updateCategory } from '../../../api/category';
 import { createClass, getAllClassByJoined, getClassesByUserId, updateClass } from '../../../api/class';
@@ -21,8 +21,6 @@ import { LoadingFullPage } from '../../Loading';
 import { QuizOptions } from '../CreateExam/CreateExamStyles';
 import { ClassBody, ClassFooter, ClassHeader, ClassItem, ClassList } from '../Search/SearchStyles';
 import AllCategoryBlock from './AllCategoryBlock';
-import AllExamBlock from './AllExamBlock';
-import { classData, classDetail } from './dummyData';
 import {
   Actions,
   ButtonActions,
@@ -41,14 +39,26 @@ import {
 } from './ProfileStyles';
 import ReportBlock from './ReportBlock';
 import StudentBlock from './StudentBlock';
+import avatarImg from '../../../images/avatar.jpg';
 
 const Profile = () => {
   const user = useAppSelector(selectUser);
   const categories = useAppSelector(selectCategoryList);
+  const { optional } = useParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const [activeTab, setActiveTab] = useState(QUIZ_APP_CONSTANTS.PROFILE.tabs[0]);
+  const [activeTab, setActiveTab] = useState(() => {
+    if (optional === 'create-category') {
+      return 'All Category';
+    }
+
+    if (optional === 'create-class') {
+      return 'All Classes';
+    }
+
+    return QUIZ_APP_CONSTANTS.PROFILE.tabs[0];
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [isShowEditDialog, setIsShowEditDialog] = useState(false);
   const [isCreateCategory, setIsCreateCategory] = useState(false);
@@ -242,6 +252,14 @@ const Profile = () => {
       if (user.id && user.role === 2) {
         await fetchClassesByJoined();
       }
+
+      if (optional === 'create-category') {
+        setIsCreateCategory(true);
+      }
+      if (optional === 'create-class') {
+        setIsCreateClass(true);
+      }
+
       setIsLoading(false);
     };
 
@@ -312,10 +330,7 @@ const Profile = () => {
           <ProfileHeader>
             <UserProfile>
               <UserAvatar>
-                <img
-                  src="https://lh3.googleusercontent.com/a-/AFdZucrdbwb3FFVarH2n7n2AMaXpHYdR2oExsH9wf-R6=s96-c?w=200&h=200"
-                  alt=""
-                />
+                <img src={avatarImg} alt="" />
               </UserAvatar>
               <UserDetail>
                 <UserName>

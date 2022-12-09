@@ -3,6 +3,7 @@ import { getResult } from '../../api/exam';
 import { SignUpButton } from '../../common/Button';
 import Table from '../../common/Table';
 import { convertLocalTime, convertSecondsToMinutes, convertTimeStampToDate } from '../../utils';
+import { getCookie } from '../../utils/cookie';
 import { LoadingFullPage } from '../Loading';
 import { Container } from '../QuestionCard/QuestionCardStyles';
 import { ResultTitle, TryAgain } from './GameResultStyles';
@@ -20,6 +21,7 @@ const GameResult = ({ setIsShowJoinDialog }: GameResultProps) => {
 
     const fetchResult = async () => {
       const response = await getResult();
+      const listExamIds = getCookie('moreInfo')?.listExamId;
 
       if (response.isSuccess && isSubscribed) {
         const data = response?.data.map((item: any) => ({
@@ -27,7 +29,8 @@ const GameResult = ({ setIsShowJoinDialog }: GameResultProps) => {
           restTime: convertSecondsToMinutes(item.restTime),
           submitDate: convertTimeStampToDate(convertLocalTime(item.submitDate)),
         }));
-        setResultList(data);
+
+        setResultList(data.filter((item: any) => listExamIds.includes(item.examId)));
         setIsLoading(false);
       }
     };

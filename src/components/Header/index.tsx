@@ -11,15 +11,9 @@ import { Container, Content, HeaderAvatar, Logo, NavItem, NavList, ShowSidebarBo
 
 const Header = () => {
   const [isShowSidebar, setIsShowSidebar] = useState(false);
-  const [isShowJoinDialog, setIsShowJoinDialog] = useState(false);
   const user = useAppSelector(selectUser);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-
-  const handleJoinExam = (code: string) => {
-    setIsShowJoinDialog(false);
-    navigate(`/game/5c4b715a-095f-47dc-b3d7-726aaa4d0054`);
-  };
 
   const handleSignOut = () => {
     dispatch(resetUser());
@@ -28,21 +22,11 @@ const Header = () => {
 
   return (
     <Container>
-      {isShowJoinDialog && (
-        <JoinDialog
-          title="Join Exam"
-          applyButtonContent="Join"
-          handleCancelDialog={() => setIsShowJoinDialog(false)}
-          handleApplyDialog={handleJoinExam}
-          handleCloseDialog={() => setIsShowJoinDialog(false)}
-        />
-      )}
-
       <Sidebar
         isLogin={user.id !== ''}
         isShowSidebar={isShowSidebar}
         setIsShowSidebar={setIsShowSidebar}
-        setIsShowJoinDialog={setIsShowJoinDialog}
+        handleSignOut={handleSignOut}
       />
       <Wrapper>
         <Content>
@@ -57,16 +41,13 @@ const Header = () => {
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NoBorderButton onClick={() => setIsShowJoinDialog(true)}>Join now</NoBorderButton>
-              </NavItem>
-              <NavItem>
-                <NavLink to="/class/create-class">
-                  <NoBorderButton>Academy</NoBorderButton>
+                <NavLink to="/profile/create-class">
+                  <NoBorderButton>Create Class</NoBorderButton>
                 </NavLink>
               </NavItem>
               <NavItem>
-                <NavLink to="/sign-in">
-                  <NoBorderButton>Start</NoBorderButton>
+                <NavLink to="/profile/create-category">
+                  <NoBorderButton>Create Category</NoBorderButton>
                 </NavLink>
               </NavItem>
               {user.id !== '' && (

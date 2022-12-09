@@ -53,7 +53,6 @@ const ReportBlock = ({
         tooltip: 'View Detail',
         icon: <BiMessageSquareDetail />,
         onClick(row: any) {
-          console.log({ students, questionsReport });
           setActiveTab(row);
         },
       },
@@ -82,8 +81,6 @@ const ReportBlock = ({
       clearTimeout(timer);
     };
   }, [searchExamInStudent]);
-
-  console.log({ students });
 
   return (
     <ExamBlock>

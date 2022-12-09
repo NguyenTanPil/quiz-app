@@ -39,6 +39,7 @@ const App: React.FC = () => {
             <Route path=":classId" element={<ClassDetail />} />
           </Route>
           <Route path="profile" element={<Profile />} />
+          <Route path="profile/:optional" element={<Profile />} />
           <Route path="search" element={<Search />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

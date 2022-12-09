@@ -98,7 +98,7 @@ const initialExam: ExamProps = {
 const CreateExam = () => {
   const navigate = useNavigate();
   const { classId } = useParams();
-  const examId = getCookie('examId');
+  const examId = getCookie('examId') === 'undefined' ? false : getCookie('examId');
 
   const [isLoading, setIsLoading] = useState(examId ? true : false);
   const [originExam, setOriginExam] = useState<ExamProps>(initialExam);
@@ -244,6 +244,7 @@ const CreateExam = () => {
     } else {
       if (isSubscribed) {
         setExam(initialExam);
+        setIsLoading(false);
       }
     }
 

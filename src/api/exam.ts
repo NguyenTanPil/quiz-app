@@ -202,6 +202,7 @@ export const getResult = async () => {
       score: result.numCorrect,
       restTime: result.restTime,
       submitDate: result.dateSubmit,
+      examId: result['examId '],
     }));
 
     return { isSuccess: true, data };

@@ -67,6 +67,7 @@ const DetailExam = () => {
   const [questionList, setQuestionList] = useState<any[]>([]);
   const [isCreated, setIsCreated] = useState(false);
   const [isNew, setIsNew] = useState(false);
+  const [code, setCode] = useState();
 
   const getTotalQuestionByLevel = (name: string) => {
     return total[name as keyof typeof total];
@@ -94,6 +95,7 @@ const DetailExam = () => {
     const res = await createSubExam(formValues);
     if (res.isSuccess) {
       setIsNew(true);
+      setCode(res.data[0].numExamination);
       const config = {
         listExamId: res.data.map((item: any) => item.id),
         numberOfSub: formValues.numExams,
@@ -104,8 +106,8 @@ const DetailExam = () => {
           medium: formValues.structureExam.normal,
           hard: formValues.structureExam.difficult,
         },
+        code: res.data[0].numExamination,
       };
-      console.log({ config });
       setCookie({ data: config, cookieName: 'moreInfo', time: 60 * 60 * 2 });
     }
   };
@@ -119,10 +121,10 @@ const DetailExam = () => {
       listExamIdCache = moreInfo.listExamId;
       setTimeDuration(convertMinutesToDuration(moreInfo.timeDuration));
       setStructure(moreInfo.structure);
-      console.log({ moreInfo });
       setNumberOfSub(moreInfo.numberOfSub);
-      setTimeStart(moreInfo.timeStart);
+      setTimeStart(moreInfo.timeStart * 1000);
       setIsCreated(true);
+      setCode(moreInfo.code);
     }
 
     const fetchQuestionBank = async () => {
@@ -194,7 +196,7 @@ const DetailExam = () => {
                 <OriginInput value={examName} name="quiz-name" readOnly={true} />
               </QuizName>
               <CreateNewQuiz>
-                <LabelGroup>Create New Sub Exam</LabelGroup>
+                <LabelGroup>{isCreated ? 'Code' : 'Create New Sub Exam'}</LabelGroup>
                 <SignUpButton
                   disabled={
                     isCreated ||
@@ -205,8 +207,14 @@ const DetailExam = () => {
                   }
                   onClick={handleCreateNewSubExam}
                 >
-                  <FiPlusSquare />
-                  <span>New Sub Exam</span>
+                  {isCreated ? (
+                    code
+                  ) : (
+                    <>
+                      <FiPlusSquare />
+                      <span>New Sub Exam</span>
+                    </>
+                  )}
                 </SignUpButton>
               </CreateNewQuiz>
             </CreateQuizHeader>
