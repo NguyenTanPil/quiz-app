@@ -20,6 +20,7 @@ export const QUIZ_APP_CONSTANTS = {
     baseUrl: 'http://127.0.0.1:8000/api/',
     signUpUrl: 'register',
     signInUrl: 'login',
+    signInUrlFace: 'login/face',
     createCategoryUrl: 'creator/category/create',
     updateCategoryUrl: 'creator/category/update/',
     getCategoryByUserIdUrl: 'creator/category',

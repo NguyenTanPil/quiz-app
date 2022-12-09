@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { checkSignIn } from '../../../api/authentication';
+import { checkSignIn, checkSignInFace } from '../../../api/authentication';
 import { useAppDispatch } from '../../../app/hooks';
 import { ConfirmDialog } from '../../../common/Dialog';
 import { createToken, createUser } from '../../../features/user/userSlice';
@@ -33,8 +33,21 @@ const SignIn = () => {
   const [errorDialog, setErrorDialog] = useState({ message: '', isShow: false });
 
   const handleSubmit = async (values: any) => {
-    const response = await checkSignIn(values);
-
+    var response:any = {};
+    console.log(values)
+    if(values.loginWithFace){
+      if(values.email !== values.emailRetrive){
+        setErrorDialog({
+          isShow: true,
+          message: "Face not match!",
+        });
+        return;
+      }
+      response = await checkSignInFace(values);
+    }else{
+      response = await checkSignIn(values);
+    }
+    
     if (response.isSuccess) {
       const user = response.data.user;
       const token = response.data['bearer-token'];
@@ -61,7 +74,7 @@ const SignIn = () => {
       });
     }
   };
-
+  
   useEffect(() => {
     if (isLogin) {
       navigate('/');
@@ -73,7 +86,7 @@ const SignIn = () => {
       <Wrapper>
         {errorDialog.isShow && (
           <ConfirmDialog
-            content="Your email or your password is incorrect!"
+            content={errorDialog.message}
             title="Notification"
             applyButtonContent="Try Again"
             handleApplyDialog={() => setErrorDialog({ message: '', isShow: false })}
