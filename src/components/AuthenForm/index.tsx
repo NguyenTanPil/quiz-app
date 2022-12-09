@@ -53,11 +53,13 @@ const AuthenForm = ({
   onSubmit,
 }: AuthenFormProps) => {
   const [isFaceAuthen, setIsFaceAuthen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [values, setValues] = useState<any>({})
 
   const handleRegister = async () => {
-    const host = 'https://tmcat3.vercel.app/register';
+    const host = 'http://192.168.1.12:3000/register';
     try {
-      const res: any = await FaceAuthen.AuthPopup(host, 'http://192.168.1.6:3000', 'Register');
+      const res: any = await FaceAuthen.AuthPopup(host, 'http://192.168.1.12:4000/', 'Register', email);
       console.log('register success:', res);
       const search = new URL(res?.href).searchParams;
 
@@ -67,9 +69,10 @@ const AuthenForm = ({
       }
 
       const emailReturn = search.get('email');
-      // Login
+      // Register
       if (emailReturn) {
         setIsFaceAuthen(true);
+        onSubmit({ ...values, isFaceAuthen })
       }
       console.log({ emailReturn });
     } catch (error) {
@@ -77,8 +80,39 @@ const AuthenForm = ({
     }
   };
 
-  console.log({ isFaceAuthen });
+  const handleLogin = async () => {
+    const host = 'http://192.168.1.12:3000/login';
+    try {
+      const res: any = await FaceAuthen.AuthPopup(host, 'http://192.168.1.12:4000/', 'Login', "");
+      const search = new URL(res?.href).searchParams;
 
+      if (search.get('error')) {
+        console.log(search.get('error'));
+        return;
+      }
+      const emailReturn = search.get('email');
+      if (emailReturn) {
+        onSubmit({ ...values, loginWithFace: true, emailRetrive: emailReturn })
+      }
+    } catch (error) {
+      console.log('login fails:', error);
+    }
+  };
+
+  function checkEmail(value: string) {
+    let error = false;
+
+    if (!value) {
+      return false;
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)) {
+      return false
+    }
+
+    return true;
+  }
+
+  console.log({ isFaceAuthen });
+  console.log(values)
   return (
     <Content isReverse={isVerticalReverse}>
       <FormContainer isReverse={isVerticalReverse}>
@@ -88,11 +122,13 @@ const AuthenForm = ({
         <Formik
           initialValues={createInitValuesFromFormValues(formValues)}
           onSubmit={(values) => {
-            onSubmit(values);
+            onSubmit({ ...values });
           }}
         >
-          {({ errors, touched, dirty, values, setFieldValue, handleSubmit }) => (
-            <Form id={formId} onSubmit={handleSubmit} noValidate>
+          {({ errors, touched, dirty, values, setFieldValue, handleSubmit }) => {
+            setEmail(values.email)
+            setValues(values)
+            return <Form id={formId} onSubmit={handleSubmit} noValidate>
               {formValues.map((value: formValueProps) => {
                 const errorProp = value.name as keyof FormikErrors<FormValues>;
                 const touchedProp = value.name as keyof FormikTouched<FormValues>;
@@ -118,8 +154,9 @@ const AuthenForm = ({
                           />
                         </SignUpButton>
                       ))}
-                      <ToolTip content="Face Authentication">
-                        <ActionButton onClick={handleRegister} type="button">
+                      <ToolTip content={"Face Authentication"}>
+                        <ActionButton onClick={handleRegister} type="button" disabled={!dirty || Object.keys(errors).length > 0}
+                          style={{ opacity: !dirty || Object.keys(errors).length > 0 ? 0.5 : 1 }}>
                           <TbFaceId />
                         </ActionButton>
                       </ToolTip>
@@ -139,40 +176,26 @@ const AuthenForm = ({
                   );
                 }
               })}
-              <SignUpButton type="submit" disabled={!dirty || Object.keys(errors).length > 0}>
-                {submitButtonText}
-              </SignUpButton>
+              <RadioBoxList>
+                {
+                  !isFaceAuthen && <SignUpButton type="submit" disabled={!dirty || Object.keys(errors).length > 0}>
+                    {submitButtonText}
+                  </SignUpButton>
+                }
+                <span style={{ width: "4.8rem", height: "4.8rem", fontSize: "16px", color: "#536471" }}>Or</span>
+                {
+                  isSignIn && <ToolTip content={"Face Authentication"}>
+                    <ActionButton onClick={handleLogin} type="button" disabled={checkEmail(email) ? false : true}
+                      style={{ opacity: checkEmail(email) ? 1 : 0.5 }}>
+                      <TbFaceId />
+                    </ActionButton>
+                  </ToolTip>
+                }
+              </RadioBoxList>
             </Form>
-          )}
+          }}
         </Formik>
-        {isSignIn && (
-          <OtherAuthen>
-            <span>Or login with</span>
-            <ListAuthen>
-              <li>
-                <ToolTip content="Facebook">
-                  <OtherAuthenButton logoColor="#4267B2">
-                    <RiFacebookFill />
-                  </OtherAuthenButton>
-                </ToolTip>
-              </li>
-              <li>
-                <ToolTip content="Twitter">
-                  <OtherAuthenButton logoColor="#1DA1F2">
-                    <RiTwitterFill />
-                  </OtherAuthenButton>
-                </ToolTip>
-              </li>
-              <li>
-                <ToolTip content="Google">
-                  <OtherAuthenButton logoColor="#DB4437">
-                    <RiGoogleFill />
-                  </OtherAuthenButton>
-                </ToolTip>
-              </li>
-            </ListAuthen>
-          </OtherAuthen>
-        )}
+
       </FormContainer>
       <AuthenFormBanner isReverse={isVerticalReverse}>
         <img src={bannerImg} alt="" />

@@ -47,6 +47,7 @@ const SignUp = () => {
 
   const handleSubmit = async (values: any) => {
     const formValues = { ...values };
+    console.log(formValues)
 
     formValues.role =
       values.role === 'Student'

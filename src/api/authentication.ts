@@ -24,13 +24,33 @@ export const createAccount = async (formValues: any) => {
 
 export const checkSignIn = async (formValues: any) => {
   const url = QUIZ_APP_CONSTANTS.API.baseUrl + QUIZ_APP_CONSTANTS.API.signInUrl;
-  const { email, password } = formValues;
+  const { email, password} = formValues;
 
   try {
     const response = await axios({
       method: 'post',
       url,
       data: { email, password },
+    });
+
+    if (response.data.status !== '200') {
+      return { isSuccess: false, data: response.data.message };
+    }
+
+    return { isSuccess: true, data: response.data.data };
+  } catch (error: any) {
+    return { isSuccess: false, message: error.message };
+  }
+};
+
+export const checkSignInFace = async (email:string) => {
+  const url = QUIZ_APP_CONSTANTS.API.baseUrl + QUIZ_APP_CONSTANTS.API.signInUrlFace;
+  console.log("Sign up with Face", email)
+  try {
+    const response = await axios({
+      method: 'post',
+      url,
+      data: { email },
     });
 
     if (response.data.status !== '200') {
