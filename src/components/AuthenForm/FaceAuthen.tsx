@@ -4,7 +4,7 @@ const FaceAuthen = (() => {
   return {
     AuthPopup(host: string, redirectUrl: string, popupName: string, email?: string) {
       return new Promise((resolve, reject) => {
-        const url = host + `?redirect_url=${redirectUrl}${email && `&email${email}`}`;
+        const url = host + `?redirect_url=${redirectUrl}${email && `&email=${email}`}`;
 
         const registerWindowPopup = AuthenFormUtils.openPopupResize(url, popupName);
         console.log({ registerWindowPopup });

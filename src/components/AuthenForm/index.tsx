@@ -55,11 +55,12 @@ const AuthenForm = ({
   const [isFaceAuthen, setIsFaceAuthen] = useState(false);
   const [email, setEmail] = useState("");
   const [values, setValues] = useState<any>({})
-
+  const [roleUser, setRoleUser] = useState("Student");
+  const BASE_IP = "192.168.129.81"
   const handleRegister = async () => {
-    const host = 'http://192.168.1.12:3000/register';
+    const host = `http://${BASE_IP}:3000/register`;
     try {
-      const res: any = await FaceAuthen.AuthPopup(host, 'http://192.168.1.12:4000/', 'Register', email);
+      const res: any = await FaceAuthen.AuthPopup(host, `http://${BASE_IP}:4000/`, 'Register', email);
       console.log('register success:', res);
       const search = new URL(res?.href).searchParams;
 
@@ -72,7 +73,7 @@ const AuthenForm = ({
       // Register
       if (emailReturn) {
         setIsFaceAuthen(true);
-        onSubmit({ ...values, isFaceAuthen })
+        onSubmit({ ...values, isFaceAuthen: 1 })
       }
       console.log({ emailReturn });
     } catch (error) {
@@ -81,9 +82,9 @@ const AuthenForm = ({
   };
 
   const handleLogin = async () => {
-    const host = 'http://192.168.1.12:3000/login';
+    const host = `http://${BASE_IP}:3000/login`;
     try {
-      const res: any = await FaceAuthen.AuthPopup(host, 'http://192.168.1.12:4000/', 'Login', "");
+      const res: any = await FaceAuthen.AuthPopup(host, `http://${BASE_IP}:4000/`, 'Login', "");
       const search = new URL(res?.href).searchParams;
 
       if (search.get('error')) {
@@ -111,8 +112,6 @@ const AuthenForm = ({
     return true;
   }
 
-  console.log({ isFaceAuthen });
-  console.log(values)
   return (
     <Content isReverse={isVerticalReverse}>
       <FormContainer isReverse={isVerticalReverse}>
@@ -122,12 +121,13 @@ const AuthenForm = ({
         <Formik
           initialValues={createInitValuesFromFormValues(formValues)}
           onSubmit={(values) => {
-            onSubmit({ ...values });
+            onSubmit({ ...values , isFaceAuthen: 0});
           }}
         >
           {({ errors, touched, dirty, values, setFieldValue, handleSubmit }) => {
             setEmail(values.email)
             setValues(values)
+            setRoleUser(values.role)
             return <Form id={formId} onSubmit={handleSubmit} noValidate>
               {formValues.map((value: formValueProps) => {
                 const errorProp = value.name as keyof FormikErrors<FormValues>;
@@ -154,12 +154,14 @@ const AuthenForm = ({
                           />
                         </SignUpButton>
                       ))}
-                      <ToolTip content={"Face Authentication"}>
-                        <ActionButton onClick={handleRegister} type="button" disabled={!dirty || Object.keys(errors).length > 0}
-                          style={{ opacity: !dirty || Object.keys(errors).length > 0 ? 0.5 : 1 }}>
-                          <TbFaceId />
-                        </ActionButton>
-                      </ToolTip>
+                      {
+                        roleUser === "Student" && <ToolTip content={"Face Authentication"}>
+                          <ActionButton onClick={handleRegister} type="button" disabled={!dirty || Object.keys(errors).length > 0}
+                            style={{ opacity: !dirty || Object.keys(errors).length > 0 ? 0.5 : 1 }}>
+                            <TbFaceId />
+                          </ActionButton>
+                        </ToolTip>
+                      }
                     </RadioBoxList>
                   );
                 } else {

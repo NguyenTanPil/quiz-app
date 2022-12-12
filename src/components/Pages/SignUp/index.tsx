@@ -47,7 +47,6 @@ const SignUp = () => {
 
   const handleSubmit = async (values: any) => {
     const formValues = { ...values };
-    console.log(formValues)
 
     formValues.role =
       values.role === 'Student'
@@ -56,7 +55,6 @@ const SignUp = () => {
     formValues.nameTitle = QUIZ_APP_CONSTANTS.CREATE_EXAM.initNameTitle;
 
     delete formValues.repeatPass;
-
     const response = await createAccount(formValues);
     if (response.isSuccess) {
       navigate('/sign-in');
