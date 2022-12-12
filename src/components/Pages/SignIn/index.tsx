@@ -47,6 +47,8 @@ const SignIn = () => {
     }else{
       response = await checkSignIn(values);
     }
+
+    console.log(response)
     
     if (response.isSuccess) {
       const user = response.data.user;
@@ -70,7 +72,7 @@ const SignIn = () => {
     } else {
       setErrorDialog({
         isShow: true,
-        message: response.message,
+        message: response.message || response.data,
       });
     }
   };

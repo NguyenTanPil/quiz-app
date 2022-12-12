@@ -36,6 +36,11 @@ const Header = () => {
           <div>
             <NavList>
               <NavItem>
+                <NavLink to="/">
+                  <SignUpButton>Review Exam</SignUpButton>
+                </NavLink>
+              </NavItem>
+              <NavItem>
                 <NavLink to="/search">
                   <NoBorderButton>Search Class</NoBorderButton>
                 </NavLink>

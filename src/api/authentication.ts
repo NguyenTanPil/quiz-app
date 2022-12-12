@@ -43,14 +43,14 @@ export const checkSignIn = async (formValues: any) => {
   }
 };
 
-export const checkSignInFace = async (email:string) => {
+export const checkSignInFace = async (formValues:any) => {
   const url = QUIZ_APP_CONSTANTS.API.baseUrl + QUIZ_APP_CONSTANTS.API.signInUrlFace;
-  console.log("Sign up with Face", email)
+  console.log("Sign up with Face", formValues)
   try {
     const response = await axios({
       method: 'post',
       url,
-      data: { email },
+      data: { email: formValues.email },
     });
 
     if (response.data.status !== '200') {
